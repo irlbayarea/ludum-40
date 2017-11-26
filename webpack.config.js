@@ -14,7 +14,10 @@ const isProd = nodeEnv === 'production';
 
 module.exports = {
   // Entrypoint(s) to bundles.
-  entry: './src/index.ts',
+  entry: {
+    app: './src/index.ts',
+    vendor: ['pixi', 'p2', 'phaser'],
+  },
 
   // Output bundles.
   output: {
@@ -26,12 +29,21 @@ module.exports = {
   // Enable source-maps.
   devtool: isProd ? 'hidden-source-map' : 'eval',
 
+  node: {
+    fs: 'empty',
+    net: 'empty',
+    tls: 'empty',
+  },
+
   resolve: {
     alias: {
       assets: path.join(__dirname, 'assets/'),
-      p2: path.join(__dirname, 'node_modules/phaser/build/p2.js'),
-      pixi: path.join(__dirname, 'node_modules/phaser/build/pixi.js'),
-      phaser: path.join(__dirname,  'node_modules/phaser/build/phaser.js')
+      p2: path.join(__dirname, 'node_modules/phaser-ce/build/custom/p2.js'),
+      pixi: path.join(__dirname, 'node_modules/phaser-ce/build/custom/pixi.js'),
+      phaser: path.join(
+        __dirname,
+        'node_modules/phaser-ce/build/custom/phaser-split.js'
+      ),
     },
     extensions: ['.ts', '.js', '.html'],
   },
@@ -40,9 +52,9 @@ module.exports = {
     rules: [
       { test: /assets(\/|\\)/, loader: 'file-loader?name=assets/[hash].[ext]' },
       { test: /pixi\.js$/, loader: 'expose-loader?PIXI' },
-      { test: /phaser\.js$/, loader: 'expose-loader?Phaser' },
+      { test: /phaser-split\.js$/, loader: 'expose-loader?Phaser' },
       { test: /p2\.js$/, loader: 'expose-loader?p2' },
-      { test: /\.ts$/, use: 'ts-loader', exclude: '/node_modules/' }
+      { test: /\.ts$/, use: 'ts-loader', exclude: '/node_modules/' },
     ],
   },
 
@@ -55,9 +67,7 @@ module.exports = {
     // https://webpack.js.org/plugins/hot-module-replacement-plugin/
     new webpack.HotModuleReplacementPlugin(),
 
-    new CleanWebpackPlugin([
-      path.join(__dirname, 'dist')
-    ]),
+    new CleanWebpackPlugin([path.join(__dirname, 'dist')]),
 
     // Generates an HTML5 entrypoint for all of the output bundles.
     // https://github.com/jantimon/html-webpack-plugin
@@ -75,7 +85,7 @@ module.exports = {
     overlay: true,
     port: 8000,
     watchOptions: {
-      ignored: /node_modules/
-    }
+      ignored: /node_modules/,
+    },
   },
 };
