@@ -91,8 +91,8 @@ module.exports = {
       Object.assign(options || {}, {
         __DEBUG: true,
         __DIMENSIONS: {
-          WIDTH: 800,
-          HEIGHT: 600,
+          width: 800,
+          height: 600,
         },
       })
     );
