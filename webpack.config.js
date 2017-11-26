@@ -3,8 +3,8 @@ const webpack = require('webpack');
 
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
-const nodeEnv = process.env.NODE_ENV || "development";
-const isProd = nodeEnv === "production";
+const nodeEnv = process.env.NODE_ENV || 'development';
+const isProd = nodeEnv === 'production';
 
 // Sources:
 // * https://www.typescriptlang.org/docs/handbook/react-&-webpack.html
@@ -23,7 +23,7 @@ module.exports = {
   },
 
   // Enable source-maps.
-  devtool: isProd ? 'hidden-source-map' : 'source-map',
+  devtool: isProd ? 'hidden-source-map' : 'eval',
 
   resolve: {
     extensions: ['.ts', '.js', '.html'],
@@ -45,9 +45,9 @@ module.exports = {
     // Generates an HTML5 entrypoint for all of the output bundles.
     // https://github.com/jantimon/html-webpack-plugin
     new HtmlWebpackPlugin({
-      title: 'Ludum Dare 2017',
+      title: 'Ludum Dare 40',
       template: './src/index.html',
-    })
+    }),
   ],
 
   // https://webpack.js.org/configuration/dev-server/
@@ -57,5 +57,5 @@ module.exports = {
     hot: true,
     overlay: true,
     port: 8000,
-  }
+  },
 };
