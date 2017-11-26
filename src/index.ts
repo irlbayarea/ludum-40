@@ -1,7 +1,3 @@
-class Main {
-  constructor() {
-    console.log('Typescript Webpack starter launched!');
-  }
-}
-
-new Main();
+(() => {
+  document.body.innerText = 'Hello World!';
+})();

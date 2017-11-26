@@ -9,6 +9,7 @@
     "format": "./node_modules/.bin/prettier --config '.prettier' --write 'src/**/*.ts' 'webpack.config.js'",
     "format:check": "./node_modules/.bin/prettier-check --config '.prettier' --list-different 'src/**/*.ts' 'webpack.config.js'",
     "lint": "./node_modules/.bin/tslint ./**/*.ts -e './node_modules/**/*.ts'",
+    "lint:fix": "./node_modules/.bin/tslint --fix ./**/*.ts -e './node_modules/**/*.ts'",
     "serve": "./node_modules/.bin/webpack-dev-server --watch --config ./webpack.config.js"
   },
   "repository": {
