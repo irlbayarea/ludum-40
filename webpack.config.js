@@ -67,8 +67,6 @@ module.exports = {
     // https://webpack.js.org/plugins/hot-module-replacement-plugin/
     new webpack.HotModuleReplacementPlugin(),
 
-    new CleanWebpackPlugin([path.join(__dirname, 'dist')]),
-
     // Generates an HTML5 entrypoint for all of the output bundles.
     // https://github.com/jantimon/html-webpack-plugin
     new HtmlWebpackPlugin({
