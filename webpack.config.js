@@ -1,6 +1,7 @@
 const path = require('path');
 const webpack = require('webpack');
 
+const CleanWebpackPlugin = require('clean-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 const nodeEnv = process.env.NODE_ENV || 'development';
@@ -26,11 +27,23 @@ module.exports = {
   devtool: isProd ? 'hidden-source-map' : 'eval',
 
   resolve: {
+    alias: {
+      assets: path.join(__dirname, 'assets/'),
+      p2: path.join(__dirname, 'node_modules/phaser/build/p2.js'),
+      pixi: path.join(__dirname, 'node_modules/phaser/build/pixi.js'),
+      phaser: path.join(__dirname,  'node_modules/phaser/build/phaser.js')
+    },
     extensions: ['.ts', '.js', '.html'],
   },
 
   module: {
-    rules: [{ enforce: 'pre', test: /\.ts$/, use: 'ts-loader' }],
+    rules: [
+      { test: /assets(\/|\\)/, loader: 'file-loader?name=assets/[hash].[ext]' },
+      { test: /pixi\.js$/, loader: 'expose-loader?PIXI' },
+      { test: /phaser\.js$/, loader: 'expose-loader?Phaser' },
+      { test: /p2\.js$/, loader: 'expose-loader?p2' },
+      { test: /\.ts$/, use: 'ts-loader', exclude: '/node_modules/' }
+    ],
   },
 
   plugins: [
@@ -42,10 +55,14 @@ module.exports = {
     // https://webpack.js.org/plugins/hot-module-replacement-plugin/
     new webpack.HotModuleReplacementPlugin(),
 
+    new CleanWebpackPlugin([
+      path.join(__dirname, 'dist')
+    ]),
+
     // Generates an HTML5 entrypoint for all of the output bundles.
     // https://github.com/jantimon/html-webpack-plugin
     new HtmlWebpackPlugin({
-      title: 'Ludum Dare 40',
+      title: 'DEV MODE: Ludum Dare 40',
       template: './src/index.html',
     }),
   ],
@@ -57,5 +74,8 @@ module.exports = {
     hot: true,
     overlay: true,
     port: 8000,
+    watchOptions: {
+      ignored: /node_modules/
+    }
   },
 };

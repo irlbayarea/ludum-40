@@ -16,9 +16,10 @@ branches:
 
 jobs:
   include:
+    - env: "MODE=build"
     - env: "MODE=format"
     - env: "MODE=lint"
-    - env: "MODE=build"
+    - env: "MODE=test"
 
 before_install:
   - source ./scripts/ci/travis-env.sh
