@@ -4,14 +4,13 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "webpack --config ./webpack.config.js",
-    "build:prod": "NODE_ENV=production npm run build",
+    "build": "webpack --config ./configs/webpack/webpack.dev.js $f",
     "clean": "rimraf -- dist",
-    "format": "prettier --config '.prettier' --write 'src/**.ts' 'webpack.config.js'",
-    "format:check": "prettier-check --config '.prettier' --list-different 'src/**.ts' 'webpack.config.js'",
-    "lint": "tslint ./**.ts -e './node_modules/**.ts'",
-    "lint:fix": "tslint --fix ./**.ts -e './node_modules/**.ts'",
-    "serve": "webpack-dev-server --watch --config ./webpack.config.js",
+    "format": "prettier --config '.prettier' --write './src/**/*.ts' './configs/**/*.js'",
+    "format:check": "prettier-check --config '.prettier' --list-different './src/**/*.ts' './configs/**/*.js'",
+    "lint": "tslint ./**/*.ts -e './node_modules/**/*.ts'",
+    "lint:fix": "tslint --fix ./**/*.ts -e './node_modules/**/*.ts'",
+    "serve": "webpack-dev-server --watch --config ./configs/webpack/webpack.dev.js",
     "test": "jest"
   },
   "repository": {
@@ -43,8 +42,10 @@
   },
   "homepage": "https://github.com/matanlurey/ludum-40",
   "devDependencies": {
+    "@types/debug": "0.0.30",
     "@types/jest": "^21.1.8",
     "@types/node": "^8.0.53",
+    "app-root-path": "^2.0.1",
     "awesome-typescript-loader": "^3.4.0",
     "concurrently": "^3.5.1",
     "expose-loader": "^0.7.4",
@@ -65,6 +66,8 @@
     "webpack-dev-server": "^2.9.4"
   },
   "dependencies": {
+    "debug": "^3.1.0",
+    "lodash": "^4.17.4",
     "phaser-ce": "^2.9.2"
   }
 }
