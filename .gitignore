@@ -1,0 +1,14 @@
+# Popular IDEs/configuration.
+jsconfig.json
+.idea/
+.vscode/
+
+# Output directories/caches.
+dist/
+node_modules/
+tmp/
+
+# Misc.
+npm-debug.log*
+**/.DS_Store
+.DS_Store
