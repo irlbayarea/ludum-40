@@ -28,7 +28,11 @@ if [[ ${fileDiff} =~ ^(.*\.md\s*)*$ ]]; then
   exit 0
 fi
 
-if is_lint; then
+source scripts/ci/sources/mode.sh
+
+if is_format; then
+  npm run format:check
+elif is_lint; then
   npm run lint
 elif is_build; then
   npm run build

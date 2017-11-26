@@ -16,6 +16,7 @@ branches:
 
 jobs:
   include:
+    - env: "MODE=format"
     - env: "MODE=lint"
     - env: "MODE=build"
 
