@@ -1,7 +1,10 @@
-import * as Phaser from 'phaser-ce';
+import * as phaser from 'phaser-ce';
+import * as common from './common';
 
-class Game extends Phaser.Game {
-  constructor(config: Phaser.IGameConfig) {
+import Main from './ui/states/main';
+
+class Game extends phaser.Game {
+  constructor(config: phaser.IGameConfig) {
     super(config);
 
     this.state.add('Main', Main);
@@ -9,21 +12,9 @@ class Game extends Phaser.Game {
   }
 }
 
-class Main extends Phaser.State {
-  public create(): void {
-    const logo = new Phaser.Sprite(
-      this.game,
-      this.world.centerX - 382 / 2,
-      this.world.centerY - 320 / 2,
-      'logo'
-    );
-
-    this.game.add.existing(logo);
-  }
-
-  public preload(): void {
-    this.load.image('logo', require('assets/images/phaser.png'));
-  }
+if (common.globals.debug) {
+  common.debug.log('Debugging enabled!');
 }
 
+// tslint:disable-next-line:no-unused-expression
 new Game({});
