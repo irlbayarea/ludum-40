@@ -90,7 +90,6 @@ export default class Main extends Phaser.State {
     p2.convertTilemap(map, collision, true, true);
     p2.setBoundsToWorld(true, true, true, true, false);
     p2.restitution = 0.2; // Bounciness of '1' is very bouncy.
-    p2.gravity.y = 300;
 
     return map;
   }
