@@ -33,7 +33,7 @@ export default class Crisis {
     if (!this.isResolved()) {
       this.options.push(new CrisisOption(this, description, value));
     } else {
-      throw new Error("Cannot add a CrisisOption to a resolved event");
+      throw new Error('Cannot add a CrisisOption to a resolved event');
     }
   }
 
@@ -41,7 +41,7 @@ export default class Crisis {
     if (!this.isResolved()) {
       this.resolution = resolution;
     } else {
-      throw new Error("Cannot resolve a Crisis that has already been resolved");
+      throw new Error('Cannot resolve a Crisis that has already been resolved');
     }
   }
 
@@ -53,7 +53,7 @@ export default class Crisis {
     if (this.isResolved()) {
       return this.resolver;
     } else {
-      throw new Error("Cannot get resolver for an unresolved Crisis");
+      throw new Error('Cannot get resolver for an unresolved Crisis');
     }
   }
 
