@@ -200,3 +200,28 @@ function scoreOption(c: Character, o: CrisisOption): number {
       Math.sqrt((Math.abs(c.getGOOD() + o.getGOOD()) + c.getRANDO()) ** 2)
   );
 }
+
+/**
+ * randomGuard()
+ */
+const minSPEED: number = 1;
+const maxSPEED: number = 10;
+const maxSTR: number = 10;
+const maxINT: number = 10;
+const maxCHA: number = 10;
+const maxRANDO: number = 10;
+const minGOOD: number = -5;
+const maxGOOD: number = 10;
+function randomGuard(sprite: Phaser.Sprite): Character {
+  return new Character(
+    sprite,
+    generateName(),
+    Math.random() * (maxSPEED - minSPEED) + minSPEED,
+    Math.random() * maxSTR,
+    Math.random() * maxINT,
+    Math.random() * maxCHA,
+    Math.random() * maxRANDO,
+    Math.random() * (maxGOOD - minGOOD) + minGOOD,
+    true
+  );
+}
