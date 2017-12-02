@@ -1,4 +1,5 @@
 import Crisis from './crisis';
+import { minGOOD } from '../character';
 
 /**
  * CrisisOption
@@ -71,4 +72,8 @@ export default class CrisisOption {
   public getValue(): number {
     return this.value;
   }
+}
+
+export function UnresolvedCrisis(crisis: Crisis): CrisisOption {
+  return new CrisisOption(crisis, "Unresolved Crisis", 0, 0, 0, 0, minGOOD);
 }
