@@ -1,9 +1,9 @@
 import * as Phaser from 'phaser-ce';
-
 import Controller from '../../input/controller';
 import MessagePanel from '../message';
 import BloodFactory from '../sprites/blood';
 import HutFactory from '../sprites/hut';
+import { game } from '../../index';
 
 /**
  * Main state (i.e. in the game).
@@ -40,7 +40,7 @@ export default class Main extends Phaser.State {
     this.controller = new Controller(this.game);
 
     // Enable physics.
-    this.game.physics.startSystem(Phaser.Physics.ARCADE);
+    this.game.physics.startSystem(Phaser.Physics.P2JS);
 
     // Example of the main character.
     this.character = this.game.add.sprite(0, 64 * 4, 'characters', 325);
@@ -66,6 +66,13 @@ export default class Main extends Phaser.State {
 
   public update(): void {
     this.messages.update();
+    const completedEvents = game.eventQueue.tick(game.time.elapsed);
+    if (completedEvents.length > 0) {
+      completedEvents.forEach(event => {
+        game.eventHandlers.handle(event);
+      });
+    }
+
     this.game.camera.follow(this.character);
     if (this.controller.isLeft) {
       this.character.x -= 8;
@@ -124,7 +131,7 @@ export default class Main extends Phaser.State {
       162,
     );
     monster.scale = this.character.scale;
-    this.game.physics.enable(monster, Phaser.Physics.ARCADE);
+    this.game.physics.arcade.enable(monster);
     return monster;
   }
 }
