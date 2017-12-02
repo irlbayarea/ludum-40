@@ -79,9 +79,8 @@ export default class MessagePanel extends Phaser.Plugin {
     group.add(this.option1);
     group.add(this.option2);
 
-    this.oSprite.visible = false;
-    this.option1.visible = false;
-    this.option2.visible = false;
+    this.oSprite.visible = this.option1.visible = this.option2.visible = false;
+    this.option1.fixedToCamera = this.option2.fixedToCamera = true;
   }
 
   public askUser(
