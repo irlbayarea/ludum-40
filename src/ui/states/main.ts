@@ -1,6 +1,7 @@
 import * as Phaser from 'phaser-ce';
 
 import Controller from '../../input/controller';
+import HutFactory from '../sprites/hut';
 
 /**
  * Main state (i.e. in the game).
@@ -38,6 +39,10 @@ export default class Main extends Phaser.State {
     // Example of the main character.
     this.character = this.game.add.sprite(0, 64 * 4, 'characters', 325);
     this.character.scale = new Phaser.Point(4.0, 4.0);
+
+    // Example of generating a hut (at 64,64 for now).
+    const hutFactory = new HutFactory(this.game);
+    hutFactory.sprite(64, 64);
 
     // Example of monsters.
     for (let i = 0; i < 10; i++) {
