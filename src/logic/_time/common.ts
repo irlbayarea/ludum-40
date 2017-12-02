@@ -1,5 +1,4 @@
-<<<<<<< HEAD
-import { game } from '../index';
+import { game } from '../../index';
 
 /**
  * The Time class enables retrieving the time in seconds, both game time and wall time (real world time).
@@ -33,8 +32,3 @@ export default class Time {
     return game.time.elapsed / 1000;
   }
 }
-=======
-export * from './_time/common';
-export * from './_time/repeating_world_timer';
-export * from './_time/world_timer';
->>>>>>> 6027461a8bc3b9d787a40c2a1c29e09280d5050f

@@ -5,6 +5,21 @@
 import * as Phaser from 'phaser-ce';
 import Crisis from './crisis/crisis';
 import CrisisOption from './crisis/option';
+
+export const minSPEED: number = 1;
+export const maxSPEED: number = 10;
+export const minSTR: number = 0;
+export const maxSTR: number = 10;
+export const minINT: number = 0;
+export const maxINT: number = 10;
+export const minCHA: number = 0;
+export const maxCHA: number = 10;
+export const minRANDO: number = -5;
+export const maxRANDO: number = 10;
+export const minGOOD: number = -5;
+export const maxGOOD: number = 10;
+export const maxSalary: number = 100;
+
 export default class Character {
   private name: string;
 
@@ -20,17 +35,19 @@ export default class Character {
   private good: number;
 
   private isGuard: boolean;
+  private salary: number;
 
   constructor(
     sprite: Phaser.Sprite,
     name: string = generateName(),
-    speed: number = 1,
-    str: number = 1,
-    int: number = 1,
-    cha: number = 1,
-    rando: number = 1,
-    good: number = 1,
-    isGuard: boolean = false
+    speed: number = 0.5 * (maxSPEED - minSPEED) + minSPEED,
+    str: number = 0.5 * (maxSTR - minSTR) + minSTR,
+    int: number = 0.5 * (maxINT - minINT) + minINT,
+    cha: number = 0.5 * (maxCHA - minCHA) + minCHA,
+    rando: number = 0.5 * (maxRANDO - minRANDO) + minRANDO,
+    good: number = 0.5 * (maxGOOD - minGOOD) + minGOOD,
+    isGuard: boolean = false,
+    salary: number = 0
   ) {
     this.name = name;
     this.sprite = sprite;
@@ -42,6 +59,7 @@ export default class Character {
     this.setRando(rando);
     this.good = good;
     this.isGuard = isGuard;
+    this.setSalary(salary);
   }
 
   public getName(): string {
@@ -83,6 +101,10 @@ export default class Character {
 
   public getIsGuard(): boolean {
     return this.isGuard;
+  }
+
+  public getSalary(): number {
+    return this.salary;
   }
 
   /**
@@ -150,6 +172,14 @@ export default class Character {
       throw new RangeError('rando value must be >= 0');
     }
   }
+
+  private setSalary(salary: number): void {
+    if (salary >= 0) {
+      this.salary = salary;
+    } else {
+      throw new RangeError('salary must be >= 0');
+    }
+  }
 }
 
 function generateName(): string {
@@ -198,5 +228,23 @@ function scoreOption(c: Character, o: CrisisOption): number {
       (c.getINT() * o.getINT() + c.getRANDO()) +
       (c.getCHA() * o.getCHA() + c.getRANDO()) +
       Math.sqrt((Math.abs(c.getGOOD() + o.getGOOD()) + c.getRANDO()) ** 2)
+  );
+}
+
+/**
+ * randomGuard()
+ */
+export function randomGuard(sprite: Phaser.Sprite): Character {
+  return new Character(
+    sprite,
+    generateName(),
+    Math.random() * (maxSPEED - minSPEED) + minSPEED,
+    Math.random() * (maxSTR - minSTR) + minSTR,
+    Math.random() * (maxINT - minINT) + minINT,
+    Math.random() * (maxCHA - minCHA) + minCHA,
+    Math.random() * (maxRANDO - minRANDO) + minRANDO,
+    Math.random() * (maxGOOD - minGOOD) + minGOOD,
+    true,
+    Math.random() * maxSalary
   );
 }

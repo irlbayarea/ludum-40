@@ -1,6 +1,7 @@
 import * as Phaser from 'phaser-ce';
 import Controller from '../../input/controller';
 import MessagePanel from '../message';
+import BloodFactory from '../sprites/blood';
 import HutFactory from '../sprites/hut';
 import { game } from '../../index';
 
@@ -18,6 +19,9 @@ export default class Main extends Phaser.State {
   private character: Phaser.Sprite;
   private messages: MessagePanel;
   private monsters: Phaser.Sprite[] = [];
+  private alwaysOnTop: Phaser.Group;
+
+  private bloodFactory: BloodFactory;
 
   /**
    * Called from `create`. Initializes tilemap and physics.
@@ -54,25 +58,35 @@ export default class Main extends Phaser.State {
     // Enable keyboard.
     this.controller = new Controller(this.game);
 
+<<<<<<< HEAD
     // Main character.
+=======
+    // Enable physics.
+    this.game.physics.startSystem(Phaser.Physics.P2JS);
+
+    // Example of the main character.
+>>>>>>> 6027461a8bc3b9d787a40c2a1c29e09280d5050f
     this.character = this.game.add.sprite(0, 64 * 4, 'characters', 325);
     this.character.scale = new Phaser.Point(4.0, 4.0);
     this.game.physics.p2.enable(this.character);
     this.character.body.fixedRotation = true;
     this.game.camera.follow(this.character);
 
-    // Example of generating a hut (at 64,64 for now).
+    // Example of generating a hut (at 64,64 for now), and blood.
     const hutFactory = new HutFactory(this.game);
     hutFactory.sprite(64, 64);
 
+    this.bloodFactory = new BloodFactory(this.game);
+
     // Example of monsters.
-    for (let i = 0; i < 10; i++) {
+    setInterval(() => {
       const monster = this.monster();
       this.monsters.push(monster);
-    }
+    }, 300);
 
     // Message panel.
-    this.messages = this.game.plugins.add(MessagePanel);
+    this.alwaysOnTop = this.game.add.group();
+    this.messages = this.game.plugins.add(MessagePanel, this.alwaysOnTop);
     this.messages.setText('🔥🔥 CRISIS! 🔥🔥');
   }
 
@@ -83,7 +97,7 @@ export default class Main extends Phaser.State {
     	this.character.body.moveLeft(400);
 =======
     this.messages.update();
-    var completedEvents = game.eventQueue.tick(game.time.elapsed);
+    const completedEvents = game.eventQueue.tick(game.time.elapsed);
     if (completedEvents.length > 0) {
       completedEvents.forEach(event => {
         game.eventHandlers.handle(event);
@@ -102,6 +116,7 @@ export default class Main extends Phaser.State {
     } else if (this.controller.isUp) {
     	this.character.body.moveDown(400);
     }
+<<<<<<< HEAD
     this.monsters.forEach(monster => {
       const p: Phaser.Point = new Phaser.Point(monster.body.x, monster.body.y);
       const p2: Phaser.Point = new Phaser.Point(this.character.body.x, this.character.body.y);
@@ -110,17 +125,58 @@ export default class Main extends Phaser.State {
       monster.body.moveRight(dir.x);
       //this.game.physics.p2.(monster, this.character, 200)
     });
+=======
+    if (this.controller.isSpace) {
+      const distance = this.game.physics.arcade.distanceBetween;
+      this.monsters
+        .filter(monster => {
+          return distance(monster, this.character) <= 64 * 1.5;
+        })
+        .forEach(monster => {
+          monster.damage(1);
+          this.bloodFactory.sprite(monster);
+        });
+      this.monsters = this.monsters.filter(monster => monster.health > 0);
+    }
+    this.monsters.forEach(monster =>
+      this.game.physics.arcade.moveToObject(monster, this.character, 200)
+    );
+    this.game.world.bringToTop(this.alwaysOnTop);
+>>>>>>> 6027461a8bc3b9d787a40c2a1c29e09280d5050f
   }
 
   private monster(): Phaser.Sprite {
-    const monster = this.game.add.sprite(
-      Main.random(10, 20) * 64,
-      Main.random(10, 20) * 64,
-      'characters',
-      162
-    );
+    let x: number;
+    let y: number;
+    if (Main.random(0, 2) === 1) {
+      x = Main.random(
+        this.character.x - this.game.camera.width * 2,
+        this.character.x - this.game.camera.width
+      );
+    } else {
+      x = Main.random(
+        this.character.x + this.game.camera.width * 2,
+        this.character.x + this.game.camera.width
+      );
+    }
+    if (Main.random(0, 2) === 1) {
+      y = Main.random(
+        this.character.y - this.game.camera.height * 2,
+        this.character.y - this.game.camera.height
+      );
+    } else {
+      y = Main.random(
+        this.character.y + this.game.camera.height * 2,
+        this.character.y + this.game.camera.height
+      );
+    }
+    const monster = this.game.add.sprite(x, y, 'characters', 162);
     monster.scale = this.character.scale;
+<<<<<<< HEAD
     this.game.physics.p2.enable(monster);
+=======
+    this.game.physics.arcade.enable(monster);
+>>>>>>> 6027461a8bc3b9d787a40c2a1c29e09280d5050f
     return monster;
   }
 }
