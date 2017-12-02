@@ -1,5 +1,4 @@
 import Character from '../character';
-import { Skip } from 'serializer.ts/Decorators';
 import CrisisOption, { UnresolvedCrisis } from './option';
 
 /**
@@ -7,25 +6,35 @@ import CrisisOption, { UnresolvedCrisis } from './option';
  * Encapsulates information concerning a single event.
  */
 export default class Crisis {
-  // The display label of this Crisis.
   public readonly description: string;
 
   // Score of this crisis, however it is resolved
   public readonly score: number;
 
-  // The options for resolving this crisis
-  public readonly options: CrisisOption[];
-
   // The messenger Character who alerts other characters of this crisis
-  @Skip() private resolution: CrisisOption;
+  public readonly messenger: Character;
+
+  private options: CrisisOption[];
 
   // The character who resolved this crisis: either a guard or the player character
-  @Skip() private resolver: Character;
+  private resolver: Character;
 
-  constructor(description: string, score: number, options: CrisisOption[]) {
+  // The resolution to this crisis.
+  private resolution: CrisisOption;
+
+  constructor(description: string, score: number) {
     this.description = description;
     this.score = score;
-    this.options = options;
+
+    this.options = [];
+  }
+
+  public addOption(description: string, value: number): void {
+    if (!this.isResolved()) {
+      this.options.push(new CrisisOption(this, description, value));
+    } else {
+      throw new Error('Cannot add a CrisisOption to a resolved event');
+    }
   }
 
   public resolve(resolution: CrisisOption) {
@@ -38,11 +47,6 @@ export default class Crisis {
 
   public isResolved() {
     return this.resolution !== undefined;
-  }
-
-  // FIXME: delete
-  public getOptions() {
-    return this.options;
   }
 
   public getResolver() {
@@ -74,5 +78,9 @@ export default class Crisis {
       return true;
     }
     return false;
+  }
+
+  public getOptions(): CrisisOption[] {
+    return this.options;
   }
 }

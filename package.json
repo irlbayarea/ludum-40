@@ -69,7 +69,6 @@
     "@types/lodash": "^4.14.86",
     "debug": "^3.1.0",
     "lodash": "^4.17.4",
-    "phaser-ce": "^2.9.2",
-    "serializer.ts": "0.0.12"
+    "phaser-ce": "^2.9.2"
   }
 }
