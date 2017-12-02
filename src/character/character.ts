@@ -83,7 +83,7 @@ export default class Character {
     }
     if (
       Character.maxIntelligence >= intelligence &&
-      Character.minIntelligence >= intelligence
+      intelligence >= Character.minIntelligence
     ) {
       this.intelligence = intelligence;
     } else {
