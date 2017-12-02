@@ -15,7 +15,7 @@ export default class PeriodicCrisisGenerator implements ICrisisGenerator {
     this.sinceLastCrisis += elapsed;
     if (this.sinceLastCrisis >= this.period) {
       this.sinceLastCrisis = 0;
-      const crisis = new Crisis('test-crisis-' + elapsed, 100);
+      const crisis = new Crisis('test-crisis-' + elapsed, 100, []);
       return [new CrisisEvent(crisis, 100)];
     }
     return [];
