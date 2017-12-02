@@ -1,4 +1,4 @@
-import Character from '../character';
+import Character from '../character/character';
 import { Skip, Type } from 'serializer.ts/Decorators';
 import CrisisOption from './option';
 
