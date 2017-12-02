@@ -1,35 +1,29 @@
 import Character from '../character';
 import CrisisOption from './option';
+import { Skip } from 'serializer.ts/Decorators';
 
 /**
  * class Event
  * Encapsulates information concerning a single event.
  */
 export default class Crisis {
+  // The display label of this Crisis.
   public readonly description: string;
 
   // Score of this crisis, however it is resolved
   public readonly score: number;
-  // The messenger who alerts other characters of this crisis
-  public readonly messenger: Character;
 
-  private options: CrisisOption[];
+  // The options for resolving this crisis
+  public readonly options: CrisisOption[];
 
-  // The character who resolved this crisis.
-  private resolver: Character;
+  @Skip() private resolution: CrisisOption;
 
-  // The resolution to this crisis.
-  private resolution: CrisisOption;
+  @Skip() private resolver: Character;
 
-  constructor(description: string, score: number) {
+  constructor(description: string, score: number, options: CrisisOption[]) {
     this.description = description;
     this.score = score;
-
-    this.options = [];
-  }
-
-  public addOption(description: string, value: number): void {
-    this.options.push(new CrisisOption(this, description, value));
+    this.options = options;
   }
 
   public resolve(resolution: CrisisOption) {
@@ -38,6 +32,10 @@ export default class Crisis {
 
   public isResolved() {
     return this.resolution !== undefined;
+  }
+
+  public getOptions() {
+    return this.options;
   }
 
   public getResolver() {
@@ -61,9 +59,5 @@ export default class Crisis {
       return true;
     }
     return false;
-  }
-
-  public getOptions(): CrisisOption[] {
-    return this.options;
   }
 }
