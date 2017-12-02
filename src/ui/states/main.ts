@@ -9,10 +9,15 @@ export default class Main extends Phaser.State {
   public create(): void {
     const map = this.game.add.tilemap('Tilemap');
     map.addTilesetImage('tiles', 'tiles');
-
-    const layer = map.createLayer('terrain');
-    layer.resizeWorld();
-    layer.wrap = true;
+    const layers = [
+      map.createLayer('terrain'),
+      map.createLayer('foreground'),
+      map.createLayer('structures'),
+    ];
+    layers.forEach(layer => {
+      layer.resizeWorld();
+      layer.wrap = true;
+    });
     this.cursors = this.game.input.keyboard.createCursorKeys();
   }
 
