@@ -39,7 +39,7 @@ export default class Character {
 
   constructor(
     sprite: Phaser.Sprite,
-    name: string = generateName(),
+    name: string = randomName(),
     speed: number = 0.5 * (maxSPEED - minSPEED) + minSPEED,
     str: number = 0.5 * (maxSTR - minSTR) + minSTR,
     int: number = 0.5 * (maxINT - minINT) + minINT,
@@ -192,35 +192,10 @@ export default class Character {
   }
 }
 
-function generateName(): string {
-  const names: string[] = [
-    'Bob',
-    'Joe',
-    'Bill',
-    'Steve',
-    'Eric',
-    'Donald',
-    'Jared',
-    'Robert',
-    'Paul',
-    'Jesse',
-    'Matan',
-    'Kendal',
-    'Porgzar',
-    'Porg-Porg',
-    'Jennifer',
-    'Jamie',
-    'Allison',
-    'Stacy',
-    'Kelly',
-    'Brian',
-    'Lisa',
-    'Maria',
-    'Kyle',
-    'Jason',
-  ];
-
-  return names[Math.floor(Math.random() * names.length)];
+function randomName(): string {
+  const YAML = require('yamljs');
+  const names = YAML.load("./src/static/names.yaml");
+  return names['names'][Math.floor(Math.random() * names['names'].length)];
 }
 /**
  * If this crisis is being handled by a Guard, use the following formula to determine the
@@ -247,7 +222,7 @@ function scoreOption(c: Character, o: CrisisOption): number {
 export function randomGuard(sprite: Phaser.Sprite): Character {
   return new Character(
     sprite,
-    generateName(),
+    randomName(),
     Math.random() * (maxSPEED - minSPEED) + minSPEED,
     Math.random() * (maxSTR - minSTR) + minSTR,
     Math.random() * (maxINT - minINT) + minINT,
@@ -258,3 +233,6 @@ export function randomGuard(sprite: Phaser.Sprite): Character {
     Math.random() * maxSalary
   );
 }
+
+console.log(randomName());
+// console.log(randomGuard(new Phaser.Sprite(new Phaser.Game(),0, 0)));
