@@ -1,4 +1,6 @@
 import * as Debug from 'debug';
+import {forIn} from 'lodash';
+import {parse} from 'query-string';
 
 /**
  * Shared debugger for the entire application.
@@ -8,6 +10,17 @@ debug.log = console.log.bind(console);
 
 declare const __DEBUG: boolean;
 declare const __DIMENSIONS: IGlobals['dimensions'];
+declare const __EXPERIMENTS: {
+  [key: string]: boolean
+};
+
+/**
+ * Experiments enabled by the user.
+ */
+const userExperiments: {[key: string]: boolean} = __EXPERIMENTS;
+forIn(parse(location.search), (value, key) => {
+  userExperiments[key] = value !== 'false';
+});
 
 export const globals: IGlobals = {
   debug: __DEBUG,
@@ -15,6 +28,7 @@ export const globals: IGlobals = {
     height: __DIMENSIONS.height,
     width: __DIMENSIONS.width,
   },
+  experiments: userExperiments,
 };
 
 /**
@@ -32,5 +46,12 @@ interface IGlobals {
   readonly dimensions: {
     readonly height: number;
     readonly width: number;
+  };
+
+  /**
+   * Experiments
+   */
+  readonly experiments: {
+    [key: string]: boolean
   };
 }
