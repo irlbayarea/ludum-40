@@ -1,8 +1,8 @@
 import * as Phaser from 'phaser-ce';
 
 import Controller from '../../input/controller';
-import HutFactory from '../sprites/hut';
 import MessagePanel from '../message';
+import HutFactory from '../sprites/hut';
 
 /**
  * Main state (i.e. in the game).
