@@ -5,19 +5,10 @@ import * as Phaser from 'phaser-ce';
  */
 export default class Main extends Phaser.State {
   public create(): void {
-    const logo = new Phaser.Sprite(
-      this.game,
-      this.world.centerX - 382 / 2,
-      this.world.centerY - 320 / 2,
-      'logo'
-    );
-
-    this.game.add.existing(logo);
+    this.game.add.sprite(0, 0, 'rpg', 180);
   }
 
-  public preload(): void {
-    // TODO: Extract to a previous state/loader.
-    // tslint:disable-next-line:no-submodule-imports
-    this.load.image('logo', require('assets/images/phaser.png'));
+  public init(): void {
+    this.stage.backgroundColor = '#EDEEC9';
   }
 }
