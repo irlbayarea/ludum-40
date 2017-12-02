@@ -58,10 +58,10 @@ export default class Main extends Phaser.State {
     } else if (this.controller.isUp) {
       this.character.y += 8;
     }
-    this.monsters.forEach(monster =>
-      //this.game.physics.p2.(monster, this.character, 200)
-      this.game.
-    );
+    // this.monsters.forEach(monster =>
+    //   //this.game.physics.p2.(monster, this.character, 200)
+    //   //this.game.
+    // );
   }
 
   private monster(): Phaser.Sprite {
