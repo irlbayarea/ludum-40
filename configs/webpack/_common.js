@@ -1,5 +1,6 @@
 const path = require('path');
 const webpack = require('webpack');
+const experiments = require('../experiments');
 
 // Used instead of __dirname.
 const root = require('app-root-path') + '';
@@ -94,9 +95,7 @@ module.exports = {
           width: 800,
           height: 600,
         },
-        __EXPERIMENTS: {
-          useGeneratedMap: false,
-        },
+        __EXPERIMENTS: experiments.experiments,
       })
     );
   },

@@ -32,6 +32,15 @@ export const globals: IGlobals = {
 };
 
 /**
+ * Whether the provided experiment is enabled.
+ *
+ * @param name
+ */
+export function experiment(name: string): boolean {
+  return globals.experiments[name] === true;
+}
+
+/**
  * Global readonly constants shared across the entire application.
  */
 interface IGlobals {
