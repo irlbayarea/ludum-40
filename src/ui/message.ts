@@ -11,7 +11,7 @@ export default class MessagePanel extends Phaser.Plugin {
     bitmap.ctx.rect(0, game.height - 100, game.width, 100);
     bitmap.ctx.fillStyle = '#333333';
     bitmap.ctx.fill();
-    game.add.sprite(0, 0, bitmap);
+    game.add.sprite(0, 0, bitmap).fixedToCamera = true;
 
     const text = game.add.text(0, 0, '...', {
       boundsAlignH: 'center',
@@ -21,6 +21,7 @@ export default class MessagePanel extends Phaser.Plugin {
     });
     text.setShadow(3, 3, 'rgba(0, 0, 0, 0.5)', 2);
     text.setTextBounds(0, game.height - 100, game.width, 100);
+    text.fixedToCamera = true;
     this.text = text;
   }
 
