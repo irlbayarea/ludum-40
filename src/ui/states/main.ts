@@ -33,7 +33,7 @@ export default class Main extends Phaser.State {
     this.controller = new Controller(this.game);
 
     // Enable physics.
-    this.game.physics.startSystem(Phaser.Physics.ARCADE);
+    this.game.physics.startSystem(Phaser.Physics.P2JS);
 
     // Example of the main character.
     this.character = this.game.add.sprite(0, 64 * 4, 'characters', 325);
@@ -59,7 +59,8 @@ export default class Main extends Phaser.State {
       this.character.y += 8;
     }
     this.monsters.forEach(monster =>
-      this.game.physics.arcade.moveToObject(monster, this.character, 200)
+      //this.game.physics.p2.(monster, this.character, 200)
+      this.game.
     );
   }
 
@@ -71,7 +72,7 @@ export default class Main extends Phaser.State {
       162
     );
     monster.scale = this.character.scale;
-    this.game.physics.enable(monster, Phaser.Physics.ARCADE);
+    this.game.physics.p2.enable(monster);
     return monster;
   }
 }
