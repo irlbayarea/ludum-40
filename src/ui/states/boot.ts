@@ -9,8 +9,7 @@ export default class Boot extends Phaser.State {
   }
 
   public preload(): void {
-    // Load collision tiles.
-
+    // // Load collision tiles.
     this.load.spritesheet(
       'collision',
       require('assets/sprites/collision.png'),
