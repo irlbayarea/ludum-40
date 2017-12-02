@@ -1,5 +1,5 @@
 import Character from '../character';
-import CrisisOption from './option';
+import CrisisOption, { UnresolvedCrisis } from './option';
 
 /**
  * class Event
@@ -10,12 +10,13 @@ export default class Crisis {
 
   // Score of this crisis, however it is resolved
   public readonly score: number;
-  // The messenger who alerts other characters of this crisis
+
+  // The messenger Character who alerts other characters of this crisis
   public readonly messenger: Character;
 
   private options: CrisisOption[];
 
-  // The character who resolved this crisis.
+  // The character who resolved this crisis: either a guard or the player character
   private resolver: Character;
 
   // The resolution to this crisis.
@@ -29,11 +30,19 @@ export default class Crisis {
   }
 
   public addOption(description: string, value: number): void {
-    this.options.push(new CrisisOption(this, description, value));
+    if (!this.isResolved()) {
+      this.options.push(new CrisisOption(this, description, value));
+    } else {
+      throw new Error('Cannot add a CrisisOption to a resolved event');
+    }
   }
 
   public resolve(resolution: CrisisOption) {
-    this.resolution = resolution;
+    if (!this.isResolved()) {
+      this.resolution = resolution;
+    } else {
+      throw new Error('Cannot resolve a Crisis that has already been resolved');
+    }
   }
 
   public isResolved() {
@@ -41,11 +50,19 @@ export default class Crisis {
   }
 
   public getResolver() {
-    return this.resolver;
+    if (this.isResolved()) {
+      return this.resolver;
+    } else {
+      throw new Error('Cannot get resolver for an unresolved Crisis');
+    }
   }
 
   public getResolution() {
-    return this.resolution;
+    if (this.isResolved()) {
+      return this.resolution;
+    } else {
+      return UnresolvedCrisis(this);
+    }
   }
 
   /**

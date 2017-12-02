@@ -109,6 +109,9 @@ export default class Character {
 
   /**
    * handleCrisis
+   *
+   * If the crisis is being handled by a guard, perform a weighted random choice
+   *
    */
   public handleCrisis(crisis: Crisis): boolean {
     if (this.isGuard) {
@@ -140,6 +143,7 @@ export default class Character {
         }
       }
 
+      // If we get to the end of the list without resolving the crisis, just pick the last element
       crisis.resolve(crisis.getOptions()[crisis.getOptions().length - 1]);
       return true;
     } else {
