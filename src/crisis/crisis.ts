@@ -21,7 +21,9 @@ import CrisisOption from './option';
  *  Automatically generated Character designed to lead Player / Guard to GameEvent
  *
  */
+
 export default class Crisis {
+
   private description: string;
   private options: CrisisOption[];
   private timeLimit: number;
