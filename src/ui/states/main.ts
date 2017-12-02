@@ -5,7 +5,12 @@ import * as Phaser from 'phaser-ce';
  */
 export default class Main extends Phaser.State {
   public create(): void {
-    this.game.add.sprite(0, 0, 'rpg', 180);
+    const map = this.game.add.tilemap('Tilemap');
+    map.addTilesetImage('tiles', 'tiles');
+
+    const layer = map.createLayer('terrain');
+    layer.resizeWorld();
+    layer.wrap = true;
   }
 
   public init(): void {
