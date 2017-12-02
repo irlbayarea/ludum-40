@@ -36,7 +36,6 @@ class Game extends phaser.Game {
     this.state.add('Boot', Boot);
     this.state.add('Main', Main);
     this.state.start('Boot');
-
   }
 }
 

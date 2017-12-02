@@ -8,7 +8,7 @@ import MessagePanel from '../message';
 import { game } from '../../index';
 
 // DEBUG
-import {randomName, randomGuard} from '../../character';
+import { randomName, randomGuard } from '../../character';
 
 /**
  * Main state (i.e. in the game).
@@ -43,7 +43,6 @@ export default class Main extends Phaser.State {
     // DEBUG
     common.debug.log(randomName());
     common.debug.log(randomGuard(this.game.add.sprite()));
-
   }
 
   public update(): void {
