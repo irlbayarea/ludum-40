@@ -58,10 +58,6 @@ export default class CrisisOption {
 
   public getGOOD(): number {
     return this.goodVal;
-<<<<<<< HEAD
-
-=======
->>>>>>> master
   }
 
   public choose(guard: Character): boolean {
