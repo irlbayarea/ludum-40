@@ -86,12 +86,14 @@ export default class Main extends Phaser.State {
     }
     if (this.controller.isSpace) {
       const distance = this.game.physics.arcade.distanceBetween;
-      this.monsters.filter(monster => {
-        return distance(monster, this.character) <= 64 * 1.5;
-      }).forEach((monster) => {
-        monster.damage(1);
-        this.bloodFactory.sprite(monster);
-      });
+      this.monsters
+        .filter(monster => {
+          return distance(monster, this.character) <= 64 * 1.5;
+        })
+        .forEach(monster => {
+          monster.damage(1);
+          this.bloodFactory.sprite(monster);
+        });
       this.monsters = this.monsters.filter(monster => monster.health > 0);
     }
     this.monsters.forEach(monster =>
@@ -106,30 +108,26 @@ export default class Main extends Phaser.State {
     if (Main.random(0, 2) === 1) {
       x = Main.random(
         this.character.x - this.game.camera.width * 2,
-        this.character.x - this.game.camera.width,
+        this.character.x - this.game.camera.width
       );
     } else {
       x = Main.random(
         this.character.x + this.game.camera.width * 2,
-        this.character.x + this.game.camera.width,
+        this.character.x + this.game.camera.width
       );
     }
     if (Main.random(0, 2) === 1) {
       y = Main.random(
         this.character.y - this.game.camera.height * 2,
-        this.character.y - this.game.camera.height,
+        this.character.y - this.game.camera.height
       );
     } else {
       y = Main.random(
         this.character.y + this.game.camera.height * 2,
-        this.character.y + this.game.camera.height,
+        this.character.y + this.game.camera.height
       );
     }
-    const monster = this.game.add.sprite(
-      x, y,
-      'characters',
-      162,
-    );
+    const monster = this.game.add.sprite(x, y, 'characters', 162);
     monster.scale = this.character.scale;
     this.game.physics.arcade.enable(monster);
     return monster;
