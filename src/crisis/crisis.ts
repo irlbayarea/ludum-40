@@ -1,6 +1,6 @@
 import Character from '../character';
-import CrisisOption from './option';
 import { Skip } from 'serializer.ts/Decorators';
+import CrisisOption, { UnresolvedCrisis } from './option';
 
 /**
  * class Event
@@ -16,8 +16,10 @@ export default class Crisis {
   // The options for resolving this crisis
   public readonly options: CrisisOption[];
 
+  // The messenger Character who alerts other characters of this crisis
   @Skip() private resolution: CrisisOption;
 
+  // The character who resolved this crisis: either a guard or the player character
   @Skip() private resolver: Character;
 
   constructor(description: string, score: number, options: CrisisOption[]) {
@@ -27,23 +29,36 @@ export default class Crisis {
   }
 
   public resolve(resolution: CrisisOption) {
-    this.resolution = resolution;
+    if (!this.isResolved()) {
+      this.resolution = resolution;
+    } else {
+      throw new Error('Cannot resolve a Crisis that has already been resolved');
+    }
   }
 
   public isResolved() {
     return this.resolution !== undefined;
   }
 
+  // FIXME: delete
   public getOptions() {
     return this.options;
   }
 
   public getResolver() {
-    return this.resolver;
+    if (this.isResolved()) {
+      return this.resolver;
+    } else {
+      throw new Error('Cannot get resolver for an unresolved Crisis');
+    }
   }
 
   public getResolution() {
-    return this.resolution;
+    if (this.isResolved()) {
+      return this.resolution;
+    } else {
+      return UnresolvedCrisis(this);
+    }
   }
 
   /**

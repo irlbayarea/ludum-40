@@ -66,6 +66,7 @@
     "webpack-dev-server": "^2.9.4"
   },
   "dependencies": {
+    "@types/lodash": "^4.14.86",
     "debug": "^3.1.0",
     "lodash": "^4.17.4",
     "phaser-ce": "^2.9.2",
