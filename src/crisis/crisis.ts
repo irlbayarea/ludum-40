@@ -1,4 +1,5 @@
 import Character from '../character';
+import { Skip } from 'serializer.ts/Decorators';
 import CrisisOption, { UnresolvedCrisis } from './option';
 
 /**
@@ -6,35 +7,25 @@ import CrisisOption, { UnresolvedCrisis } from './option';
  * Encapsulates information concerning a single event.
  */
 export default class Crisis {
+  // The display label of this Crisis.
   public readonly description: string;
 
   // Score of this crisis, however it is resolved
   public readonly score: number;
 
-  // The messenger Character who alerts other characters of this crisis
-  public readonly messenger: Character;
+  // The options for resolving this crisis
+  public readonly options: CrisisOption[];
 
-  private options: CrisisOption[];
+  // The messenger Character who alerts other characters of this crisis
+  @Skip() private resolution: CrisisOption;
 
   // The character who resolved this crisis: either a guard or the player character
-  private resolver: Character;
+  @Skip() private resolver: Character;
 
-  // The resolution to this crisis.
-  private resolution: CrisisOption;
-
-  constructor(description: string, score: number) {
+  constructor(description: string, score: number, options: CrisisOption[]) {
     this.description = description;
     this.score = score;
-
-    this.options = [];
-  }
-
-  public addOption(description: string, value: number): void {
-    if (!this.isResolved()) {
-      this.options.push(new CrisisOption(this, description, value));
-    } else {
-      throw new Error('Cannot add a CrisisOption to a resolved event');
-    }
+    this.options = options;
   }
 
   public resolve(resolution: CrisisOption) {
@@ -47,6 +38,11 @@ export default class Crisis {
 
   public isResolved() {
     return this.resolution !== undefined;
+  }
+
+  // FIXME: delete
+  public getOptions() {
+    return this.options;
   }
 
   public getResolver() {
@@ -78,9 +74,5 @@ export default class Crisis {
       return true;
     }
     return false;
-  }
-
-  public getOptions(): CrisisOption[] {
-    return this.options;
   }
 }
