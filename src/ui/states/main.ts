@@ -1,4 +1,5 @@
 import * as Phaser from 'phaser-ce';
+import * as common from '../../common';
 import { forIn, last } from 'lodash';
 
 import Controller from '../../input/controller';
@@ -40,8 +41,8 @@ export default class Main extends Phaser.State {
     this.messages.setText('🔥🔥 CRISIS! 🔥🔥');
 
     // DEBUG
-    console.log(randomName());
-    console.log(randomGuard(this.game.add.sprite()));
+    common.debug.log(randomName());
+    common.debug.log(randomGuard(this.game.add.sprite()));
 
   }
 
