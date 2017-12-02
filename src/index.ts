@@ -12,10 +12,13 @@ import Boot from './ui/states/boot';
 import EventHandlers from './event_handler';
 import EventQueue from './event_queue';
 import Main from './ui/states/main';
+import PeriodicCrisisGenerator from './crisis/periodic_crisis_generator';
+import ICrisisGenerator from './crisis/crisis_generator';
 
 class Game extends phaser.Game {
   public eventQueue: EventQueue;
   public eventHandlers: EventHandlers;
+  public crisisGenerator: ICrisisGenerator;
 
   constructor() {
     super({
@@ -28,6 +31,7 @@ class Game extends phaser.Game {
 
     this.eventQueue = new EventQueue(0);
     this.eventHandlers = new EventHandlers();
+    this.crisisGenerator = new PeriodicCrisisGenerator(1000);
 
     this.state.add('Boot', Boot);
     this.state.add('Main', Main);

@@ -4,6 +4,8 @@ import MessagePanel from '../message';
 import BloodFactory from '../sprites/blood';
 import HutFactory from '../sprites/hut';
 import { game } from '../../index';
+import CrisisEvent from '../../crisis/crisis_event';
+import Event from '../../event';
 
 /**
  * Main state (i.e. in the game).
@@ -65,11 +67,35 @@ export default class Main extends Phaser.State {
   }
 
   public update(): void {
+    const elapsed = game.time.elapsed;
+
     this.messages.update();
-    const completedEvents = game.eventQueue.tick(game.time.elapsed);
+
+    // Resolve the event queue.
+    const completedEvents = game.eventQueue.tick(elapsed);
     if (completedEvents.length > 0) {
       completedEvents.forEach(event => {
         game.eventHandlers.handle(event);
+      });
+    }
+
+    // Generate more crises.
+    const newCrises: CrisisEvent[] = game.crisisGenerator.tick(elapsed);
+    if (newCrises.length > 0) {
+      newCrises.forEach((crisisEvent: CrisisEvent) => {
+        game.eventQueue.add(
+          crisisEvent.crisis.description,
+          crisisEvent.crisis,
+          crisisEvent.duration
+        );
+        game.eventHandlers.register(
+          crisisEvent.crisis.description,
+          (_: Event) => {
+            // Satisfy linter so I can leave this code sample here.
+            // Do whatever else with result.
+            game.eventHandlers.unregister(crisisEvent.crisis.description);
+          }
+        );
       });
     }
 
@@ -84,6 +110,7 @@ export default class Main extends Phaser.State {
     } else if (this.controller.isUp) {
       this.character.y += 8;
     }
+
     if (this.controller.isSpace) {
       const distance = this.game.physics.arcade.distanceBetween;
       this.monsters

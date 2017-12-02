@@ -4,128 +4,66 @@ import CrisisOption from './option';
 /**
  * class Event
  * Encapsulates information concerning a single event.
- *
- * description: string
- *  A description of the event that is unfolding.
- *
- * options: Array<string>
- *  A list of options a Character can choose from to resolve the Event
- *
- * timeLimit: number
- *  The maximum time limit that the Event has before it must be resolved
- *
- * baseValue: number
- *  Number that determines how much this event impacts the player's score
- *
- * townsfolk: Character
- *  Automatically generated Character to lead Player / Guard to GameEvent
- *
  */
-
 export default class Crisis {
-  private description: string;
+  public readonly description: string;
+
+  // Score of this crisis, however it is resolved
+  public readonly score: number;
+  // The messenger who alerts other characters of this crisis
+  public readonly messenger: Character;
+
   private options: CrisisOption[];
-  private timeLimit: number;
 
-  private baseValue: number;
-
-  private townsfolk: Character;
-
+  // The character who resolved this crisis.
   private resolver: Character;
-  private choice: CrisisOption;
 
-  private resolved: boolean;
-  private timeStart: number;
-  private timeResolved: number;
+  // The resolution to this crisis.
+  private resolution: CrisisOption;
 
-  constructor(
-    description: string,
-    timeLimit: number,
-    baseValue: number,
-    townsfolk: Character,
-    timeStart: number
-  ) {
+  constructor(description: string, score: number) {
     this.description = description;
+    this.score = score;
 
-    this.setTimeLimit(timeLimit);
-
-    this.baseValue = baseValue;
-    this.townsfolk = townsfolk;
-
-    this.resolved = false;
-    this.timeStart = timeStart;
-  }
-
-  public getDescription(): string {
-    return this.description;
-  }
-
-  /**
-   * Score of this crisis, however it is resolved
-   */
-  public score(): number {
-    // This needs to get a lot more complicated
-    return this.baseValue;
-  }
-
-  public getTownsfolk(): Character {
-    return this.townsfolk;
+    this.options = [];
   }
 
   public addOption(description: string, value: number): void {
     this.options.push(new CrisisOption(this, description, value));
   }
 
+  public resolve(resolution: CrisisOption) {
+    this.resolution = resolution;
+  }
+
+  public isResolved() {
+    return this.resolution !== undefined;
+  }
+
+  public getResolver() {
+    return this.resolver;
+  }
+
+  public getResolution() {
+    return this.resolution;
+  }
+
   /**
-   * If a guard attempts to claim this crisis and its resolver is not null,
-   * then return false.
-   * Otherwise, set the resolver to the guard and its choice
-   * @param guard
-   * @param choice
+   * Claims this crisis iff it is unclaimed.
+   *
+   * Returns true on success, false otherwise.
+   *
+   * @param character  The character attempting to claim this crisis.
    */
-  public claim(guard: Character, choice: CrisisOption): boolean {
+  public claim(character: Character): boolean {
     if (this.resolver == null) {
-      this.resolver = guard;
-      this.choice = choice;
+      this.resolver = character;
       return true;
     }
     return false;
   }
 
-  public resolve(time: number) {
-    this.timeResolved = time;
-    this.resolved = true;
-  }
-
-  public getGuard(): Character {
-    return this.resolver;
-  }
-
-  public isResolved(): boolean {
-    return this.resolved;
-  }
-
-  public getChoice(): CrisisOption {
-    return this.choice;
-  }
-
-  public getTimeToResolve(): number {
-    return this.timeResolved - this.timeStart;
-  }
-
-  public getResolvedInTime(): boolean {
-    return this.timeResolved - this.timeStart <= this.timeLimit;
-  }
-
   public getOptions(): CrisisOption[] {
     return this.options;
-  }
-
-  private setTimeLimit(timeLimit: number): void {
-    if (timeLimit > 0) {
-      this.timeLimit = timeLimit;
-    } else {
-      throw new RangeError('Invalid timeLimit. Must be > 0');
-    }
   }
 }
