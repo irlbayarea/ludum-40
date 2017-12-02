@@ -212,7 +212,7 @@ const maxCHA: number = 10;
 const maxRANDO: number = 10;
 const minGOOD: number = -5;
 const maxGOOD: number = 10;
-function randomGuard(sprite: Phaser.Sprite): Character {
+export function randomGuard(sprite: Phaser.Sprite): Character {
   return new Character(
     sprite,
     generateName(),
