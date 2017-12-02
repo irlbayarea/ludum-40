@@ -1,3 +1,6 @@
+import Character from '../character';
+import CrisisOption from './option';
+
 /**
  * class Event
  * Encapsulates information concerning a single event.
@@ -18,7 +21,7 @@
  *  Automatically generated Character designed to lead Player / Guard to GameEvent
  *
  */
-class Crisis {
+export default class Crisis {
   private description: string;
   private options: CrisisOption[];
   private timeLimit: number;
@@ -56,7 +59,10 @@ class Crisis {
     return this.description;
   }
 
-  public getValue(): number {
+  /**
+   * Score of this crisis, however it is resolved
+   */
+  public score(): number {
     // This needs to get a lot more complicated
     return this.baseValue;
   }
