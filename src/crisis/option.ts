@@ -46,7 +46,7 @@ export default class CrisisOption {
     }
     if (
       Character.maxIntelligence >= intelligence &&
-      Character.minIntelligence >= intelligence
+      intelligence >= Character.minIntelligence 
     ) {
       this.intelligence = intelligence;
     } else {
