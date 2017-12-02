@@ -2,6 +2,7 @@ import * as Phaser from 'phaser-ce';
 
 import Controller from '../../input/controller';
 import MessagePanel from '../message';
+import BloodFactory from '../sprites/blood';
 import HutFactory from '../sprites/hut';
 
 /**
@@ -18,6 +19,9 @@ export default class Main extends Phaser.State {
   private character: Phaser.Sprite;
   private messages: MessagePanel;
   private monsters: Phaser.Sprite[] = [];
+  private alwaysOnTop: Phaser.Group;
+
+  private bloodFactory: BloodFactory;
 
   public create(): void {
     const map = this.game.add.tilemap('Tilemap');
@@ -42,18 +46,21 @@ export default class Main extends Phaser.State {
     this.character = this.game.add.sprite(0, 64 * 4, 'characters', 325);
     this.character.scale = new Phaser.Point(4.0, 4.0);
 
-    // Example of generating a hut (at 64,64 for now).
+    // Example of generating a hut (at 64,64 for now), and blood.
     const hutFactory = new HutFactory(this.game);
     hutFactory.sprite(64, 64);
 
+    this.bloodFactory = new BloodFactory(this.game);
+
     // Example of monsters.
-    for (let i = 0; i < 10; i++) {
+    setInterval(() => {
       const monster = this.monster();
       this.monsters.push(monster);
-    }
+    }, 300);
 
     // Message panel.
-    this.messages = this.game.plugins.add(MessagePanel);
+    this.alwaysOnTop = this.game.add.group();
+    this.messages = this.game.plugins.add(MessagePanel, this.alwaysOnTop);
     this.messages.setText('🔥🔥 CRISIS! 🔥🔥');
   }
 
@@ -70,17 +77,51 @@ export default class Main extends Phaser.State {
     } else if (this.controller.isUp) {
       this.character.y += 8;
     }
+    if (this.controller.isSpace) {
+      const distance = this.game.physics.arcade.distanceBetween;
+      this.monsters.filter(monster => {
+        return distance(monster, this.character) <= 64 * 1.5;
+      }).forEach((monster) => {
+        monster.damage(1);
+        this.bloodFactory.sprite(monster);
+      });
+      this.monsters = this.monsters.filter(monster => monster.health > 0);
+    }
     this.monsters.forEach(monster =>
       this.game.physics.arcade.moveToObject(monster, this.character, 200)
     );
+    this.game.world.bringToTop(this.alwaysOnTop);
   }
 
   private monster(): Phaser.Sprite {
+    let x: number;
+    let y: number;
+    if (Main.random(0, 2) === 1) {
+      x = Main.random(
+        this.character.x - this.game.camera.width * 2,
+        this.character.x - this.game.camera.width,
+      );
+    } else {
+      x = Main.random(
+        this.character.x + this.game.camera.width * 2,
+        this.character.x + this.game.camera.width,
+      );
+    }
+    if (Main.random(0, 2) === 1) {
+      y = Main.random(
+        this.character.y - this.game.camera.height * 2,
+        this.character.y - this.game.camera.height,
+      );
+    } else {
+      y = Main.random(
+        this.character.y + this.game.camera.height * 2,
+        this.character.y + this.game.camera.height,
+      );
+    }
     const monster = this.game.add.sprite(
-      Main.random(10, 20) * 64,
-      Main.random(10, 20) * 64,
+      x, y,
       'characters',
-      162
+      162,
     );
     monster.scale = this.character.scale;
     this.game.physics.enable(monster, Phaser.Physics.ARCADE);

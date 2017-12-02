@@ -9,6 +9,7 @@ export default class Controller {
   private a: Phaser.Key;
   private s: Phaser.Key;
   private d: Phaser.Key;
+  private space: Phaser.Key;
 
   /**
    * Create a game controller from the current game object.
@@ -20,6 +21,7 @@ export default class Controller {
     this.a = game.input.keyboard.addKey(Phaser.Keyboard.A);
     this.s = game.input.keyboard.addKey(Phaser.Keyboard.S);
     this.d = game.input.keyboard.addKey(Phaser.Keyboard.D);
+    this.space = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
   }
 
   get isUp(): boolean {
@@ -36,5 +38,9 @@ export default class Controller {
 
   get isRight(): boolean {
     return this.cursors.right.isDown || this.d.isDown;
+  }
+
+  get isSpace(): boolean {
+    return this.space.isDown;
   }
 }
