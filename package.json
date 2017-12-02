@@ -6,10 +6,10 @@
   "scripts": {
     "build": "webpack --config ./configs/webpack/webpack.dev.js $f",
     "clean": "rimraf -- dist",
-    "format": "prettier --config .prettier --write src/**/*.ts configs/**/*.js",
-    "format:check": "prettier-check --config '.prettier' --list-different src/**/*.ts configs/**/*.js",
-    "lint": "tslint ./**/*.ts -e './node_modules/**/*.ts'",
-    "lint:fix": "tslint --fix ./**/*.ts -e './node_modules/**/*.ts'",
+    "format": "prettier --config .prettier --write \"src/**/*.ts\" \"configs/*/**.js\"",
+    "format:check": "prettier-check --config '.prettier' --list-different \"src/**/*.ts\" \"configs/*/**.js\"",
+    "lint": "tslint --project .",
+    "lint:fix": "tslint --fix --project .",
     "serve": "webpack-dev-server --watch --config ./configs/webpack/webpack.dev.js",
     "test": "jest"
   },

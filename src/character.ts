@@ -40,12 +40,12 @@ export default class Character {
   constructor(
     sprite: Phaser.Sprite,
     name: string = generateName(),
-    speed: number = 0.5*(maxSPEED - minSPEED) + minSPEED,
-    str: number = 0.5*(maxSTR - minSTR) + minSTR,
-    int: number = 0.5*(maxINT - minINT) + minINT,
-    cha: number = 0.5*(maxCHA - minCHA) + minCHA,
-    rando: number = 0.5*(maxRANDO - minRANDO) + minRANDO,
-    good: number = 0.5*(maxGOOD - minGOOD) + minGOOD,
+    speed: number = 0.5 * (maxSPEED - minSPEED) + minSPEED,
+    str: number = 0.5 * (maxSTR - minSTR) + minSTR,
+    int: number = 0.5 * (maxINT - minINT) + minINT,
+    cha: number = 0.5 * (maxCHA - minCHA) + minCHA,
+    rando: number = 0.5 * (maxRANDO - minRANDO) + minRANDO,
+    good: number = 0.5 * (maxGOOD - minGOOD) + minGOOD,
     isGuard: boolean = false,
     salary: number = 0
   ) {

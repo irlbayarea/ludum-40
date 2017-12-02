@@ -22,7 +22,7 @@ export default class Boot extends Phaser.State {
       'blood',
       require('assets/sprites/blood.png'),
       512,
-      512,
+      512
     );
 
     // Load the character sheet.
