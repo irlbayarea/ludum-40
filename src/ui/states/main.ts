@@ -4,6 +4,7 @@ import { forIn, last } from 'lodash';
 import Controller from '../../input/controller';
 import MessagePanel from '../message';
 
+import * as common from '../../common';
 import { game } from '../../index';
 import CrisisEvent from '../../crisis/crisis_event';
 import EventType from '../../event_type';
@@ -49,8 +50,17 @@ export default class Main extends Phaser.State {
 
     // Messages.
     this.alwaysOnTop = this.game.add.group();
-    this.messages = this.game.plugins.add(MessagePanel, this.alwaysOnTop);
-    this.messages.setText('🔥🔥 CRISIS! 🔥🔥');
+    this.messages = this.game.plugins.add(
+      MessagePanel,
+      this.alwaysOnTop,
+      this.controller
+    );
+    this.messages.setText('Welcome to Guard Captain');
+    this.messages.askUser('Sushi', 'Tacos', option =>
+      common.debug.log(
+        `Selected: ${option === 1 ? 'Great Choice' : 'Eh, not bad'}`
+      )
+    );
   }
 
   public update(): void {
