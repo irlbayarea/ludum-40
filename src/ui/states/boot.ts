@@ -17,6 +17,14 @@ export default class Boot extends Phaser.State {
       64
     );
 
+    // Load blood sprays.
+    this.load.spritesheet(
+      'blood',
+      require('assets/sprites/blood.png'),
+      512,
+      512,
+    );
+
     // Load the character sheet.
     this.load.spritesheet(
       'characters',
