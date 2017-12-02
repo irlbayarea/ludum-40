@@ -1,5 +1,5 @@
 import * as Phaser from 'phaser-ce';
-
+import { game } from '../../index';
 /**
  * Main state (i.e. in the game).
  */
@@ -22,6 +22,7 @@ export default class Main extends Phaser.State {
   }
 
   public init(): void {
+    game.physics.startSystem(Phaser.Physics.ARCADE);
     this.stage.backgroundColor = '#EDEEC9';
   }
 
