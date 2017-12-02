@@ -1,3 +1,10 @@
+// Forces webpack to inline the files in this precise order.
+import 'p2';
+import 'pixi';
+// tslint:disable-next-line:ordered-imports
+import 'phaser';
+// End force webpack inline.
+
 import * as phaser from 'phaser-ce';
 import * as common from './common';
 
