@@ -1,6 +1,8 @@
 import * as Phaser from 'phaser-ce';
 
 import Controller from '../../input/controller';
+import MessagePanel from '../message';
+import HutFactory from '../sprites/hut';
 
 /**
  * Main state (i.e. in the game).
@@ -14,6 +16,7 @@ export default class Main extends Phaser.State {
 
   private controller: Controller;
   private character: Phaser.Sprite;
+  private messages: MessagePanel;
   private monsters: Phaser.Sprite[] = [];
 
   public create(): void {
@@ -39,14 +42,23 @@ export default class Main extends Phaser.State {
     this.character = this.game.add.sprite(0, 64 * 4, 'characters', 325);
     this.character.scale = new Phaser.Point(4.0, 4.0);
 
+    // Example of generating a hut (at 64,64 for now).
+    const hutFactory = new HutFactory(this.game);
+    hutFactory.sprite(64, 64);
+
     // Example of monsters.
     for (let i = 0; i < 10; i++) {
       const monster = this.monster();
       this.monsters.push(monster);
     }
+
+    // Message panel.
+    this.messages = this.game.plugins.add(MessagePanel);
+    this.messages.setText('🔥🔥 CRISIS! 🔥🔥');
   }
 
   public update(): void {
+    this.messages.update();
     this.game.camera.follow(this.character);
     if (this.controller.isLeft) {
       this.character.x -= 8;
