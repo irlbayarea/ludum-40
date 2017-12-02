@@ -1,5 +1,7 @@
 import * as Phaser from 'phaser-ce';
 
+import Controller from '../../input/controller';
+
 /**
  * Main state (i.e. in the game).
  */
@@ -10,8 +12,7 @@ export default class Main extends Phaser.State {
     return Math.floor(Math.random() * (max - min)) + min;
   }
 
-  private cursors: Phaser.CursorKeys;
-
+  private controller: Controller;
   private character: Phaser.Sprite;
   private monsters: Phaser.Sprite[] = [];
 
@@ -29,7 +30,7 @@ export default class Main extends Phaser.State {
     });
 
     // Enable keyboard.
-    this.cursors = this.game.input.keyboard.createCursorKeys();
+    this.controller = new Controller(this.game);
 
     // Enable physics.
     this.game.physics.startSystem(Phaser.Physics.ARCADE);
@@ -47,14 +48,14 @@ export default class Main extends Phaser.State {
 
   public update(): void {
     this.game.camera.follow(this.character);
-    if (this.cursors.left.isDown) {
+    if (this.controller.isLeft) {
       this.character.x -= 8;
-    } else if (this.cursors.right.isDown) {
+    } else if (this.controller.isRight) {
       this.character.x += 8;
     }
-    if (this.cursors.up.isDown) {
+    if (this.controller.isDown) {
       this.character.y -= 8;
-    } else if (this.cursors.down.isDown) {
+    } else if (this.controller.isUp) {
       this.character.y += 8;
     }
     this.monsters.forEach(monster =>
