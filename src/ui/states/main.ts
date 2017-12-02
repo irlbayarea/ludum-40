@@ -56,11 +56,14 @@ export default class Main extends Phaser.State {
       this.controller
     );
     this.messages.setText('Welcome to Guard Captain');
-    this.messages.askUser('Sushi', 'Tacos', option =>
-      common.debug.log(
-        `Selected: ${option === 1 ? 'Great Choice' : 'Eh, not bad'}`
-      )
-    );
+
+    if (common.experiment('demo-ask-user')) {
+      this.messages.askUser('Sushi', 'Tacos', option =>
+        common.debug.log(
+          `Selected: ${option === 1 ? 'Great Choice' : 'Eh, not bad'}`
+        )
+      );
+    }
   }
 
   public update(): void {
