@@ -2,38 +2,45 @@
  * Character class
  * Encapsulates all information about a character
  */
-
-class Character {
+import * as Phaser from 'phaser-ce';
+import Crisis from './crisis/crisis';
+import CrisisOption from './crisis/option';
+export default class Character {
   private name: string;
 
-  private speed: number;
+  private sprite: Phaser.Sprite;
 
-  private x: number;
-  private y: number;
+  private speed: number;
 
   private str: number;
   private int: number;
   private cha: number;
 
+  private rando: number;
+  private good: number;
+
   private isGuard: boolean;
 
   constructor(
-    name: string,
-    x: number,
-    y: number,
-    speed: number,
+    sprite: Phaser.Sprite,
+    name: string = generateName(),
+    speed: number = 1,
     str: number = 1,
     int: number = 1,
     cha: number = 1,
+    rando: number = 1,
+    good: number = 1,
     isGuard: boolean = false
   ) {
     this.name = name;
+    this.sprite = sprite;
     this.setSpeed(speed);
-    this.moveTo(x, y);
 
     this.setStr(str);
     this.setInt(int);
     this.setCha(cha);
+    this.setRando(rando);
+    this.good = good;
     this.isGuard = isGuard;
   }
 
@@ -41,16 +48,12 @@ class Character {
     return this.name;
   }
 
+  public getSprite(): Phaser.Sprite {
+    return this.sprite;
+  }
+
   public getSpeed(): number {
     return this.speed;
-  }
-
-  public getX(): number {
-    return this.x;
-  }
-
-  public getY(): number {
-    return this.y;
   }
 
   public setSpeed(speed: number) {
@@ -58,24 +61,6 @@ class Character {
       this.speed = speed;
     } else {
       throw new RangeError('Speed must be > 0');
-    }
-  }
-
-  public moveBy(dx: number, dy: number): void {
-    this.x = this.x + dx;
-    this.y = this.y + dy;
-  }
-
-  public moveTo(x: number, y: number): void {
-    if (x > 0) {
-      this.x = x;
-    } else {
-      throw new RangeError('x value must be > 0');
-    }
-    if (y > 0) {
-      this.y = y;
-    } else {
-      throw new RangeError('y value must be > 0');
     }
   }
 
@@ -88,17 +73,47 @@ class Character {
   public getCHA(): number {
     return this.cha;
   }
+  public getRANDO(): number {
+    return this.rando;
+  }
+
+  public getGOOD(): number {
+    return this.good;
+  }
 
   public getIsGuard(): boolean {
     return this.isGuard;
   }
 
+  /**
+   * handleCrisis
+   */
   public handleCrisis(crisis: Crisis): boolean {
-    // Logic for choosing a crisis option here
     if (this.isGuard) {
-      return crisis
-        .getOptions()
-        [Math.floor(Math.random() * crisis.getOptions().length)].choose(this);
+      const crisisProbability: number[] = [];
+
+      for (const opt of crisis.getOptions()) {
+        crisisProbability.push(scoreOption(this, opt));
+      }
+
+      let normalize: number = 0;
+      for (const prob of crisisProbability) {
+        normalize += prob;
+      }
+
+      const choiceVal: number = Math.random() * normalize;
+      let choiceSum: number = 0;
+      let i: number = 0;
+      for (const prob of crisisProbability) {
+        choiceSum += prob;
+        if (choiceVal <= choiceSum) {
+          return crisis.getOptions()[i].choose(this);
+        } else {
+          i++;
+        }
+      }
+
+      return crisis.getOptions()[crisis.getOptions().length - 1].choose(this);
     } else {
       return false;
     }
@@ -127,6 +142,14 @@ class Character {
       throw new RangeError('cha value must be > 0');
     }
   }
+
+  private setRando(rando: number): void {
+    if (rando >= 0) {
+      this.rando = rando;
+    } else {
+      throw new RangeError('rando value must be >= 0');
+    }
+  }
 }
 
 function generateName(): string {
@@ -140,7 +163,40 @@ function generateName(): string {
     'Jared',
     'Robert',
     'Paul',
+    'Jesse',
+    'Matan',
+    'Kendal',
+    'Porgzar',
+    'Porg-Porg',
+    'Jennifer',
+    'Jamie',
+    'Allison',
+    'Stacy',
+    'Kelly',
+    'Brian',
+    'Lisa',
+    'Maria',
+    'Kyle',
+    'Jason',
   ];
 
   return names[Math.floor(Math.random() * names.length)];
+}
+/**
+ * If this crisis is being handled by a Guard, use the following formula to determine the
+ * (relative) probability of the Guard choosing any particular option:
+ * abs( (guard STR  * option STR  val + guard RANDO) +
+ *      (guard CHA  * option CHA  val + guard RANDO) +
+ *      (guard INT  * option INT  val + guard RANDO) +
+ *      sqrt((abs(guard GOOD + option GOOD val) + guard RANDO)^2) )
+ * The larger this value, the more aligned the choice is with the guard's "personality".
+ */
+function scoreOption(c: Character, o: CrisisOption): number {
+  return Math.abs(
+    c.getSTR() * o.getSTR() +
+      c.getRANDO() +
+      (c.getINT() * o.getINT() + c.getRANDO()) +
+      (c.getCHA() * o.getCHA() + c.getRANDO()) +
+      Math.sqrt((Math.abs(c.getGOOD() + o.getGOOD()) + c.getRANDO()) ** 2)
+  );
 }
