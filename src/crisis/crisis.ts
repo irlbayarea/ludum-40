@@ -18,7 +18,7 @@ import CrisisOption from './option';
  *  Number that determines how much this event impacts the player's score
  *
  * townsfolk: Character
- *  Automatically generated Character designed to lead Player / Guard to GameEvent
+ *  Automatically generated Character to lead Player / Guard to GameEvent
  *
  */
 export default class Crisis {
