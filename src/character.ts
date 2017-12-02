@@ -1,7 +1,7 @@
-
-
-// Basic Character interface
-// Encapsulates all information about a character
+/**
+ * Character class
+ * Encapsulates all information about a character
+ */ 
 class Character {
 
     name: string;
@@ -17,30 +17,36 @@ class Character {
 
         this.name = name;
         
-        if (str > 0) { this.str = str; } else { throw new RangeError("str value must be > 0"); }
-        if (int > 0) { this.int = int; } else { throw new RangeError("int value must be > 0"); }
-        if (cha > 0) { this.cha = cha; } else { throw new RangeError("cha value must be > 0"); }
+        this.setStr(str);
+        this.setInt(int);
+        this.setCha(cha);
         
-        // TODO: Double check later 
-        if (x > 0) { this.x = x; } else { throw new RangeError("x value must be > 0"); }
-        if (y > 0) { this.y = y; } else { throw new RangeError("y value must be > 0"); }
-
+        this.moveTo(x, y);
     }
-
+    
     moveBy(dx: number, dy: number): void {
         this.x = this.x + dx;
         this.y = this.y + dy;
     }
-
+    
     moveTo(x: number, y: number): void {
         if (x > 0) { this.x = x; } else { throw new RangeError("x value must be > 0"); }
         if (y > 0) { this.y = y; } else { throw new RangeError("y value must be > 0"); }
     }
+    
+    setStr(str: number): void {
+        if (str > 0) { this.str = str; } else { throw new RangeError("str value must be > 0"); }
+    }
+    
+    setInt(int: number): void {
+        if (int > 0) { this.int = int; } else { throw new RangeError("int value must be > 0"); }
+    }
+    
+    setCha(cha: number): void {
+        if (cha > 0) { this.cha = cha; } else { throw new RangeError("cha value must be > 0"); }
+    }
 }
 
-class PC { 
-    
-}
 
 function generateName(): string {
     
