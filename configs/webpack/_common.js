@@ -28,9 +28,7 @@ module.exports = {
          */
         vendor: [
           'debug',
-          'lodash',
-          'easystarjs',
-          'dungeon-loader',
+          'lodash', 
           'pixi',
           'p2',
           'phaser',
