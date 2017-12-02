@@ -23,11 +23,11 @@ export default class Controller {
   }
 
   get isUp(): boolean {
-    return this.cursors.up.isDown || this.s.isDown;
+    return this.cursors.down.isDown || this.s.isDown;
   }
 
   get isDown(): boolean {
-    return this.cursors.down.isDown || this.w.isDown;
+    return this.cursors.up.isDown || this.w.isDown;
   }
 
   get isLeft(): boolean {
