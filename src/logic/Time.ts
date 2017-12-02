@@ -5,7 +5,7 @@ import { game } from '../index';
  */
 export default class Time {
   /**
-   * Returns a timestamp that is the number of game time seconds passed since an arbitrary epoch until 
+   * Returns a timestamp that is the number of game time seconds passed since an arbitrary epoch until
    */
   public static gameTime(): number {
     return game.physics.p2.time;
@@ -29,6 +29,6 @@ export default class Time {
    * Returns the real world time elapsed in seconds since last tick.
    */
   public static wallElapsed(): number {
-    return game.time.elapsed;
+    return game.time.elapsed / 1000;
   }
 }
