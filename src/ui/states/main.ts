@@ -6,6 +6,10 @@ import MessagePanel from '../message';
 
 import * as common from '../../common';
 import { game } from '../../index';
+import CrisisEvent from '../../crisis/crisis_event';
+import EventType from '../../event_type';
+import Event from '../../event';
+import Crisis from '../../crisis/crisis';
 
 /**
  * Main state (i.e. in the game).
@@ -18,6 +22,18 @@ export default class Main extends Phaser.State {
 
   public create(): void {
     this.createMap();
+
+    game.gameEvents.addListener(EventType.CrisisStart, (e: Event) => {
+      const crisis: Crisis = e.value;
+      this.messages.setText(
+        '🔥🔥 CRISIS! "' + crisis.description + '" Started'
+      );
+    });
+
+    game.gameEvents.addListener(EventType.CrisisEnd, (e: Event) => {
+      const crisis: Crisis = e.value;
+      this.messages.setText('"' + crisis.description + '" Ended.');
+    });
 
     // Enable keyboard.
     this.controller = new Controller(this.game);
@@ -49,6 +65,10 @@ export default class Main extends Phaser.State {
 
   public update(): void {
     this.character.body.setZeroVelocity();
+
+    const elapsed: number = game.time.elapsed;
+    this.tickEvents(elapsed);
+    this.tickCrises(elapsed);
 
     this.game.camera.follow(this.character);
     if (this.controller.isLeft && !this.controller.isRight) {
@@ -102,5 +122,16 @@ export default class Main extends Phaser.State {
     p2.restitution = 0.2; // Bounciness of '1' is very bouncy.
 
     return map;
+  }
+
+  private tickCrises(elapsed: number) {
+    game.crisisGenerator.tick(elapsed).forEach((e: CrisisEvent) => {
+      game.gameEvents.emit(EventType.CrisisStart, e.crisis);
+      game.gameEvents.schedule(EventType.CrisisEnd, e.crisis, e.duration);
+    });
+  }
+
+  private tickEvents(elapsed: number) {
+    game.gameEvents.tick(elapsed);
   }
 }
