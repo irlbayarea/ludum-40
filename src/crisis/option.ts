@@ -23,14 +23,17 @@ export default class CrisisOption {
   constructor(
     description: string,
     value: number,
-    strength: number = 0,
-    intelligence: number = 0,
-    charisma: number = 0,
-    goodness: number = 1
+    strength: number = 0.5 * (Character.maxStrength - Character.minStrength) + Character.minStrength,
+    intelligence: number = 0.5 * (Character.maxIntelligence - Character.minIntelligence) + Character.minIntelligence,
+    charisma: number = 0.5 * (Character.maxCharisma - Character.minCharisma) + Character.minCharisma,
+    goodness: number = 0.5 * (Character.maxGoodness - Character.minGoodness) + Character.minGoodness
   ) {
     this.description = description;
     this.value = value;
-    if (Character.maxStrength > strength && strength > Character.minStrength) {
+    if (
+      Character.maxStrength >= strength &&
+      strength >= Character.minStrength
+    ) {
       this.strength = strength;
     } else {
       throw new RangeError(
@@ -42,8 +45,8 @@ export default class CrisisOption {
       );
     }
     if (
-      Character.maxIntelligence > intelligence &&
-      Character.minIntelligence > intelligence
+      Character.maxIntelligence >= intelligence &&
+      Character.minIntelligence >= intelligence
     ) {
       this.intelligence = intelligence;
     } else {
@@ -55,7 +58,10 @@ export default class CrisisOption {
           ']'
       );
     }
-    if (Character.maxCharisma > charisma && charisma > Character.minCharisma) {
+    if (
+      Character.maxCharisma >= charisma &&
+      charisma >= Character.minCharisma
+    ) {
       this.charisma = charisma;
     } else {
       throw new RangeError(
@@ -66,7 +72,10 @@ export default class CrisisOption {
           ']'
       );
     }
-    if (Character.maxGoodness > goodness && goodness > Character.minGoodness) {
+    if (
+      Character.maxGoodness >= goodness &&
+      goodness >= Character.minGoodness
+    ) {
       this.goodness = goodness;
     } else {
       throw new RangeError(
