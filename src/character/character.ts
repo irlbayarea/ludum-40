@@ -7,22 +7,22 @@ import Crisis from '../crisis/crisis';
 import CrisisOption from '../crisis/option';
 import { randomName } from './names';
 
-export const minSpeed: number = 1;
-export const maxSpeed: number = 10;
-export const minStrength: number = 0;
-export const maxStrength: number = 10;
-export const minIntelligence: number = 0;
-export const maxIntelligence: number = 10;
-export const minCharisma: number = 0;
-export const maxCharisma: number = 10;
-export const minRandomness: number = -5;
-export const maxRandomness: number = 10;
-export const minGoodness: number = -5;
-export const maxGoodness: number = 10;
-
-export const maxSalary: number = 100;
-
 export default class Character {
+  public static readonly minSpeed: number = 1;
+  public static readonly maxSpeed: number = 10;
+  public static readonly minStrength: number = 0;
+  public static readonly maxStrength: number = 10;
+  public static readonly minIntelligence: number = 0;
+  public static readonly maxIntelligence: number = 10;
+  public static readonly minCharisma: number = 0;
+  public static readonly maxCharisma: number = 10;
+  public static readonly minRandomness: number = -5;
+  public static readonly maxRandomness: number = 10;
+  public static readonly minGoodness: number = -5;
+  public static readonly maxGoodness: number = 10;
+
+  public static readonly maxSalary: number = 100;
+
   public readonly speed: number;
   public readonly strength: number;
   public readonly intelligence: number;
@@ -38,77 +38,93 @@ export default class Character {
   constructor(
     sprite: Phaser.Sprite,
     name: string = randomName(),
-    speed: number = average(minSpeed, maxSpeed),
-    strength: number = average(minStrength, maxStrength),
-    intelligence: number = average(minIntelligence, maxIntelligence),
-    charisma: number = average(minCharisma, maxCharisma),
-    randomness: number = average(minRandomness, maxRandomness),
-    goodness: number = average(minGoodness, maxGoodness),
+    speed: number = average(Character.minSpeed, Character.maxSpeed),
+    strength: number = average(Character.minStrength, Character.maxStrength),
+    intelligence: number = average(
+      Character.minIntelligence,
+      Character.maxIntelligence
+    ),
+    charisma: number = average(Character.minCharisma, Character.maxCharisma),
+    randomness: number = average(
+      Character.minRandomness,
+      Character.maxRandomness
+    ),
+    goodness: number = average(Character.minGoodness, Character.maxGoodness),
     isGuard: boolean = false,
     salary: number = 0
   ) {
     this.name = name;
     this.sprite = sprite;
 
-    if (maxSpeed > speed && speed > minSpeed) {
+    if (Character.maxSpeed > speed && speed > Character.minSpeed) {
       this.speed = speed;
     } else {
       throw new RangeError(
-        'speed value must be within [' + minSpeed + ',' + maxSpeed + ']'
+        'speed value must be within [' +
+          Character.minSpeed +
+          ',' +
+          Character.maxSpeed +
+          ']'
       );
     }
-    if (maxStrength > strength && strength > minStrength) {
+    if (Character.maxStrength > strength && strength > Character.minStrength) {
       this.strength = strength;
     } else {
       throw new RangeError(
         'strength value must be within [' +
-          minStrength +
+          Character.minStrength +
           ',' +
-          maxStrength +
+          Character.maxStrength +
           ']'
       );
     }
-    if (maxIntelligence > intelligence && minIntelligence > intelligence) {
+    if (
+      Character.maxIntelligence > intelligence &&
+      Character.minIntelligence > intelligence
+    ) {
       this.intelligence = intelligence;
     } else {
       throw new RangeError(
         'intelligence value must be within [' +
-          minIntelligence +
+          Character.minIntelligence +
           ',' +
-          maxIntelligence +
+          Character.maxIntelligence +
           ']'
       );
     }
-    if (maxCharisma > charisma && charisma > minCharisma) {
+    if (Character.maxCharisma > charisma && charisma > Character.minCharisma) {
       this.charisma = charisma;
     } else {
       throw new RangeError(
         'charisma value must be within [' +
-          minCharisma +
+          Character.minCharisma +
           ',' +
-          maxCharisma +
+          Character.maxCharisma +
           ']'
       );
     }
-    if (maxGoodness > goodness && goodness > minGoodness) {
+    if (Character.maxGoodness > goodness && goodness > Character.minGoodness) {
       this.goodness = goodness;
     } else {
       throw new RangeError(
         'goodness value must be within [' +
-          minGoodness +
+          Character.minGoodness +
           ',' +
-          maxGoodness +
+          Character.maxGoodness +
           ']'
       );
     }
-    if (maxRandomness > randomness && randomness > minRandomness) {
+    if (
+      Character.maxRandomness > randomness &&
+      randomness > Character.minRandomness
+    ) {
       this.randomness = randomness;
     } else {
       throw new RangeError(
         'randomness value must be within [' +
-          minRandomness +
+          Character.minRandomness +
           ',' +
-          maxRandomness +
+          Character.maxRandomness +
           ']'
       );
     }
@@ -217,13 +233,19 @@ export function randomGuard(sprite: Phaser.Sprite): Character {
   return new Character(
     sprite,
     randomName(),
-    Math.random() * (maxSpeed - minSpeed) + minSpeed,
-    Math.random() * (maxStrength - minStrength) + minStrength,
-    Math.random() * (maxIntelligence - minIntelligence) + minIntelligence,
-    Math.random() * (maxCharisma - minCharisma) + minCharisma,
-    Math.random() * (maxRandomness - minRandomness) + minRandomness,
-    Math.random() * (maxGoodness - minGoodness) + minGoodness,
+    Math.random() * (Character.maxSpeed - Character.minSpeed) +
+      Character.minSpeed,
+    Math.random() * (Character.maxStrength - Character.minStrength) +
+      Character.minStrength,
+    Math.random() * (Character.maxIntelligence - Character.minIntelligence) +
+      Character.minIntelligence,
+    Math.random() * (Character.maxCharisma - Character.minCharisma) +
+      Character.minCharisma,
+    Math.random() * (Character.maxRandomness - Character.minRandomness) +
+      Character.minRandomness,
+    Math.random() * (Character.maxGoodness - Character.minGoodness) +
+      Character.minGoodness,
     true,
-    Math.random() * maxSalary
+    Math.random() * Character.maxSalary
   );
 }
