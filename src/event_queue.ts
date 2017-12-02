@@ -1,4 +1,5 @@
 import Event from './event';
+import EventType from './event_type';
 
 export default class EventQueue {
   private time: number;
@@ -12,10 +13,8 @@ export default class EventQueue {
   }
 
   // Adds e to the end of the queue.
-  public add(key: string, value: any, duration: number) {
-    this.unscheduled.push(
-      new Event(key, value, this.time, this.time + duration)
-    );
+  public add(type: EventType, value: any, duration: number) {
+    this.unscheduled.push(new Event(type, value, this.time + duration));
   }
 
   public isEmpty(): boolean {
@@ -32,7 +31,10 @@ export default class EventQueue {
     this.unscheduled = [];
 
     while (!this.isEmpty() && this.isComplete(this.peek())) {
-      completed.push(this.pop());
+      const event = this.pop();
+      // Set true end tie.
+      event.time = this.time;
+      completed.push(event);
     }
 
     return completed;
@@ -46,7 +48,7 @@ export default class EventQueue {
   }
 
   private isComplete(event: Event) {
-    return event.end < this.time;
+    return event.time < this.time;
   }
 
   // Removes and returns the oldest event from the queue or undefined if the

@@ -54,7 +54,7 @@ export default class Boot extends Phaser.State {
     );
 
     // UI elements.
-    this.load.image('panel.blue', require('assets/images/panel_blue.png'));
+    this.load.image('arrow.right', require('assets/images/arrow_right.png'));
   }
 
   public render(): void {
