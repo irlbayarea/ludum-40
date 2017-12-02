@@ -1,6 +1,7 @@
 import * as phaser from 'phaser-ce';
 import * as common from './common';
 
+import Boot from './ui/states/boot';
 import Main from './ui/states/main';
 
 class Game extends phaser.Game {
@@ -13,8 +14,9 @@ class Game extends phaser.Game {
       width: common.globals.dimensions.width,
     });
 
+    this.state.add('Boot', Boot);
     this.state.add('Main', Main);
-    this.state.start('Main');
+    this.state.start('Boot');
   }
 }
 
