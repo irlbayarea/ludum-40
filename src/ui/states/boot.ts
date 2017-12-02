@@ -10,7 +10,6 @@ export default class Boot extends Phaser.State {
 
   public preload(): void {
     // Load collision tiles.
-
     this.load.spritesheet(
       'collision',
       require('assets/sprites/collision.png'),
@@ -54,8 +53,8 @@ export default class Boot extends Phaser.State {
       Phaser.Tilemap.TILED_JSON
     );
 
-    // We may forget how to draw images, so let's keep this here for now.
-    this.load.image('logo', require('assets/images/phaser.png'));
+    // UI elements.
+    this.load.image('panel.blue', require('assets/images/panel_blue.png'));
   }
 
   public render(): void {
