@@ -9,17 +9,17 @@ import * as phaser from 'phaser-ce';
 import * as common from './common';
 
 import Boot from './ui/states/boot';
-import EventHandlers from './event_handler';
 import generateMap from './map/generator';
-import EventQueue from './event_queue';
 import Main from './ui/states/main';
 import PeriodicCrisisGenerator from './crisis/periodic_crisis_generator';
 import ICrisisGenerator from './crisis/crisis_generator';
+import GameEvents from './game_events';
+import { jsonCrises } from './crisis/crises';
+import CrisisSerializer from './crisis/crisis_serializer';
 
 class Game extends phaser.Game {
-  public eventQueue: EventQueue;
-  public eventHandlers: EventHandlers;
   public crisisGenerator: ICrisisGenerator;
+  public gameEvents: GameEvents;
 
   constructor() {
     super({
@@ -30,9 +30,10 @@ class Game extends phaser.Game {
       width: common.globals.dimensions.width,
     });
 
-    this.eventQueue = new EventQueue(0);
-    this.eventHandlers = new EventHandlers();
-    this.crisisGenerator = new PeriodicCrisisGenerator(1000);
+    this.gameEvents = new GameEvents();
+
+    const crises = CrisisSerializer.unserializeAll(JSON.stringify(jsonCrises));
+    this.crisisGenerator = new PeriodicCrisisGenerator(10000, crises);
 
     this.state.add('Boot', Boot);
     this.state.add('Main', Main);
