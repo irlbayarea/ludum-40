@@ -9,7 +9,7 @@ import * as phaser from 'phaser-ce';
 import * as common from './common';
 
 import Boot from './ui/states/boot';
-import {generateMap} from './map/generator';
+import { generateMap } from './map/generator';
 import Main from './ui/states/main';
 import PeriodicCrisisGenerator from './crisis/periodic_crisis_generator';
 import ICrisisGenerator from './crisis/crisis_generator';

@@ -26,7 +26,7 @@ interface IMap extends DungeonFactory.IDungeon {
  * Converts a generated map into a tilemap.
  *
  * @param map
- * @param game 
+ * @param game
  */
 export function convertToTiles(map: IMap, game: Phaser.Game): Phaser.Tilemap {
   return game.add.tilemap(undefined, 64, 64, map.width, map.height);
