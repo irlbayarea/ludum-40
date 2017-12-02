@@ -7,7 +7,7 @@ import {
   maxIntelligence,
   minStrength,
   maxStrength,
-} from '../character';
+} from '../character/character';
 
 /**
  * CrisisOption

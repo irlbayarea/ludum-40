@@ -3,8 +3,9 @@
  * Encapsulates all information about a character
  */
 import * as Phaser from 'phaser-ce';
-import Crisis from './crisis/crisis';
-import CrisisOption from './crisis/option';
+import Crisis from '../crisis/crisis';
+import CrisisOption from '../crisis/option';
+import { randomName } from './names';
 
 export const minSpeed: number = 1;
 export const maxSpeed: number = 10;
@@ -190,15 +191,6 @@ function average(min: number, max: number) {
   return 0.5 * (max - min) + min;
 }
 
-/**
- * Get a random name from a list of names in assets/lists/names.yaml
- */
-export function randomName(): string {
-  const YAML = require('yamljs');
-  const names = YAML.load('assets/lists/names.yaml');
-  const namesKey = 'names';
-  return names[namesKey][Math.floor(Math.random() * names[namesKey].length)];
-}
 /**
  * If this crisis is being handled by a Guard, use the following formula to determine the
  * (relative) probability of the Guard choosing any particular option:
