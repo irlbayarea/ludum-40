@@ -14,7 +14,7 @@ export default class Boot extends Phaser.State {
       require('assets/sprites/rpg-sheet.png'),
       64,
       64,
-      196,
+      196
     );
     this.load.image('logo', require('assets/images/phaser.png'));
   }
