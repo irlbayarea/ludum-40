@@ -3,13 +3,13 @@ import Event from './event';
 type EventHandler = (e: Event) => void;
 
 export default class EventHandlers {
-  private eventHandlers: Map<Event, EventHandler[]>;
+  private eventHandlers: Map<string, EventHandler[]>;
 
   constructor() {
     this.eventHandlers = new Map();
   }
 
-  public register(key: any, callback: EventHandler) {
+  public register(key: string, callback: EventHandler) {
     if (this.eventHandlers.has(key)) {
       this.eventHandlers.get(key)!.push(callback);
     } else {
@@ -21,11 +21,12 @@ export default class EventHandlers {
     if (this.eventHandlers.has(key)) {
       this.eventHandlers.delete(key);
     }
+    this.eventHandlers.delete(key);
   }
 
   public handle(event: Event) {
-    if (this.eventHandlers.has(event.value)) {
-      this.eventHandlers.get(event.value)!.forEach(handler => {
+    if (this.eventHandlers.has(event.key)) {
+      this.eventHandlers.get(event.key)!.forEach(handler => {
         handler(event);
       });
     }

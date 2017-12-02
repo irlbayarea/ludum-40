@@ -12,8 +12,10 @@ export default class EventQueue {
   }
 
   // Adds e to the end of the queue.
-  public add(value: any, duration: number) {
-    this.unscheduled.push(new Event(value, this.time, this.time + duration));
+  public add(key: string, value: any, duration: number) {
+    this.unscheduled.push(
+      new Event(key, value, this.time, this.time + duration)
+    );
   }
 
   public isEmpty(): boolean {

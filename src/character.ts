@@ -112,6 +112,10 @@ export default class Character {
    */
   public handleCrisis(crisis: Crisis): boolean {
     if (this.isGuard) {
+      if (!crisis.claim(this)) {
+        return false;
+      }
+
       const crisisProbability: number[] = [];
 
       for (const opt of crisis.getOptions()) {
@@ -129,13 +133,15 @@ export default class Character {
       for (const prob of crisisProbability) {
         choiceSum += prob;
         if (choiceVal <= choiceSum) {
-          return crisis.getOptions()[i].choose(this);
+          crisis.resolve(crisis.getOptions()[i]);
+          return true;
         } else {
           i++;
         }
       }
 
-      return crisis.getOptions()[crisis.getOptions().length - 1].choose(this);
+      crisis.resolve(crisis.getOptions()[crisis.getOptions().length - 1]);
+      return true;
     } else {
       return false;
     }
