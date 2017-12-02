@@ -192,9 +192,9 @@ export default class Character {
   }
 }
 
-function randomName(): string {
+export function randomName(): string {
   const YAML = require('yamljs');
-  const names = YAML.load("./src/static/names.yaml");
+  const names = YAML.load("assets/lists/names.yaml");
   return names['names'][Math.floor(Math.random() * names['names'].length)];
 }
 /**
@@ -234,5 +234,3 @@ export function randomGuard(sprite: Phaser.Sprite): Character {
   );
 }
 
-console.log(randomName());
-// console.log(randomGuard(new Phaser.Sprite(new Phaser.Game(),0, 0)));

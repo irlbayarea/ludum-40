@@ -6,6 +6,9 @@ import MessagePanel from '../message';
 
 import { game } from '../../index';
 
+// DEBUG
+import {randomName, randomGuard} from '../../character';
+
 /**
  * Main state (i.e. in the game).
  */
@@ -35,6 +38,11 @@ export default class Main extends Phaser.State {
     this.alwaysOnTop = this.game.add.group();
     this.messages = this.game.plugins.add(MessagePanel, this.alwaysOnTop);
     this.messages.setText('🔥🔥 CRISIS! 🔥🔥');
+
+    // DEBUG
+    console.log(randomName());
+    console.log(randomGuard(this.game.add.sprite()));
+
   }
 
   public update(): void {
