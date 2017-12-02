@@ -109,9 +109,9 @@ export default class Character {
 
   /**
    * handleCrisis
-   * 
-   * If the crisis is being handled by a guard, perform a weighted random choice 
-   * 
+   *
+   * If the crisis is being handled by a guard, perform a weighted random choice
+   *
    */
   public handleCrisis(crisis: Crisis): boolean {
     if (this.isGuard) {

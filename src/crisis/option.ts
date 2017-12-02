@@ -75,5 +75,5 @@ export default class CrisisOption {
 }
 
 export function UnresolvedCrisis(crisis: Crisis): CrisisOption {
-  return new CrisisOption(crisis, "Unresolved Crisis", 0, 0, 0, 0, minGOOD);
+  return new CrisisOption(crisis, 'Unresolved Crisis', 0, 0, 0, 0, minGOOD);
 }
