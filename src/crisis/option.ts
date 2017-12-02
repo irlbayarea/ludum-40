@@ -1,4 +1,13 @@
-import { minGoodness, maxGoodness, minCharisma, maxCharisma, minIntelligence, maxIntelligence, minStrength, maxStrength } from '../character';
+import {
+  minGoodness,
+  maxGoodness,
+  minCharisma,
+  maxCharisma,
+  minIntelligence,
+  maxIntelligence,
+  minStrength,
+  maxStrength,
+} from '../character';
 
 /**
  * CrisisOption
@@ -31,9 +40,49 @@ export default class CrisisOption {
   ) {
     this.description = description;
     this.value = value;
-    if (maxStrength > strength && strength > minStrength) { this.strength = strength; } else { throw new RangeError('strength value must be within [' + minStrength + ',' + maxStrength + ']'); }
-    if (maxIntelligence > intelligence && minIntelligence > intelligence) { this.intelligence = intelligence; } else { throw new RangeError('intelligence value must be within [' + minIntelligence + ',' + maxIntelligence + ']'); }
-    if (maxCharisma > charisma && charisma > minCharisma) { this.charisma = charisma; } else { throw new RangeError('charisma value must be within [' + minCharisma + ',' + maxCharisma + ']'); }
-    if (maxGoodness > goodness && goodness > minGoodness) { this.goodness = goodness; } else { throw new RangeError('goodness value must be within [' + minGoodness + ',' + maxGoodness + ']'); }
+    if (maxStrength > strength && strength > minStrength) {
+      this.strength = strength;
+    } else {
+      throw new RangeError(
+        'strength value must be within [' +
+          minStrength +
+          ',' +
+          maxStrength +
+          ']'
+      );
+    }
+    if (maxIntelligence > intelligence && minIntelligence > intelligence) {
+      this.intelligence = intelligence;
+    } else {
+      throw new RangeError(
+        'intelligence value must be within [' +
+          minIntelligence +
+          ',' +
+          maxIntelligence +
+          ']'
+      );
+    }
+    if (maxCharisma > charisma && charisma > minCharisma) {
+      this.charisma = charisma;
+    } else {
+      throw new RangeError(
+        'charisma value must be within [' +
+          minCharisma +
+          ',' +
+          maxCharisma +
+          ']'
+      );
+    }
+    if (maxGoodness > goodness && goodness > minGoodness) {
+      this.goodness = goodness;
+    } else {
+      throw new RangeError(
+        'goodness value must be within [' +
+          minGoodness +
+          ',' +
+          maxGoodness +
+          ']'
+      );
+    }
   }
 }
