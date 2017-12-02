@@ -5,6 +5,7 @@ import * as Phaser from 'phaser-ce';
  */
 export default class Main extends Phaser.State {
   private cursors: Phaser.CursorKeys;
+  private character: Phaser.Sprite;
 
   public create(): void {
     const map = this.game.add.tilemap('Tilemap');
@@ -19,22 +20,23 @@ export default class Main extends Phaser.State {
       layer.wrap = true;
     });
     this.cursors = this.game.input.keyboard.createCursorKeys();
-  }
 
-  public init(): void {
-    this.stage.backgroundColor = '#EDEEC9';
+    // Example of the main character.
+    this.character = this.game.add.sprite(0, 64 * 4, 'characters', 325);
+    this.character.scale = new Phaser.Point(4.0, 4.0);
   }
 
   public update(): void {
+    this.game.camera.follow(this.character);
     if (this.cursors.left.isDown) {
-      this.game.camera.x -= 8;
+      this.character.x -= 8;
     } else if (this.cursors.right.isDown) {
-      this.game.camera.x += 8;
+      this.character.x += 8;
     }
     if (this.cursors.up.isDown) {
-      this.game.camera.y -= 8;
+      this.character.y -= 8;
     } else if (this.cursors.down.isDown) {
-      this.game.camera.y += 8;
+      this.character.y += 8;
     }
   }
 }
