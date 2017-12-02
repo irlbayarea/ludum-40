@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Created using Tiled 1.0.3
+  https://thorbjorn.itch.io/tiled
+-->
+<tileset name="RPG" tilewidth="64" tileheight="64" tilecount="260" columns="20">
+ <image source="../assets/sprites/rpg-sheet.png" width="1280" height="832"/>
+ <tile id="200" type="tree"/>
+ <tile id="220" type="tree"/>
+</tileset>
