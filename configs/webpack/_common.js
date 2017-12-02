@@ -26,7 +26,7 @@ module.exports = {
         /**
          * Dependencies.
          */
-        vendor: ['debug', 'lodash',  'easystarjs', 'pixi', 'p2', 'phaser'],
+        vendor: ['debug', 'lodash',  'easystarjs', 'dungeon-loader', 'pixi', 'p2', 'phaser'],
       },
 
       /**
