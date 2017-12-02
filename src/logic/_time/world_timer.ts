@@ -1,4 +1,4 @@
-import Time from './Time';
+import Time from './common';
 
 /**
  * A timer that triggers on a repeating interval. Call `isReady` and then `use`
@@ -19,8 +19,9 @@ export class RepeatingWorldTimer {
     private readonly repeatPeriod: number,
     triggerNow: boolean = false
   ) {
-    if (!triggerNow) this.lastTriggeredTime = Time.gameTime();
-    else this.lastTriggeredTime = Time.gameTime() - repeatPeriod;
+    this.lastTriggeredTime = !triggerNow
+      ? Time.gameTime()
+      : Time.gameTime() - repeatPeriod;
   }
 
   public isReady(): boolean {
@@ -29,21 +30,5 @@ export class RepeatingWorldTimer {
 
   public use(): void {
     this.lastTriggeredTime += this.repeatPeriod;
-  }
-}
-
-/**
- * A WorldTimer is a timer that triggers after a given amount of time. Call
- * `isReady` to see if the timer is active.
- */
-export class WorldTimer {
-  private readonly triggerTime: number;
-
-  public constructor(delay: number) {
-    this.triggerTime = Time.gameTime() + delay;
-  }
-
-  public isReady(): boolean {
-    return Time.gameTime() >= this.triggerTime;
   }
 }
