@@ -16,8 +16,15 @@ export default class Main extends Phaser.State {
   private character: Phaser.Sprite;
   private monsters: Phaser.Sprite[] = [];
 
-  public create(): void {
+  /**
+   * Called from `create`. Initializes tilemap and physics.
+   */
+  private create_physics(): void {
+    this.game.physics.startSystem(Phaser.Physics.P2JS);
+
+    // Initialize tilemap.
     const map = this.game.add.tilemap('Tilemap');
+    map.addTilesetImage('collision', 'collision');
     map.addTilesetImage('tiles', 'tiles');
     const layers = [
       map.createLayer('terrain'),
@@ -28,16 +35,28 @@ export default class Main extends Phaser.State {
       layer.resizeWorld();
       layer.wrap = true;
     });
+    const collisionLayer: Phaser.TilemapLayer = map.createLayer('collision');
+    collisionLayer.visible = false;
+    // The collision tilemap tiles are not 0 or 1 indexed. Get the starting index.
+    const collisionIndex: number = collisionLayer.getTiles(0, 0, 1, 1)[0].index;
+    map.setCollision(collisionIndex, true, collisionLayer);
+    this.game.physics.p2.convertTilemap(map, collisionLayer, true, true);
+    this.game.physics.p2.setBoundsToWorld(true, true, true, true, false);
+    this.game.physics.p2.restitution = 0.2;  // Bounciness. 1 is very bouncy.
+  }
+
+  public create(): void {
+    this.create_physics();
 
     // Enable keyboard.
     this.controller = new Controller(this.game);
 
-    // Enable physics.
-    this.game.physics.startSystem(Phaser.Physics.P2JS);
-
-    // Example of the main character.
+    // Main character.
     this.character = this.game.add.sprite(0, 64 * 4, 'characters', 325);
     this.character.scale = new Phaser.Point(4.0, 4.0);
+    this.game.physics.p2.enable(this.character);
+    this.character.body.fixedRotation = true;
+    this.game.camera.follow(this.character);
 
     // Example of monsters.
     for (let i = 0; i < 10; i++) {
@@ -47,21 +66,25 @@ export default class Main extends Phaser.State {
   }
 
   public update(): void {
-    this.game.camera.follow(this.character);
-    if (this.controller.isLeft) {
-      this.character.x -= 8;
+    this.character.body.setZeroVelocity();
+    if (this.controller.isLeft && !this.controller.isRight) {
+    	this.character.body.moveLeft(400);
     } else if (this.controller.isRight) {
-      this.character.x += 8;
+    	this.character.body.moveRight(400);
     }
-    if (this.controller.isDown) {
-      this.character.y -= 8;
+    if (this.controller.isDown && !this.controller.isUp) {
+    	this.character.body.moveUp(400);
     } else if (this.controller.isUp) {
-      this.character.y += 8;
+    	this.character.body.moveDown(400);
     }
-    // this.monsters.forEach(monster =>
-    //   //this.game.physics.p2.(monster, this.character, 200)
-    //   //this.game.
-    // );
+    this.monsters.forEach(monster => {
+      const p: Phaser.Point = new Phaser.Point(monster.body.x, monster.body.y);
+      const p2: Phaser.Point = new Phaser.Point(this.character.body.x, this.character.body.y);
+      const dir: Phaser.Point = p2.subtract(p.x, p.y).normalize().multiply(400, 400);
+      monster.body.moveDown(dir.y);
+      monster.body.moveRight(dir.x);
+      //this.game.physics.p2.(monster, this.character, 200)
+    });
   }
 
   private monster(): Phaser.Sprite {
