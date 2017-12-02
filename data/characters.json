@@ -9,6 +9,10 @@
  "tileheight":16,
  "tiles":
     {
+     "162":
+        {
+         "type":"goblin"
+        },
      "325":
         {
          "type":"captain"
