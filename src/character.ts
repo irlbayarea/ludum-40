@@ -36,13 +36,11 @@ export default class Character {
     this.sprite = sprite;
     this.setSpeed(speed);
 
-
     this.setStr(str);
     this.setInt(int);
     this.setCha(cha);
     this.setRando(rando);
     this.good = good;
-
     this.isGuard = isGuard;
   }
 
@@ -75,7 +73,6 @@ export default class Character {
   public getCHA(): number {
     return this.cha;
   }
-
   public getRANDO(): number {
     return this.rando;
   }
@@ -117,7 +114,6 @@ export default class Character {
       }
 
       return crisis.getOptions()[crisis.getOptions().length - 1].choose(this);
-
     } else {
       return false;
     }
@@ -154,7 +150,6 @@ export default class Character {
       throw new RangeError('rando value must be >= 0');
     }
   }
-
 }
 
 function generateName(): string {
@@ -187,7 +182,6 @@ function generateName(): string {
 
   return names[Math.floor(Math.random() * names.length)];
 }
-
 /**
  * If this crisis is being handled by a Guard, use the following formula to determine the
  * (relative) probability of the Guard choosing any particular option:

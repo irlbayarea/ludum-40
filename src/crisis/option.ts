@@ -1,12 +1,18 @@
 import Character from '../character';
 import Crisis from './crisis';
+<<<<<<< HEAD
 
+=======
+>>>>>>> master
 /**
  * CrisisOption
  * Encapsulates a game event option.
  */
 export default class CrisisOption {
+<<<<<<< HEAD
 
+=======
+>>>>>>> master
   private parent: Crisis;
   private description: string;
   private value: number;
@@ -60,7 +66,10 @@ export default class CrisisOption {
 
   public getGOOD(): number {
     return this.goodVal;
+<<<<<<< HEAD
 
+=======
+>>>>>>> master
   }
 
   public choose(guard: Character): boolean {
