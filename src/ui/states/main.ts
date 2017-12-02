@@ -1,8 +1,8 @@
 import * as Phaser from 'phaser-ce';
-
 import Controller from '../../input/controller';
 import MessagePanel from '../message';
 import HutFactory from '../sprites/hut';
+import { game } from '../../index';
 
 /**
  * Main state (i.e. in the game).
@@ -59,6 +59,13 @@ export default class Main extends Phaser.State {
 
   public update(): void {
     this.messages.update();
+    var completedEvents = game.eventQueue.tick(game.time.elapsed);
+    if (completedEvents.length > 0) {
+      completedEvents.forEach(event => {
+        game.eventHandlers.handle(event);
+      });
+    }
+
     this.game.camera.follow(this.character);
     if (this.controller.isLeft) {
       this.character.x -= 8;
