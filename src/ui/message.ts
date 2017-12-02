@@ -16,8 +16,8 @@ export default class MessagePanel extends Phaser.Plugin {
     bitmap.ctx.rect(0, game.height - 100, game.width, 100);
     bitmap.ctx.fillStyle = '#333333';
     bitmap.ctx.fill();
-    
-    const sprite = game.add.sprite(0, 0, bitmap)
+
+    const sprite = game.add.sprite(0, 0, bitmap);
     sprite.fixedToCamera = true;
     group.add(sprite);
 
