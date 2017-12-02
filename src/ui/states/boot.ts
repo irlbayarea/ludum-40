@@ -23,8 +23,7 @@ export default class Boot extends Phaser.State {
       'tiles',
       require('assets/sprites/rpg-sheet.png'),
       64,
-      64,
-      196
+      64
     );
 
     // Load the character sheet.

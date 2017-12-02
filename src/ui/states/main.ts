@@ -1,6 +1,8 @@
 import * as Phaser from 'phaser-ce';
-
 import Controller from '../../input/controller';
+import MessagePanel from '../message';
+import HutFactory from '../sprites/hut';
+import { game } from '../../index';
 
 /**
  * Main state (i.e. in the game).
@@ -14,6 +16,7 @@ export default class Main extends Phaser.State {
 
   private controller: Controller;
   private character: Phaser.Sprite;
+  private messages: MessagePanel;
   private monsters: Phaser.Sprite[] = [];
 
   /**
@@ -58,17 +61,39 @@ export default class Main extends Phaser.State {
     this.character.body.fixedRotation = true;
     this.game.camera.follow(this.character);
 
+    // Example of generating a hut (at 64,64 for now).
+    const hutFactory = new HutFactory(this.game);
+    hutFactory.sprite(64, 64);
+
     // Example of monsters.
     for (let i = 0; i < 10; i++) {
       const monster = this.monster();
       this.monsters.push(monster);
     }
+
+    // Message panel.
+    this.messages = this.game.plugins.add(MessagePanel);
+    this.messages.setText('🔥🔥 CRISIS! 🔥🔥');
   }
 
   public update(): void {
+<<<<<<< HEAD
     this.character.body.setZeroVelocity();
     if (this.controller.isLeft && !this.controller.isRight) {
     	this.character.body.moveLeft(400);
+=======
+    this.messages.update();
+    var completedEvents = game.eventQueue.tick(game.time.elapsed);
+    if (completedEvents.length > 0) {
+      completedEvents.forEach(event => {
+        game.eventHandlers.handle(event);
+      });
+    }
+
+    this.game.camera.follow(this.character);
+    if (this.controller.isLeft) {
+      this.character.x -= 8;
+>>>>>>> 0714b4923df054c5f794971007d876ec2974cad4
     } else if (this.controller.isRight) {
     	this.character.body.moveRight(400);
     }
