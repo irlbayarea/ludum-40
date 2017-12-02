@@ -67,7 +67,10 @@ export default class Character {
           ']'
       );
     }
-    if (Character.maxStrength >= strength && strength >= Character.minStrength) {
+    if (
+      Character.maxStrength >= strength &&
+      strength >= Character.minStrength
+    ) {
       this.strength = strength;
     } else {
       throw new RangeError(
@@ -80,7 +83,7 @@ export default class Character {
     }
     if (
       Character.maxIntelligence >= intelligence &&
-      Character.minIntelligence >= intelligence
+      intelligence >= Character.minIntelligence
     ) {
       this.intelligence = intelligence;
     } else {
@@ -92,7 +95,10 @@ export default class Character {
           ']'
       );
     }
-    if (Character.maxCharisma >= charisma && charisma >= Character.minCharisma) {
+    if (
+      Character.maxCharisma >= charisma &&
+      charisma >= Character.minCharisma
+    ) {
       this.charisma = charisma;
     } else {
       throw new RangeError(
@@ -103,7 +109,10 @@ export default class Character {
           ']'
       );
     }
-    if (Character.maxGoodness >= goodness && goodness >= Character.minGoodness) {
+    if (
+      Character.maxGoodness >= goodness &&
+      goodness >= Character.minGoodness
+    ) {
       this.goodness = goodness;
     } else {
       throw new RangeError(
