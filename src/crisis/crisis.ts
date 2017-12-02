@@ -23,7 +23,6 @@ import CrisisOption from './option';
  */
 
 export default class Crisis {
-
   private description: string;
   private options: CrisisOption[];
   private timeLimit: number;
