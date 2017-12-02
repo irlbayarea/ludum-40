@@ -1,6 +1,6 @@
 import Character from '../character';
-import { Skip } from 'serializer.ts/Decorators';
-import CrisisOption, { UnresolvedCrisis } from './option';
+import { Skip, Type } from 'serializer.ts/Decorators';
+import CrisisOption from './option';
 
 /**
  * class Event
@@ -14,6 +14,7 @@ export default class Crisis {
   public readonly score: number;
 
   // The options for resolving this crisis
+  @Type(() => CrisisOption)
   public readonly options: CrisisOption[];
 
   // The messenger Character who alerts other characters of this crisis
@@ -57,7 +58,7 @@ export default class Crisis {
     if (this.isResolved()) {
       return this.resolution;
     } else {
-      return UnresolvedCrisis(this);
+      return CrisisOption.unresolved;
     }
   }
 

@@ -233,11 +233,11 @@ function generateName(): string {
  */
 function scoreOption(c: Character, o: CrisisOption): number {
   return Math.abs(
-    c.getSTR() * o.getSTR() +
+    c.getSTR() * o.strength +
       c.getRANDO() +
-      (c.getINT() * o.getINT() + c.getRANDO()) +
-      (c.getCHA() * o.getCHA() + c.getRANDO()) +
-      Math.sqrt((Math.abs(c.getGOOD() + o.getGOOD()) + c.getRANDO()) ** 2)
+      (c.getINT() * o.intelligence + c.getRANDO()) +
+      (c.getCHA() * o.charisma + c.getRANDO()) +
+      Math.sqrt((Math.abs(c.getGOOD() + o.good) + c.getRANDO()) ** 2)
   );
 }
 

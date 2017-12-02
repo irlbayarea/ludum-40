@@ -3,14 +3,14 @@ import Crisis from './crisis';
 
 export default class CrisisSerializer {
   public static serialize(crisis: Crisis): string {
-    return serialize(crisis);
+    return serialize(JSON.stringify(crisis));
   }
 
   public static unserialize(json: string): Crisis {
-    return deserialize<Crisis>(Crisis, json);
+    return deserialize<Crisis>(Crisis, JSON.parse(json));
   }
 
   public static unserializeAll(json: string): Crisis[] {
-    return deserialize<Crisis[]>(Crisis, json);
+    return deserialize<Crisis[]>(Crisis, JSON.parse(json));
   }
 }
