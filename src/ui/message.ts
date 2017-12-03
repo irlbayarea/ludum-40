@@ -30,7 +30,12 @@ export default class MessagePanel extends Phaser.Plugin {
 
     bitmap.ctx.beginPath();
     bitmap.ctx.globalAlpha = goldenRatio;
-    bitmap.ctx.rect(mainPanel.x, mainPanel.y, mainPanel.width , mainPanel.height );
+    bitmap.ctx.rect(
+      mainPanel.x,
+      mainPanel.y,
+      mainPanel.width,
+      mainPanel.height
+    );
     bitmap.ctx.fillStyle = '#333333';
     bitmap.ctx.fill();
 
@@ -63,7 +68,7 @@ export default class MessagePanel extends Phaser.Plugin {
       mainTextPanel.x,
       mainTextPanel.y,
       mainTextPanel.width,
-      mainTextPanel.height 
+      mainTextPanel.height
     );
     text.fixedToCamera = true;
     group.add(text);
@@ -76,15 +81,15 @@ export default class MessagePanel extends Phaser.Plugin {
       mainTextPanel.x + mainTextPanel.width + 2 * textPadX,
       mainTextPanel.y,
       mainPanel.width - mainTextPanel.width - 4 * textPadX,
-      mainTextPanel.height 
+      mainTextPanel.height
     );
 
     options.ctx.beginPath();
     options.ctx.rect(
       choicePanel.x,
       choicePanel.y,
-      choicePanel.width ,
-      choicePanel.height 
+      choicePanel.width,
+      choicePanel.height
     );
     options.ctx.fillStyle = '#787C8B';
     options.ctx.fill();
@@ -92,8 +97,8 @@ export default class MessagePanel extends Phaser.Plugin {
     options.ctx.strokeRect(
       choicePanel.x,
       choicePanel.y,
-      choicePanel.width ,
-      choicePanel.height 
+      choicePanel.width,
+      choicePanel.height
     );
     this.oSprite = game.add.sprite(0, 0, options);
     this.oSprite.fixedToCamera = true;
@@ -123,8 +128,8 @@ export default class MessagePanel extends Phaser.Plugin {
       this.optionList[i].setTextBounds(
         choicePanelOption.x,
         choicePanelOption.y,
-        choicePanelOption.width ,
-        choicePanelOption.height 
+        choicePanelOption.width,
+        choicePanelOption.height
       );
       group.add(this.optionList[i]);
       this.optionList[i].visible = false;
