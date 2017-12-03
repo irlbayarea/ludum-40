@@ -15,16 +15,19 @@ import HudBuilder from '../hud/hud_builder';
 import { ITicker } from '../../ticker';
 
 import * as demo from '../demo';
+import { Weapon } from '../sprites/weapon';
 
 /**
  * Main state (i.e. in the game).
  */
 export default class Main extends Phaser.State {
   private controller: Controller;
-  private playerSprite: Phaser.Sprite;
-  private playerCharacter: Character;
   private alwaysOnTop: Phaser.Group;
   private hudRenderer: HudRenderer;
+
+  private playerSprite: Phaser.Sprite;
+  private playerCharacter: Character;
+  private playerSword: Weapon;
 
   public create(): void {
     // Enable keyboard.
@@ -44,6 +47,8 @@ export default class Main extends Phaser.State {
     game.physics.p2.enable(this.playerSprite);
     this.playerSprite.body.fixedRotation = true;
     game.camera.follow(this.playerSprite);
+    this.playerSword = new Weapon(this.game);
+    this.playerSword.attach(this.playerSprite);
 
     // Enable HUD.
     game.hud = new HudBuilder().build();
@@ -92,11 +97,6 @@ export default class Main extends Phaser.State {
     const elapsed: number = game.time.elapsed;
     game.gameEvents.tick(elapsed);
 
-    if (common.experiment('demo-huts')) {
-      const huts = new HutFactory(this.game);
-      huts.sprite(5, 5);
-    }
-
     if (common.experiment('generators')) {
       game.generators.forEach((generator: ITicker) => generator.tick(elapsed));
     }
@@ -114,6 +114,8 @@ export default class Main extends Phaser.State {
     } else if (this.controller.isUp) {
       this.playerCharacter.getSprite().body.moveDown(400);
     }
+
+    this.playerSword.update(this.controller.isSpace);
   }
 
   private createMap(): Phaser.Tilemap {
