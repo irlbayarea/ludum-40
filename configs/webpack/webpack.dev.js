@@ -15,48 +15,52 @@ const root = require('app-root-path') + '';
  * - Customizes the HTML output.
  * - Development server.
  */
-module.exports = (env) => common.config({
-  /**
-   * Cheap simple source-map implementation.
-   */
-  devtool: 'eval',
+module.exports = env =>
+  common.config(
+    {
+      /**
+       * Cheap simple source-map implementation.
+       */
+      devtool: 'eval',
 
-  /**
-   * Webpack plugins.
-   */
-  plugins: [
-    // Will cause the relative path of the module to displayed with HMR.
-    // https://webpack.js.org/plugins/named-modules-plugin/
-    new webpack.NamedModulesPlugin(),
+      /**
+       * Webpack plugins.
+       */
+      plugins: [
+        // Will cause the relative path of the module to displayed with HMR.
+        // https://webpack.js.org/plugins/named-modules-plugin/
+        new webpack.NamedModulesPlugin(),
 
-    // Hot Module Replacement.
-    // https://webpack.js.org/plugins/hot-module-replacement-plugin/
-    new webpack.HotModuleReplacementPlugin(),
+        // Hot Module Replacement.
+        // https://webpack.js.org/plugins/hot-module-replacement-plugin/
+        new webpack.HotModuleReplacementPlugin(),
 
-    // Common global definitions.
-    common.define(),
+        // Common global definitions.
+        common.define(),
 
-    // Generates an HTML5 entrypoint for all of the output bundles.
-    // https://github.com/jantimon/html-webpack-plugin
-    new HtmlWebpackPlugin({
-      title: '[DEV]: Ludum Dare 40',
-      template: './templates/index.html',
-    }),
-  ],
+        // Generates an HTML5 entrypoint for all of the output bundles.
+        // https://github.com/jantimon/html-webpack-plugin
+        new HtmlWebpackPlugin({
+          title: '[DEV]: Ludum Dare 40',
+          template: './templates/index.html',
+        }),
+      ],
 
-  /**
-   * Development server.
-   *
-   * See https://webpack.js.org/configuration/dev-server/.
-   */
-  devServer: {
-    contentBase: path.join(root, 'dist'),
-    compress: true,
-    hot: true,
-    overlay: true,
-    port: 8000,
-    watchOptions: {
-      ignored: /node_modules/,
+      /**
+       * Development server.
+       *
+       * See https://webpack.js.org/configuration/dev-server/.
+       */
+      devServer: {
+        contentBase: path.join(root, 'dist'),
+        compress: true,
+        hot: true,
+        overlay: true,
+        port: 8000,
+        watchOptions: {
+          ignored: /node_modules/,
+        },
+      },
     },
-  },
-}, env);
+    env
+  );
