@@ -13,6 +13,11 @@ import { generateMap, convertToTiles } from '../../map/generator';
 import HudRenderer from '../hud/hud_renderer';
 import UserQuestion from '../../user_question';
 import HutFactory from '../sprites/hut';
+import HudBuilder from '../hud/hud_builder';
+import CrisisSerializer from '../../crisis/crisis_serializer';
+import { jsonCrises } from '../../crisis/crises';
+import PeriodicCrisisGenerator from '../../crisis/periodic_crisis_generator';
+import CharacterGenerator from '../../character/character_generator';
 
 /**
  * Main state (i.e. in the game).
@@ -37,7 +42,26 @@ export default class Main extends Phaser.State {
     this.character.body.fixedRotation = true;
     this.game.camera.follow(this.character);
 
-    // Setup HUD.
+    // Enable events.
+    const globalHandlers = new events.EventHandlers();
+    events.registerGlobalHandlers(globalHandlers, game);
+    game.gameEvents = new events.GameEvents(globalHandlers);
+
+    // Enable crisis events.
+    const crises = CrisisSerializer.unserializeAll(JSON.stringify(jsonCrises));
+    game.crisisGenerator = new PeriodicCrisisGenerator(
+      common.globals.gameplay.crisisRateMs,
+      crises
+    );
+
+    // Enable character events.
+    game.goblinGenerator = new CharacterGenerator(
+      common.globals.gameplay.goblinSpawnRateMs,
+      'guard'
+    );
+
+    // Enable HUD.
+    game.hud = new HudBuilder().build();
     this.alwaysOnTop = this.game.add.group();
     this.hudRenderer = new HudRenderer(
       this.game.plugins.add(MessagePanel, this.alwaysOnTop, this.controller)
@@ -67,11 +91,14 @@ export default class Main extends Phaser.State {
 
   public update(): void {
     this.character.body.setZeroVelocity();
+    const elapsed: number = game.time.elapsed;
 
     if (common.experiment('demo-crisis')) {
-      const elapsed: number = game.time.elapsed;
       this.tickEvents(elapsed);
       this.tickCrises(elapsed);
+    }
+    if (common.experiment('goblin')) {
+      this.tickGoblinGenerator(elapsed);
     }
 
     // Render
@@ -157,5 +184,14 @@ export default class Main extends Phaser.State {
 
   private tickEvents(elapsed: number) {
     game.gameEvents.tick(elapsed);
+  }
+
+  private tickGoblinGenerator(elapsed: number) {
+    game.goblinGenerator.tick(elapsed).forEach(spawnEvent => {
+      game.gameEvents.emit(
+        events.EventType.CharacterSpawn,
+        spawnEvent.spriteName
+      );
+    });
   }
 }
