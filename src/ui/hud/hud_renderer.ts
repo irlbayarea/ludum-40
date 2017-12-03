@@ -1,5 +1,5 @@
 import HudModel from './hud_model';
-import MessagePanel from '../message';
+import MessagePanel from '../hud/message';
 import UserQuestion from '../../user_question';
 import TextWidget from './text_widget';
 import { Game } from '../../index';
@@ -36,7 +36,9 @@ export default class HudRenderer {
   private renderQuestion(q: UserQuestion | null) {
     if (q != null) {
       this.messages.setText(q.message);
-      this.messages.askUser(q.options, q.callback);
+      this.messages.setOptions(q.options);
+    } else {
+      this.messages.clearOptions();
     }
   }
 

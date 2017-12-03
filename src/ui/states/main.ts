@@ -2,7 +2,7 @@ import * as Phaser from 'phaser-ce';
 import { forIn } from 'lodash';
 
 import Controller from '../../input/controller';
-import MessagePanel from '../message';
+import MessagePanel from '../hud/message';
 
 import * as common from '../../common';
 
@@ -77,6 +77,22 @@ export default class Main extends Phaser.State {
 
     if (common.experiment('generators')) {
       game.generators.forEach((generator: ITicker) => generator.tick(elapsed));
+    }
+
+    if (game.hud.question !== null && game.hud.question !== undefined) {
+      if (game.controller.is1JustDown) {
+        game.hud.question.callback(1);
+        game.hud.clearQuestion();
+      } else if (game.controller.is2JustDown) {
+        game.hud.question.callback(2);
+        game.hud.clearQuestion();
+      } else if (game.controller.is3JustDown) {
+        game.hud.question.callback(3);
+        game.hud.clearQuestion();
+      } else if (game.controller.is4JustDown) {
+        game.hud.question.callback(4);
+        game.hud.clearQuestion();
+      }
     }
 
     // Render

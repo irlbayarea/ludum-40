@@ -49,6 +49,22 @@ export default class Controller {
     return this.four.isDown;
   }
 
+  get is1JustDown(): boolean {
+    return this.one.justDown;
+  }
+
+  get is2JustDown(): boolean {
+    return this.two.justDown;
+  }
+
+  get is3JustDown(): boolean {
+    return this.three.justDown;
+  }
+
+  get is4JustDown(): boolean {
+    return this.four.justDown;
+  }
+
   get isUp(): boolean {
     return this.cursors.down.isDown || this.s.isDown;
   }
