@@ -10,6 +10,7 @@ import CrisisEvent from '../../crisis/crisis_event';
 import EventType from '../../event_type';
 import Event from '../../event';
 import Crisis from '../../crisis/crisis';
+import { generateMap, convertToTiles } from '../../map/generator';
 
 /**
  * Main state (i.e. in the game).
@@ -21,8 +22,6 @@ export default class Main extends Phaser.State {
   private alwaysOnTop: Phaser.Group;
 
   public create(): void {
-    this.createMap();
-
     if (common.experiment('demo-criss')) {
       game.gameEvents.addListener(EventType.CrisisStart, (e: Event) => {
         const crisis: Crisis = e.value;
@@ -68,6 +67,10 @@ export default class Main extends Phaser.State {
     }
   }
 
+  public preload(): void {
+    this._createMap();
+  }
+
   public update(): void {
     this.character.body.setZeroVelocity();
 
@@ -92,7 +95,15 @@ export default class Main extends Phaser.State {
     this.game.world.bringToTop(this.alwaysOnTop);
   }
 
-  private createMap(): Phaser.Tilemap {
+  private _createMap(): Phaser.Tilemap {
+    if (common.experiment('use-generated-map')) {
+      return this.createGeneratedMap();
+    } else {
+      return this.createDefaultMap();
+    }
+  }
+
+  private createDefaultMap(): Phaser.Tilemap {
     // Initialize the physics system (P2).
     this.game.physics.startSystem(Phaser.Physics.P2JS);
 
@@ -129,6 +140,11 @@ export default class Main extends Phaser.State {
     p2.restitution = 0.2; // Bounciness of '1' is very bouncy.
 
     return map;
+  }
+
+  private createGeneratedMap(): Phaser.Tilemap {
+    const map = generateMap(43, 43);
+    return convertToTiles(map, this.game, 'tiles');
   }
 
   private tickCrises(elapsed: number) {
