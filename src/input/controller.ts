@@ -68,4 +68,8 @@ export default class Controller {
   get isSpace(): boolean {
     return this.space.isDown;
   }
+
+  get isSpaceJustDown(): boolean {
+    return this.space.justDown;
+  }
 }
