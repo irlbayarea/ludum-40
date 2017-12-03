@@ -1,11 +1,15 @@
 import * as Phaser from 'phaser-ce';
 import Controller from '../input/controller';
+import {debug} from '../common';
 
 export default class MessagePanel extends Phaser.Plugin {
   private controller: Controller;
 
   private text: Phaser.Text;
 
+  private hudYSpeed: number = 0;
+
+  private panelSprite: Phaser.Sprite;
   private oSprite: Phaser.Sprite;
   private optionList: Phaser.Text[] = [];
   private callback: (option: number) => void;
@@ -20,16 +24,16 @@ export default class MessagePanel extends Phaser.Plugin {
     const game = this.game;
     const bitmap = game.add.bitmapData(game.width, game.height);
 
-    const goldenRatio = 0.5 * (1 + Math.sqrt(5));
+    const gr = 0.5 * (1 + Math.sqrt(5));
     const mainPanel = new Phaser.Rectangle(
       0,
-      game.height * (1 - 1 / goldenRatio ** 3),
+      game.height * (1 - 1 / gr ** 3),
       game.width,
-      game.height * (1 / goldenRatio ** 3)
+      game.height * (1 / gr ** 3)
     );
 
     bitmap.ctx.beginPath();
-    bitmap.ctx.globalAlpha = goldenRatio;
+    bitmap.ctx.globalAlpha = 1/gr;
     bitmap.ctx.rect(
       mainPanel.x,
       mainPanel.y,
@@ -39,18 +43,19 @@ export default class MessagePanel extends Phaser.Plugin {
     bitmap.ctx.fillStyle = '#333333';
     bitmap.ctx.fill();
 
-    const sprite = game.add.sprite(0, 0, bitmap);
-    sprite.fixedToCamera = true;
-    group.add(sprite);
+    this.panelSprite = game.add.sprite(0, 0, bitmap);
+    this.panelSprite.fixedToCamera = true;
+    this.panelSprite.physicsEnabled = true;
+    group.add(this.panelSprite);
 
-    const textPadX = mainPanel.width / goldenRatio ** 8;
-    const textPadY = mainPanel.height / goldenRatio ** 4;
+    const textPadX = mainPanel.width / gr ** 8;
+    const textPadY = mainPanel.height / gr ** 4;
     const numLines = 4;
 
     const mainTextPanel = new Phaser.Rectangle(
       mainPanel.x + textPadX,
       mainPanel.y + textPadY,
-      mainPanel.width / goldenRatio ** goldenRatio - 2 * textPadX,
+      mainPanel.width / gr ** gr - 2 * textPadX,
       mainPanel.height - 2 * textPadY
     );
 
@@ -102,10 +107,9 @@ export default class MessagePanel extends Phaser.Plugin {
     );
     this.oSprite = game.add.sprite(0, 0, options);
     this.oSprite.fixedToCamera = true;
+    this.oSprite.visible = true;
     group.add(this.oSprite);
 
-    // const optionStrings: string[] = ['Hello There', 'What are you doing in there?' , 'Where are all the Ps?' ,'Yes, business trip...'];
-    this.oSprite.visible = false;
     for (let i = 0; i < 4; i++) {
       const choicePanelOption: Phaser.Rectangle = new Phaser.Rectangle(
         choicePanel.x +
@@ -132,11 +136,9 @@ export default class MessagePanel extends Phaser.Plugin {
         choicePanelOption.height
       );
       group.add(this.optionList[i]);
-      this.optionList[i].visible = false;
+      this.optionList[i].visible = true;
       this.optionList[i].fixedToCamera = true;
     }
-
-    // this.optionList[0].fixedToCamera = this.optionList[1].fixedToCamera = true;
   }
 
   public askUser(
@@ -155,8 +157,82 @@ export default class MessagePanel extends Phaser.Plugin {
     this.text.text = message;
   }
 
+  public moveUpDown(): void {
+    this.game.camera.y += 4;
+    // this.oSprite.cameraOffset.y += this.hudYSpeed;
+    // this.panelSprite.cameraOffset.y += this.hudYSpeed;
+    // for (let i = 0; i < this.optionList.length; i++) {
+    //   this.optionList[i].cameraOffset.y += this.hudYSpeed;
+    // }
+  }
+
+  public setCameraFixed(cameraFixed: boolean): void {
+    this.oSprite.fixedToCamera = cameraFixed;
+    this.panelSprite.fixedToCamera = cameraFixed;
+    this.text.fixedToCamera = cameraFixed;
+    for (let i = 0; i < this.optionList.length; i++) {
+      this.optionList[i].fixedToCamera = cameraFixed;
+    }
+  }
+
+  public setVisibility(visibility: boolean): void {
+    this.oSprite.visible = visibility;
+    this.panelSprite.visible = visibility;
+    this.text.visible = visibility;
+
+    for (let i = 0; i < this.optionList.length; i++) {
+      this.optionList[i].visible = visibility;
+    }
+  }
+
+  public toggle(): void {
+
+    this.oSprite.visible ? this.setVisibility(false) : this.setVisibility(true);
+
+    // if ((this.panelSprite.y <= this.game.height - this.panelSprite.height) || 
+    //     (this.panelSprite.y >= this.game.height)) {
+    // 
+    //   this.setCameraFixed(false);
+    //
+    //   if (this.panelSprite.y >= this.game.height) {
+    //     this.hudYSpeed = -1;
+    //   } else {
+    //     this.hudYSpeed = 1;
+    //   }
+    // }
+
+    return 
+  }
+
   public update(): void {
+    
+    if (this.controller.isSpaceJustDown) {
+      this.toggle();
+    }
+
+    // if (this.hudYSpeed !== 0) {
+    //   this.moveUpDown();
+    // }
+
+    // if ((this.panelSprite.y > this.game.height) ||
+    //     (this.panelSprite.y < this.game.height - this.panelSprite.height)){
+      
+    //   this.setCameraFixed(true);
+
+    //   this.hudYSpeed = 0;
+
+    //   // Reset Y location if necessary. Should be okay if hudYspeed is 1
+
+    //   // if (this.panelSprite.y > this.game.height) {
+    //   //   this.setVisibility(false);
+    //   // } else {
+    //   //   this.setVisibility(true);
+    //   // }
+
+    // }
+
     if (this.oSprite.visible) {
+
       if (this.controller.is1) {
         this.callback(1);
       } else if (this.controller.is2) {
@@ -165,21 +241,7 @@ export default class MessagePanel extends Phaser.Plugin {
         this.callback(3);
       } else if (this.controller.is4) {
         this.callback(4);
-      } else {
-        return;
-      }
-
-      this.oSprite.visible = false;
-      for (const i of this.optionList) {
-        i.visible = false;
-      }
-    } else {
-      if (this.controller.isSpace) {
-        this.oSprite.visible = true;
-        for (const i of this.optionList) {
-          i.visible = true;
-        }
-      }
+      } 
     }
   }
 }
