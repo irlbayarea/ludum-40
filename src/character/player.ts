@@ -21,5 +21,4 @@ export default class Player {
     this.money += mod;
     return this.money;
   }
-
 }
