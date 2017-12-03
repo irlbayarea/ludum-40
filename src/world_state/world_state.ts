@@ -247,6 +247,60 @@ export default class WorldState {
     return Math.max(0, Math.min(this.grid.h - 0.001, n));
   }
 
+  private runAggroBehavior(character: Character): void {
+    if (character === this.mPlayerCharacter) {
+      return;
+    }
+    const position = character.getWorldPosition();
+    let closestEnemy: Character | undefined;
+    let closestDistance: number = common.globals.gameplay.aggroRange;
+    this.characters.forEach(target => {
+      if (target === character || !this.isOpposed(target, character)) {
+        return;
+      }
+      const distance = position.distance(target.getWorldPosition());
+      if (distance < closestDistance) {
+        closestEnemy = target;
+        closestDistance = distance;
+      }
+      if (distance <= 2 && character.isArmed) {
+        character.swing();
+      }
+    });
+    if (closestEnemy && !character.path) {
+      this.directCharacterToPoint(character, closestEnemy.getWorldPosition());
+    }
+  }
+
+  private hitWithWeapon(attacking: Character, range: number): void {
+    const attacker = attacking.getWorldPosition();
+    remove(this.characters, c => {
+      if (c === attacking) {
+        return false;
+      }
+      const defender = c.getWorldPosition();
+      const distance = attacker.distance(defender);
+      if (distance <= range) {
+        return this.dealDamage(c, attacking);
+      }
+      return false;
+    });
+  }
+
+  private dealDamage(injure: Character, source: Character): boolean {
+    if (!this.isOpposed(injure, source)) {
+      return false;
+    }
+    const sprite = injure.getSprite();
+    sprite.damage(1);
+    injure.hud.updateHealthBar();
+    game.blood.sprite(sprite);
+    if (sprite.health === 0) {
+      return true;
+    }
+    return false;
+  }
+
   private updatePlayerCharacter(): void {
     if (game.worldState.playerCharacter.getSprite().health === 0) {
       remove(this.characters, _ => true);
