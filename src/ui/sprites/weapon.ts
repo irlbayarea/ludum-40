@@ -10,8 +10,8 @@ export class Weapon {
 
   public attach(sprite: Phaser.Sprite): void {
     sprite.addChild(this.sprite);
-    this.sprite.pivot.x = this.sprite.width * .1;
-    this.sprite.pivot.y = this.sprite.height * .8;
+    this.sprite.pivot.x = this.sprite.width * 0.1;
+    this.sprite.pivot.y = this.sprite.height * 0.8;
     this.sprite.anchor.set(0, 0);
   }
 
