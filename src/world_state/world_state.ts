@@ -180,6 +180,9 @@ export default class WorldState {
   }
 
   private stopCharacter(character: Character) {
+    if (character === this.playerCharacter) {
+      return;
+    }
     character.path = null;
     if (character.isWandering) {
       const p = this.nearby(character.getWorldPosition(), 10);
