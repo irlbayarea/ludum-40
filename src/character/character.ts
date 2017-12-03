@@ -2,6 +2,7 @@
  * Character class
  * Encapsulates all information about a character
  */
+import GuardFactory from '../ui/sprites/guard';
 import * as Phaser from 'phaser-ce';
 import Crisis from '../crisis/crisis';
 import CrisisOption from '../crisis/option';
@@ -21,7 +22,7 @@ export default class Character {
   public static readonly minGoodness: number = -5;
   public static readonly maxGoodness: number = 10;
 
-  public static readonly maxSalary: number = 100;
+  public static readonly maxSalary: number = 0;
 
   public readonly speed: number;
   public readonly strength: number;
@@ -50,8 +51,7 @@ export default class Character {
       Character.maxRandomness
     ),
     goodness: number = average(Character.minGoodness, Character.maxGoodness),
-    isGuard: boolean = false,
-    salary: number = 0
+    isGuard: boolean = false
   ) {
     this.name = name;
     this.sprite = sprite;
@@ -139,7 +139,7 @@ export default class Character {
     }
 
     this.isGuard = isGuard;
-    this.setSalary(salary);
+    this.setSalary();
   }
 
   public getName(): string {
@@ -202,12 +202,16 @@ export default class Character {
     }
   }
 
-  private setSalary(salary: number): void {
-    if (salary >= 0) {
-      this.salary = salary;
-    } else {
-      throw new RangeError('salary must be >= 0');
-    }
+  /**
+   * Set salary to scale with the primary attributes of the guard
+   */
+  private setSalary(): void {
+    this.salary = Math.sqrt(
+      this.strength ** 2 +
+        this.intelligence ** 2 +
+        this.charisma ** 2 +
+        Math.sign(this.goodness) * this.goodness ** 2
+    );
   }
 }
 
@@ -238,10 +242,12 @@ function scoreOption(c: Character, o: CrisisOption): number {
 /**
  * randomGuard()
  */
-export function randomGuard(sprite: Phaser.Sprite): Character {
+export function randomGuard(game: Phaser.Game): Character {
+  const name: string = randomName();
+  const sprite: Phaser.Sprite = new GuardFactory(game, name).sprite();
   return new Character(
-    sprite,
-    randomName(),
+    sprite, // TODO: Update this to be a real sprite
+    name,
     Math.random() * (Character.maxSpeed - Character.minSpeed) +
       Character.minSpeed,
     Math.random() * (Character.maxStrength - Character.minStrength) +
@@ -254,7 +260,14 @@ export function randomGuard(sprite: Phaser.Sprite): Character {
       Character.minRandomness,
     Math.random() * (Character.maxGoodness - Character.minGoodness) +
       Character.minGoodness,
-    true,
-    Math.random() * Character.maxSalary
+    true
   );
+}
+
+export function randomGuards(game: Phaser.Game, n: number): Character[] {
+  const guards: Character[] = [];
+  for (let i = 0; i < n; i++) {
+    guards.push(randomGuard(game));
+  }
+  return guards;
 }
