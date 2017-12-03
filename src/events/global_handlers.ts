@@ -36,6 +36,9 @@ export function registerGlobalHandlers(game: Game): void {
       );
       sprite.scale = new Phaser.Point(4.0, 4.0);
       game.physics.p2.enable(sprite);
+      sprite.body.fixedRotation = true;
+      sprite.body.removeShape(p2.Rectangle);
+      sprite.body.addCircle(20, 0, 0, 0);
       config.character.setSprite(sprite);
       game.worldState.characters.push(config.character);
     });
