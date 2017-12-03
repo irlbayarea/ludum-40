@@ -1,5 +1,5 @@
 import * as Phaser from 'phaser-ce';
-import { forIn, last } from 'lodash';
+import { forIn } from 'lodash';
 
 import Controller from '../../input/controller';
 import MessagePanel from '../message';
@@ -35,7 +35,7 @@ export default class Main extends Phaser.State {
     game.physics.startSystem(Phaser.Physics.P2JS);
 
     // Main character.
-    this.playerSprite = this.game.add.sprite(64 * 5, 64 * 5, 'characters', 325);
+    this.playerSprite = this.game.add.sprite(64 * 20, 64 * 20, 'characters', 325);
     this.playerSprite.scale = new Phaser.Point(4.0, 4.0);
     game.physics.p2.enable(this.playerSprite);
     this.playerSprite.body.fixedRotation = true;
@@ -139,7 +139,7 @@ export default class Main extends Phaser.State {
     );
 
     // Initialize Layers.
-    const layers = ['terrain', 'foreground', 'structures', 'collision'].map(
+    const layers = ['terrain', 'foreground', 'collision', 'huts', 'spawns'].map(
       name => map.createLayer(name)
     );
 
@@ -148,12 +148,15 @@ export default class Main extends Phaser.State {
       layer.wrap = true;
     });
 
-    const collision: Phaser.TilemapLayer = last(layers)!;
+    const collision = layers[2];
+    const huts = layers[3];
+    const spawns = layers[4];
     collision.visible = false;
+    huts.visible = false;
+    spawns.visible = false;
 
     const p2 = this.game.physics.p2;
-    const collisionIndex = collision.getTiles(0, 0, 1, 1)[0].index;
-    map.setCollision(collisionIndex, true, collision);
+    map.setCollision(261, true, collision);
     p2.convertTilemap(map, collision, true, true);
     p2.setBoundsToWorld(true, true, true, true, false);
     p2.restitution = 0.2; // Bounciness. '1' is very bouncy.
