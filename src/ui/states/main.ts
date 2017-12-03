@@ -2,7 +2,7 @@ import * as Phaser from 'phaser-ce';
 import { forIn } from 'lodash';
 
 import Controller from '../../input/controller';
-import MessagePanel from '../message';
+import MessagePanel from '../hud/message';
 
 import * as common from '../../common';
 
