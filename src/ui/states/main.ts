@@ -2,7 +2,7 @@ import * as Phaser from 'phaser-ce';
 import { forIn } from 'lodash';
 
 import Controller from '../../input/controller';
-import MessagePanel from '../message';
+import MessagePanel from '../hud/message';
 
 import * as common from '../../common';
 
@@ -11,7 +11,6 @@ import Character from '../../character/character';
 import { generateMap, convertToTiles } from '../../map/generator';
 import HudRenderer from '../hud/hud_renderer';
 import HutFactory from '../sprites/hut';
-import HudBuilder from '../hud/hud_builder';
 import { ITicker } from '../../ticker';
 
 import * as demo from '../demo';
@@ -32,7 +31,6 @@ export default class Main extends Phaser.State {
     game.physics.startSystem(Phaser.Physics.P2JS);
 
     // Enable HUD.
-    game.hud = new HudBuilder().build();
     this.alwaysOnTop = this.game.add.group();
     this.hudRenderer = new HudRenderer(
       game,
@@ -77,6 +75,22 @@ export default class Main extends Phaser.State {
 
     if (common.experiment('generators')) {
       game.generators.forEach((generator: ITicker) => generator.tick(elapsed));
+    }
+
+    if (game.hud.question !== null && game.hud.question !== undefined) {
+      if (game.controller.is1JustDown) {
+        game.hud.question.callback(1);
+        game.hud.clearQuestion();
+      } else if (game.controller.is2JustDown) {
+        game.hud.question.callback(2);
+        game.hud.clearQuestion();
+      } else if (game.controller.is3JustDown) {
+        game.hud.question.callback(3);
+        game.hud.clearQuestion();
+      } else if (game.controller.is4JustDown) {
+        game.hud.question.callback(4);
+        game.hud.clearQuestion();
+      }
     }
 
     // Render

@@ -44,12 +44,12 @@ export class Weapon {
     return this.mIsHitting;
   }
 
-  get isSwinging(): boolean {
-    return this.mIsSwinging;
-  }
-
   private reset(): void {
     this.sprite.rotation = 0;
     this.mIsSwinging = false;
+  }
+
+  get isSwinging(): boolean {
+    return this.mIsSwinging;
   }
 }

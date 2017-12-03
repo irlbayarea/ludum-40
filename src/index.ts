@@ -9,7 +9,7 @@ import * as phaser from 'phaser-ce';
 import * as common from './common';
 import * as events from './events';
 import * as generators from './events/generators';
-
+import * as textures from './character/textures';
 import Boot from './ui/states/boot';
 import { generateMap } from './map/generator';
 import Main from './ui/states/main';
@@ -17,9 +17,11 @@ import WorldState from './world_state/world_state';
 import HudModel from './ui/hud/hud_model';
 import { ITicker } from './ticker';
 import Controller from './input/controller';
-import { SpawnConfig } from './character/spawn_config';
+import { SpawnConfig, randomSpawnLocation } from './character/spawn_config';
 import { Armory } from './ui/sprites/armory';
 import BloodFactory from './ui/sprites/blood';
+import Character from './character/character';
+import HudBuilder from './ui/hud/hud_builder';
 
 export class Game extends phaser.Game {
   public generators: ITicker[];
@@ -29,6 +31,7 @@ export class Game extends phaser.Game {
   public controller: Controller;
   public readonly armory: Armory;
   public readonly blood: BloodFactory;
+  public isOfferingContract: boolean;
 
   constructor() {
     super({
@@ -43,6 +46,8 @@ export class Game extends phaser.Game {
     this.state.add('Main', Main);
     this.state.start('Boot');
 
+    this.isOfferingContract = false;
+    this.hud = new HudBuilder().build();
     this.armory = new Armory(this);
     this.blood = new BloodFactory(this);
     this.worldState = new WorldState(40, 40);
@@ -55,10 +60,45 @@ export class Game extends phaser.Game {
     generators.initGenerators(this);
   }
 
-  // Schedules a character spawn from config.
+  public getUserInput(
+    message: string,
+    options: string[],
+    callback: (x: number) => void
+  ) {
+    this.hud = this.hud.setQuestion(message, options, callback);
+  }
+
   public spawn(config: SpawnConfig) {
-    const e = new events.Event(events.EventType.CharacterSpawn, config, 0);
-    this.gameEvents.emit(e.type, e);
+    if (common.experiment('spawn')) {
+      const sprite = game.add.sprite(
+        config.x * 64,
+        config.y * 64,
+        config.texture
+      );
+      sprite.scale = new Phaser.Point(4.0, 4.0);
+      game.physics.p2.enable(sprite);
+      config.character.setSprite(sprite);
+      game.worldState.characters.push(config.character);
+    }
+  }
+
+  public offerContract(character: Character) {
+    this.isOfferingContract = true;
+    const { x, y } = randomSpawnLocation(game.worldState.grid);
+    this.hud = this.hud.setQuestion(
+      'Do you want to hire ' + character.name + '?',
+      ['yes', 'no'],
+      (option: number) => {
+        this.isOfferingContract = false;
+        this.hud = this.hud.clearQuestion();
+        if (option === 1) {
+          this.hud = this.hud.setMessage('You hired ' + character.name + '!');
+          this.spawn(
+            new SpawnConfig(character, textures.guard(game.armory), x, y)
+          );
+        }
+      }
+    );
   }
 }
 
