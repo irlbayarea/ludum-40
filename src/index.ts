@@ -1,4 +1,5 @@
 // Forces webpack to inline the files in this precise order.
+import Player from './character/player';
 import 'p2';
 import 'pixi';
 // tslint:disable-next-line:ordered-imports
@@ -34,7 +35,7 @@ class Game extends phaser.Game {
     this.eventQueue = new EventQueue(0);
     this.eventHandlers = new EventHandlers();
     this.crisisGenerator = new PeriodicCrisisGenerator(1000);
-    
+
     this.state.add('Boot', Boot);
     this.state.add('Main', Main);
     this.state.start('Boot');

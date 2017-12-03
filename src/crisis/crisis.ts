@@ -11,7 +11,6 @@ export default class Crisis {
   public readonly description: string;
 
   // Score of this crisis, however it is resolved
-  public readonly score: number;
 
   // The options for resolving this crisis
   @Type(() => CrisisOption)
@@ -22,6 +21,8 @@ export default class Crisis {
 
   // The character who resolved this crisis: either a guard or the player character
   @Skip() private resolver: Character;
+
+  private readonly score: number;
 
   constructor(description: string, score: number, options: CrisisOption[]) {
     this.description = description;
@@ -75,5 +76,23 @@ export default class Crisis {
       return true;
     }
     return false;
+  }
+
+  /**
+   * Score a crisis
+   */
+  public getScore(): number {
+    let actualScore = this.score;
+
+    actualScore += this.resolver.strength * this.resolution.strength;
+    actualScore += this.resolver.intelligence * this.resolution.intelligence;
+    actualScore += this.resolver.charisma * this.resolution.charisma;
+
+    actualScore +=
+      Math.sign(this.resolver.goodness) *
+      this.resolver.goodness *
+      this.resolution.goodness;
+
+    return actualScore;
   }
 }
