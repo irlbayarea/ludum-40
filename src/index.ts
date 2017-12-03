@@ -16,12 +16,14 @@ import Main from './ui/states/main';
 import WorldState from './world_state/world_state';
 import HudModel from './ui/hud/hud_model';
 import { ITicker } from './ticker';
+import Controller from './input/controller';
 
 export class Game extends phaser.Game {
   public generators: ITicker[];
   public gameEvents: events.GameEvents;
   public hud: HudModel;
   public worldState: WorldState;
+  public controller: Controller;
 
   constructor() {
     super({
