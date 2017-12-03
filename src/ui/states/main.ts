@@ -5,22 +5,15 @@ import Controller from '../../input/controller';
 import MessagePanel from '../message';
 
 import * as common from '../../common';
-import * as events from '../../events';
 
 import { game } from '../../index';
 import Character from '../../character/character';
-import CrisisEvent from '../../crisis/crisis_event';
 import { generateMap, convertToTiles } from '../../map/generator';
 import HudRenderer from '../hud/hud_renderer';
 import UserQuestion from '../../user_question';
 import HutFactory from '../sprites/hut';
 import HudBuilder from '../hud/hud_builder';
-import CrisisSerializer from '../../crisis/crisis_serializer';
-import { jsonCrises } from '../../crisis/crises';
-import PeriodicCrisisGenerator from '../../crisis/periodic_crisis_generator';
-import CharacterGenerator from '../../character/character_generator';
-import ContractGenerator from '../../character/contract_generator';
-import { randomName } from '../../character/names';
+import { ITicker } from '../../ticker';
 
 import * as demo from '../demo';
 
@@ -47,30 +40,6 @@ export default class Main extends Phaser.State {
     game.physics.p2.enable(this.playerSprite);
     this.playerSprite.body.fixedRotation = true;
     game.camera.follow(this.playerSprite);
-
-    // Enable events.
-    const globalHandlers = new events.EventHandlers();
-    events.registerGlobalHandlers(globalHandlers, game);
-    game.gameEvents = new events.GameEvents(globalHandlers);
-
-    // Enable crisis events.
-    const crises = CrisisSerializer.unserializeAll(JSON.stringify(jsonCrises));
-    game.crisisGenerator = new PeriodicCrisisGenerator(
-      common.globals.gameplay.crisisRateMs,
-      crises
-    );
-
-    // Enable character events.
-    game.goblinGenerator = new CharacterGenerator(
-      common.globals.gameplay.goblinSpawnRateMs,
-      'guard'
-    );
-
-    // Enable contract events.
-    game.contractGenerator = new ContractGenerator(
-      common.globals.gameplay.contractRateMs,
-      randomName
-    );
 
     // Enable HUD.
     game.hud = new HudBuilder().build();
@@ -118,8 +87,17 @@ export default class Main extends Phaser.State {
     game.world.bringToTop(this.alwaysOnTop);
     game.worldState.update();
 
-    // Run conditional logic for demos.
-    this.updateDemos();
+    const elapsed: number = game.time.elapsed;
+    game.gameEvents.tick(elapsed);
+
+    if (common.experiment('demo-huts')) {
+      const huts = new HutFactory(this.game);
+      huts.sprite(5, 5);
+    }
+
+    if (common.experiment('generators')) {
+      game.generators.forEach((generator: ITicker) => generator.tick(elapsed));
+    }
 
     // Render
     this.hudRenderer.render(game.hud);
@@ -189,30 +167,6 @@ export default class Main extends Phaser.State {
     return convertToTiles(map, this.game, 'tiles');
   }
 
-  private tickCrises(elapsed: number) {
-    game.crisisGenerator.tick(elapsed).forEach((e: CrisisEvent) => {
-      game.gameEvents.emit(events.EventType.CrisisStart, e.crisis);
-      game.gameEvents.schedule(
-        events.EventType.CrisisEnd,
-        e.crisis,
-        e.duration
-      );
-    });
-  }
-
-  private tickEvents(elapsed: number) {
-    game.gameEvents.tick(elapsed);
-  }
-
-  private tickGoblinGenerator(elapsed: number) {
-    game.goblinGenerator.tick(elapsed).forEach(spawnEvent => {
-      game.gameEvents.emit(
-        events.EventType.CharacterSpawn,
-        spawnEvent.spriteName
-      );
-    });
-  }
-
   private createDemos(): void {
     if (common.experiment('demo-armory')) {
       demo.armoryDemo(this.game);
@@ -220,18 +174,6 @@ export default class Main extends Phaser.State {
     if (common.experiment('demo-huts')) {
       const huts = new HutFactory(this.game);
       huts.sprite(5, 5);
-    }
-  }
-
-  private updateDemos(): void {
-    // Used by demos below.
-    const elapsed: number = game.time.elapsed;
-    if (common.experiment('demo-crisis')) {
-      this.tickEvents(elapsed);
-      this.tickCrises(elapsed);
-    }
-    if (common.experiment('goblin')) {
-      this.tickGoblinGenerator(elapsed);
     }
   }
 }
