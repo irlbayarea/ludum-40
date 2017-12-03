@@ -9,7 +9,6 @@ import * as events from '../../events';
 
 import { game } from '../../index';
 import CrisisEvent from '../../crisis/crisis_event';
-import Crisis from '../../crisis/crisis';
 import { generateMap, convertToTiles } from '../../map/generator';
 import HudRenderer from '../hud/hud_renderer';
 import UserQuestion from '../../user_question';
@@ -24,26 +23,6 @@ export default class Main extends Phaser.State {
   private hudRenderer: HudRenderer;
 
   public create(): void {
-    if (common.experiment('demo-crisis')) {
-      game.gameEvents.addListener(
-        events.EventType.CrisisStart,
-        (e: events.Event) => {
-          const crisis: Crisis = e.value;
-          game.hud = game.hud.setMessage(
-            '🔥🔥 CRISIS! "' + crisis.description + '" Started'
-          );
-        }
-      );
-
-      game.gameEvents.addListener(
-        events.EventType.CrisisEnd,
-        (e: events.Event) => {
-          const crisis: Crisis = e.value;
-          game.hud = game.hud.setMessage('"' + crisis.description + '" Ended.');
-        }
-      );
-    }
-
     // Enable keyboard.
     this.controller = new Controller(this.game);
 
@@ -62,6 +41,7 @@ export default class Main extends Phaser.State {
     this.hudRenderer = new HudRenderer(
       this.game.plugins.add(MessagePanel, this.alwaysOnTop, this.controller)
     );
+
     game.hud = game.hud.setMessage('Welcome to Guard Captain');
     if (common.experiment('demo-ask-users')) {
       game.hud = game.hud.setQuestion(

@@ -3,3 +3,4 @@ export * from './events/event_queue';
 export * from './events/event_type';
 export * from './events/event';
 export * from './events/game_events';
+export * from './events/global_handlers';
