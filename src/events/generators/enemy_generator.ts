@@ -16,7 +16,7 @@ export default class EnemyGenerator implements ITicker {
     this.game = game;
     this.periodicGenerator = new PeriodicGenerator<SpawnConfig>(
       period,
-      (_: number) => this.generateSpawnConfig(new Armory(this.game))
+      (_: number) => this.generateSpawnConfig(game.armory)
     );
   }
 
