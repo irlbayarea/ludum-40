@@ -1,23 +1,19 @@
+import * as common from '../common';
 import Crisis from './crisis';
 import CrisisEvent from './crisis_event';
-import ICrisisGenerator from './crisis_generator';
+import PeriodicGenerator from '../generators';
 
-export default class PeriodicCrisisGenerator implements ICrisisGenerator {
-  private period: number;
-  private sinceLastCrisis: number;
-
-  constructor(period: number) {
-    this.period = period;
-    this.sinceLastCrisis = 0;
-  }
-
-  public tick(elapsed: number): CrisisEvent[] {
-    this.sinceLastCrisis += elapsed;
-    if (this.sinceLastCrisis >= this.period) {
-      this.sinceLastCrisis = 0;
-      const crisis = new Crisis('test-crisis-' + elapsed, 100, []);
-      return [new CrisisEvent(crisis, 100)];
-    }
-    return [];
+export default class PeriodicCrisisGenerator extends PeriodicGenerator<
+  CrisisEvent
+> {
+  constructor(period: number, crises: Crisis[]) {
+    super(
+      period,
+      (_: number) =>
+        new CrisisEvent(
+          crises[Math.floor(Math.random() * crises.length) - 1],
+          common.globals.gameplay.crisisRateMs
+        )
+    );
   }
 }

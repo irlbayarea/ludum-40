@@ -4,13 +4,14 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "webpack --config ./configs/webpack/webpack.dev.js $f",
+    "build": "webpack --config ./configs/webpack/webpack.dev.js",
     "clean": "rimraf -- dist",
     "format": "prettier --config .prettier --write \"src/**/*.ts\" \"configs/*/**.js\"",
     "format:check": "prettier-check --config '.prettier' --list-different \"src/**/*.ts\" \"configs/*/**.js\"",
     "lint": "tslint --project .",
     "lint:fix": "tslint --fix --project .",
-    "serve": "webpack-dev-server --watch --config ./configs/webpack/webpack.dev.js",
+    "serve": "webpack-dev-server --env.NOTSCHECK=true --watch --config ./configs/webpack/webpack.dev.js",
+    "serve:checked": "webpack-dev-server --watch --config ./configs/webpack/webpack.dev.js",
     "test": "jest"
   },
   "repository": {
@@ -46,6 +47,7 @@
     "@types/jest": "^21.1.8",
     "@types/lodash": "^4.14.86",
     "@types/node": "^8.0.53",
+    "@types/query-string": "^5.0.1",
     "app-root-path": "^2.0.1",
     "awesome-typescript-loader": "^3.4.0",
     "concurrently": "^3.5.1",
@@ -61,6 +63,7 @@
     "phaser-ce": "^2.9.2",
     "prettier": "^1.8.2",
     "prettier-check": "^2.0.0",
+    "query-string": "^5.0.1",
     "rimraf": "^2.6.2",
     "serializer.ts": "0.0.12",
     "source-map-loader": "^0.2.3",

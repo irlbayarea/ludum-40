@@ -11,6 +11,9 @@ export default class Controller {
   private d: Phaser.Key;
   private space: Phaser.Key;
 
+  private one: Phaser.Key;
+  private two: Phaser.Key;
+
   /**
    * Create a game controller from the current game object.
    * @param game
@@ -22,6 +25,17 @@ export default class Controller {
     this.s = game.input.keyboard.addKey(Phaser.Keyboard.S);
     this.d = game.input.keyboard.addKey(Phaser.Keyboard.D);
     this.space = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+
+    this.one = game.input.keyboard.addKey(Phaser.Keyboard.ONE);
+    this.two = game.input.keyboard.addKey(Phaser.Keyboard.TWO);
+  }
+
+  get is1(): boolean {
+    return this.one.isDown;
+  }
+
+  get is2(): boolean {
+    return this.two.isDown;
   }
 
   get isUp(): boolean {
