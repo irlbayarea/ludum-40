@@ -65,10 +65,18 @@ export class GameMechanics {
 
     // Setup game looping mechanics:
     // Have the goblin AI "think" every 1s.
-    game.time.events.loop(common.globals.gameplay.goblinThinkRateMs, this.giveGoblinOrders, this);
+    game.time.events.loop(
+      common.globals.gameplay.goblinThinkRateMs,
+      this.giveGoblinOrders,
+      this
+    );
 
     // Have the NPCs "attack" when in range of enemies.
-    game.time.events.loop(common.globals.gameplay.npcAttackRateMs, this.attackNearbyEnemies, this);
+    game.time.events.loop(
+      common.globals.gameplay.npcAttackRateMs,
+      this.attackNearbyEnemies,
+      this
+    );
   }
 
   /**
@@ -133,7 +141,7 @@ export class GameMechanics {
 
   /**
    * Finds all valid spawn locations on the given layer.
-   * 
+   *
    * @param layer
    */
   private findSpawnLocations(layer: Phaser.TilemapLayer): Phaser.Tile[] {
@@ -232,9 +240,9 @@ export class GameMechanics {
 
   /**
    * Hit all characters and entities within range of the provided attacker.
-   * 
+   *
    * This is expected to called internally.
-   * 
+   *
    * @param attacker
    */
   private hitWithWeapon(attacker: Character): void {
@@ -252,9 +260,9 @@ export class GameMechanics {
 
   /**
    * Deal damage to a N/PC.
-   * 
-   * @param injure 
-   * @param source 
+   *
+   * @param injure
+   * @param source
    */
   private dealDamage(injure: Character, source: Character): boolean {
     if (!this.isOpposed(injure, source)) {

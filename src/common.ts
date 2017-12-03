@@ -102,7 +102,7 @@ interface IGlobals {
 
     /**
      * How often to have armed NPCs swing their weapon.
-     * 
+     *
      * TODO: We should allow this number to be accelerated for stronger NPCs.
      */
     npcAttackRateMs: number;
