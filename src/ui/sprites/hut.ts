@@ -39,11 +39,11 @@ export default class HutFactory extends SpriteFactory {
     );
   }
 
-  public hut(x?: number, y?: number): Phaser.Sprite {
-    return this.game.add.sprite(x, y, this.hutTexture);
+  public hut(): Phaser.Sprite {
+    return this.game.add.sprite(0, 0, this.hutTexture);
   }
 
-  public den(x?: number, y?: number): Phaser.Sprite {
-    return this.game.add.sprite(x, y, this.denTexture);
+  public den(): Phaser.Sprite {
+    return this.game.add.sprite(0, 0, this.denTexture);
   }
 }
