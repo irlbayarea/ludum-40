@@ -40,9 +40,9 @@ export default class Boot extends Phaser.State {
       require('assets/sprites/rogue-like-characters.png'),
       16,
       16,
+      616,
       undefined,
-      undefined,
-      1
+      1,
     );
 
     // Load a simple default map.
