@@ -34,7 +34,7 @@ class Game extends phaser.Game {
     this.eventQueue = new EventQueue(0);
     this.eventHandlers = new EventHandlers();
     this.crisisGenerator = new PeriodicCrisisGenerator(1000);
-    
+
     this.state.add('Boot', Boot);
     this.state.add('Main', Main);
     this.state.start('Boot');

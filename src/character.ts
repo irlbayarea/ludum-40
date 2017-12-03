@@ -5,9 +5,10 @@
 import * as Phaser from 'phaser-ce';
 import Crisis from './crisis/crisis';
 import CrisisOption from './crisis/option';
+import Path from './world_state/path';
 
-export const minSPEED: number = 1;
-export const maxSPEED: number = 10;
+export const minSPEED: number = 10;
+export const maxSPEED: number = 500;
 export const minSTR: number = 0;
 export const maxSTR: number = 10;
 export const minINT: number = 0;
@@ -37,6 +38,8 @@ export default class Character {
   private isGuard: boolean;
   private salary: number;
 
+  public path: Path | null;
+
   constructor(
     sprite: Phaser.Sprite,
     name: string = generateName(),
@@ -60,6 +63,7 @@ export default class Character {
     this.good = good;
     this.isGuard = isGuard;
     this.setSalary(salary);
+    this.path = null;
   }
 
   public getName(): string {
@@ -105,6 +109,13 @@ export default class Character {
 
   public getSalary(): number {
     return this.salary;
+  }
+
+  /**
+   * Returns the position of the character in world coordinates (1 tile = 1.00 distance).
+   */
+  public getWorldPosition(): Phaser.Point {
+    return new Phaser.Point(this.sprite.x / 64, this.sprite.y / 64);
   }
 
   /**
