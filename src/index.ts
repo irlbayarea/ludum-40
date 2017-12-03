@@ -22,6 +22,7 @@ import { Armory } from './ui/sprites/armory';
 import BloodFactory from './ui/sprites/blood';
 import Character from './character/character';
 import HudBuilder from './ui/hud/hud_builder';
+import GameOver from './ui/states/over';
 
 export class Game extends phaser.Game {
   public generators: ITicker[];
@@ -44,6 +45,7 @@ export class Game extends phaser.Game {
 
     this.state.add('Boot', Boot);
     this.state.add('Main', Main);
+    this.state.add('Over', GameOver);
     this.state.start('Boot');
 
     this.isOfferingContract = false;
@@ -78,6 +80,7 @@ export class Game extends phaser.Game {
       sprite.scale = new Phaser.Point(4.0, 4.0);
       game.physics.p2.enable(sprite);
       config.character.setSprite(sprite);
+      sprite.body.fixedRotation = true;
       game.worldState.characters.push(config.character);
     }
   }

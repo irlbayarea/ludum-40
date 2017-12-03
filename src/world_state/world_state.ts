@@ -48,6 +48,13 @@ export default class WorldState {
 
   private readonly astar: EasyStar.js;
 
+  /**
+   * Whether the player character released the attack key.
+   *
+   * This prevents holding down the attack key for infinite attacks.
+   */
+  private releasedSwing: boolean = true;
+
   public get playerCharacter(): Character {
     return this.mPlayerCharacter;
   }
@@ -139,6 +146,16 @@ export default class WorldState {
     this.updateCharacters();
   }
 
+  /**
+   * Whether the provided characters are on opposing sides.
+   *
+   * @param who
+   * @param to
+   */
+  public isOpposed(who: Character, to: Character): boolean {
+    return who.isGoblin !== to.isGoblin;
+  }
+
   private updateCharacters(): void {
     this.characters.forEach(char => {
       char.getSprite().body.setZeroVelocity();
@@ -146,9 +163,13 @@ export default class WorldState {
         char.weapon.update();
       }
       if (char.isAttacking) {
-        this.hitWithWeapon(char);
+        let range = char.weapon.range;
+        if (char === this.playerCharacter) {
+          range += 1;
+        }
+        this.hitWithWeapon(char, range);
       }
-      this.maybeChasePlayer(char);
+      this.tryToKillPlayer(char);
     });
     this.characters.forEach(char => {
       if (char.path !== null && char.path !== undefined) {
@@ -194,19 +215,22 @@ export default class WorldState {
     return Math.max(0, Math.min(this.grid.h - 0.001, n));
   }
 
-  private maybeChasePlayer(goblin: Character) {
-    if (goblin === this.playerCharacter || goblin.path) {
+  private tryToKillPlayer(goblin: Character) {
+    if (goblin === this.playerCharacter) {
       return;
     }
     const them = goblin.getWorldPosition();
     const target = this.playerCharacter.getWorldPosition();
     const distance = them.distance(target);
-    if (distance <= 15) {
+    if (!goblin.path && distance <= 15) {
       this.directCharacterToPoint(goblin, target);
+    }
+    if (distance <= 2 && goblin.isArmed) {
+      goblin.swing();
     }
   }
 
-  private hitWithWeapon(attacking: Character): void {
+  private hitWithWeapon(attacking: Character, range: number): void {
     const attacker = attacking.getWorldPosition();
     remove(this.characters, c => {
       if (c === attacking) {
@@ -214,14 +238,17 @@ export default class WorldState {
       }
       const defender = c.getWorldPosition();
       const distance = attacker.distance(defender);
-      if (distance <= 1.5) {
-        return this.dealDamage(c);
+      if (distance <= range) {
+        return this.dealDamage(c, attacking);
       }
       return false;
     });
   }
 
-  private dealDamage(injure: Character): boolean {
+  private dealDamage(injure: Character, source: Character): boolean {
+    if (!this.isOpposed(injure, source)) {
+      return false;
+    }
     const sprite = injure.getSprite();
     sprite.damage(1);
     game.blood.sprite(sprite);
@@ -232,6 +259,9 @@ export default class WorldState {
   }
 
   private updatePlayerCharacter(): void {
+    if (game.worldState.playerCharacter.getSprite().health === 0) {
+      game.state.start('Over');
+    }
     if (game.controller.isLeft && !game.controller.isRight) {
       game.worldState.playerCharacter.getSprite().body.moveLeft(400);
     } else if (game.controller.isRight) {
@@ -242,8 +272,13 @@ export default class WorldState {
     } else if (game.controller.isUp) {
       game.worldState.playerCharacter.getSprite().body.moveDown(400);
     }
-    if (game.worldState.playerCharacter.isArmed && game.controller.isSpace) {
-      game.worldState.playerCharacter.weapon.markInUse();
+    if (game.worldState.playerCharacter.isArmed) {
+      if (game.controller.isSpace && this.releasedSwing) {
+        game.worldState.playerCharacter.weapon.markInUse();
+        this.releasedSwing = false;
+      } else if (!game.controller.isSpace) {
+        this.releasedSwing = true;
+      }
     }
   }
 }

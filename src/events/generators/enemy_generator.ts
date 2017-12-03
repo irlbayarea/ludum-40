@@ -4,8 +4,9 @@ import { Game } from '../../index';
 import PeriodicGenerator from '../../periodic_generator';
 import { ITicker } from '../../ticker';
 import { Armory } from '../../ui/sprites/armory';
-import Character from '../../character/character';
+import Character, { CharacterType } from '../../character/character';
 import { SpawnConfig, randomSpawnLocation } from '../../character/spawn_config';
+import { Weapon } from '../../ui/sprites/weapon';
 
 export default class EnemyGenerator implements ITicker {
   private periodicGenerator: PeriodicGenerator<SpawnConfig>;
@@ -28,7 +29,8 @@ export default class EnemyGenerator implements ITicker {
   private generateSpawnConfig(armory: Armory): SpawnConfig {
     const { x, y } = randomSpawnLocation(this.game.worldState.grid);
     const texture = textures.goblin(armory);
-    const character = new Character();
+    const character = new Character('Goblin', CharacterType.Goblin);
+    character.arm(Weapon.axe());
     return new SpawnConfig(character, texture, x, y);
   }
 }

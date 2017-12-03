@@ -7,7 +7,7 @@ import MessagePanel from '../hud/message';
 import * as common from '../../common';
 
 import { game } from '../../index';
-import Character from '../../character/character';
+import Character, { CharacterType } from '../../character/character';
 import { generateMap, convertToTiles } from '../../map/generator';
 import HudRenderer from '../hud/hud_renderer';
 import HutFactory from '../sprites/hut';
@@ -89,14 +89,19 @@ export default class Main extends Phaser.State {
       325
     );
     playerSprite.scale = new Phaser.Point(4.0, 4.0);
+    playerSprite.health = 100;
+    playerSprite.maxHealth = 100;
     game.physics.p2.enable(playerSprite);
     playerSprite.body.fixedRotation = true;
     game.camera.follow(playerSprite);
 
-    const playerCharacter: Character = new Character();
+    const playerCharacter: Character = new Character(
+      'Captain',
+      CharacterType.Player
+    );
     playerCharacter.setSprite(playerSprite);
     game.worldState.playerCharacter = playerCharacter;
-    playerCharacter.arm(new Weapon(game));
+    playerCharacter.arm(Weapon.sword());
   }
 
   private createMap(): Phaser.Tilemap {
