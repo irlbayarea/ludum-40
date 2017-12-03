@@ -138,6 +138,7 @@ export default class Character {
 
     this.isGuard = isGuard;
     this.setSalary();
+    this.path = null;
   }
 
   public getName(): string {
@@ -157,7 +158,7 @@ export default class Character {
   }
 
   public setSprite(sprite: Phaser.Sprite) {
-    if (this.sprite === undefined) {
+    if (this.sprite === undefined || this.sprite === null) {
       this.sprite = sprite;
     } else {
       throw new Error('Sprite already defined.');

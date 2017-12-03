@@ -5,13 +5,9 @@ export class GameEvents {
   private eventQueue: events.EventQueue;
   private eventHandlers: events.EventHandlers;
 
-  // Global event handlers that can't be unregistered.
-  private globalHandlers: events.EventHandlers;
-
-  constructor(globalHandlers: events.EventHandlers) {
+  constructor() {
     this.eventQueue = new events.EventQueue(0);
     this.eventHandlers = new events.EventHandlers();
-    this.globalHandlers = globalHandlers;
   }
 
   public schedule(type: events.EventType, value: any, delay: number) {
@@ -21,7 +17,7 @@ export class GameEvents {
   public tick(elapsed: number) {
     const ended = this.eventQueue.tick(elapsed);
     ended.forEach((event: events.Event) => {
-      this.internalEmit(event);
+      this.eventHandlers.handle(event);
     });
   }
 
@@ -30,11 +26,8 @@ export class GameEvents {
   }
 
   public emit(type: events.EventType, value: any) {
-    this.internalEmit(new events.Event(type, value, game.time.elapsedMS));
-  }
-
-  private internalEmit(e: events.Event) {
-    this.eventHandlers.handle(e);
-    this.globalHandlers.handle(e);
+    this.eventHandlers.handle(
+      new events.Event(type, value, game.time.elapsedMS)
+    );
   }
 }
