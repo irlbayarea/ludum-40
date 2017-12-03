@@ -35,6 +35,7 @@ export default class HudRenderer {
 
   private renderQuestion(q: UserQuestion | null) {
     if (q != null) {
+      this.messages.setText(q.message);
       this.messages.askUser(q.options, q.callback);
     }
   }
