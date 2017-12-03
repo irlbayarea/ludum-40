@@ -5,6 +5,7 @@ import Grid from './grid';
 import Path from './path';
 import Character from '../character/character';
 import { game } from '../index';
+import { remove } from 'lodash';
 
 /**
  */
@@ -137,6 +138,9 @@ export default class WorldState {
       if (char.isArmed) {
         char.weapon.update();
       }
+      if (char.isAttacking) {
+        this.hitWithWeapon(char);
+      }
     });
     this.characters
       .filter(char => char.path !== null && char.path !== undefined)
@@ -163,6 +167,31 @@ export default class WorldState {
         );
       });
     this.updatePlayerCharacter();
+  }
+
+  private hitWithWeapon(attacking: Character): void {
+    const attacker = attacking.getWorldPosition();
+    remove(this.characters, c => {
+      if (c === attacking) {
+        return false;
+      }
+      const defender = c.getWorldPosition();
+      const distance = attacker.distance(defender);
+      if (distance <= 1.5) {
+        return this.dealDamage(c);
+      }
+      return false;
+    });
+  }
+
+  private dealDamage(injure: Character): boolean {
+    const sprite = injure.getSprite();
+    sprite.damage(1);
+    game.blood.sprite(sprite);
+    if (sprite.health === 0) {
+      return true;
+    }
+    return false;
   }
 
   private updatePlayerCharacter(): void {
