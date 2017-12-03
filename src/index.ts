@@ -49,7 +49,11 @@ export class Game extends phaser.Game {
   }
 
   public spawn(config: SpawnConfig) {
-    const sprite = game.add.sprite(config.x, config.y, config.texture);
+    const sprite = game.add.sprite(
+      config.x * 64,
+      config.y * 64,
+      config.texture
+    );
     sprite.scale = new Phaser.Point(4.0, 4.0);
     game.physics.p2.enable(sprite);
 
