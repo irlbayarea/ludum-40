@@ -1,13 +1,11 @@
 import * as Phaser from 'phaser-ce';
-import { debug } from '../common';
 
 export default class Path {
   public static readonly CLOSE_DISTANCE: number = 10 / 64;
 
   public curIndex: number;
 
-  public constructor(public readonly points: { x: number; y: number }[]) {
-    debug.log('path() points: ' + points);
+  public constructor(public readonly points: Array<{ x: number; y: number }>) {
     this.curIndex = 0;
   }
 
@@ -15,8 +13,10 @@ export default class Path {
    * Returns the next point goal to reach or null if we are done.
    */
   public currentGoal(): { x: number; y: number } | null {
-    if (this.curIndex >= this.points.length) return null;
-    let p = this.points[this.curIndex];
+    if (this.curIndex >= this.points.length) {
+      return null;
+    }
+    const p = this.points[this.curIndex];
     return { x: p.x + 0.5, y: p.y + 0.5 };
   }
 
