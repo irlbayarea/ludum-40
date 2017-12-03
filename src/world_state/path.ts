@@ -32,7 +32,7 @@ export default class Path {
       ) <= Path.CLOSE_DISTANCE
     );
   }
-  
+
   /**
    * Advances to the next goal.
    */
