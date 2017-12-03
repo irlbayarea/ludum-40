@@ -1,5 +1,3 @@
-import * as events from '../../events';
-
 import { Game } from '../../index';
 import PeriodicGenerator from '../../periodic_generator';
 import { ITicker } from '../../ticker';
@@ -18,8 +16,13 @@ export default class ContractGenerator implements ITicker {
   }
 
   public tick(elapsed: number) {
-    this.periodicGenerator.tick(elapsed).forEach(character => {
-      this.game.gameEvents.emit(events.EventType.Contract, character);
-    });
+    this.periodicGenerator
+      .tick(elapsed)
+      // FIXME: This shouldn't be an iterable.
+      .forEach(character => {
+        if (!this.game.isOfferingContract) {
+          this.game.offerContract(character);
+        }
+      });
   }
 }

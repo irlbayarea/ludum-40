@@ -1,5 +1,5 @@
 import HudModel from './hud_model';
-import MessagePanel from '../message';
+import MessagePanel from '../hud/message';
 import UserQuestion from '../../user_question';
 import TextWidget from './text_widget';
 import { Game } from '../../index';
