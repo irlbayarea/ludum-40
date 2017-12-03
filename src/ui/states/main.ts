@@ -74,6 +74,7 @@ export default class Main extends Phaser.State {
     game.hud = new HudBuilder().build();
     this.alwaysOnTop = this.game.add.group();
     this.hudRenderer = new HudRenderer(
+      game,
       this.game.plugins.add(MessagePanel, this.alwaysOnTop, this.controller)
     );
 
@@ -115,17 +116,17 @@ export default class Main extends Phaser.State {
     game.worldState.update();
 
     const elapsed: number = game.time.elapsed;
+    this.tickEvents(elapsed);
 
     if (common.experiment('demo-huts')) {
       const huts = new HutFactory(this.game);
       huts.sprite(5, 5);
     }
 
-    if (common.experiment('demo-crisis')) {
-      this.tickEvents(elapsed);
+    if (common.experiment('crisis')) {
       this.tickCrises(elapsed);
     }
-    if (common.experiment('goblin')) {
+    if (common.experiment('spawn')) {
       this.tickGoblinGenerator(elapsed);
     }
     if (common.experiment('contract')) {
