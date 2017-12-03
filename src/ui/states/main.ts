@@ -5,10 +5,10 @@ import Controller from '../../input/controller';
 import MessagePanel from '../message';
 
 import * as common from '../../common';
+import * as events from '../../events';
+
 import { game } from '../../index';
 import CrisisEvent from '../../crisis/crisis_event';
-import EventType from '../../event_type';
-import Event from '../../event';
 import Crisis from '../../crisis/crisis';
 import { generateMap, convertToTiles } from '../../map/generator';
 import HudRenderer from '../hud/hud_renderer';
@@ -25,17 +25,23 @@ export default class Main extends Phaser.State {
 
   public create(): void {
     if (common.experiment('demo-crisis')) {
-      game.gameEvents.addListener(EventType.CrisisStart, (e: Event) => {
-        const crisis: Crisis = e.value;
-        game.hud = game.hud.setMessage(
-          '🔥🔥 CRISIS! "' + crisis.description + '" Started'
-        );
-      });
+      game.gameEvents.addListener(
+        events.EventType.CrisisStart,
+        (e: events.Event) => {
+          const crisis: Crisis = e.value;
+          game.hud = game.hud.setMessage(
+            '🔥🔥 CRISIS! "' + crisis.description + '" Started'
+          );
+        }
+      );
 
-      game.gameEvents.addListener(EventType.CrisisEnd, (e: Event) => {
-        const crisis: Crisis = e.value;
-        game.hud = game.hud.setMessage('"' + crisis.description + '" Ended.');
-      });
+      game.gameEvents.addListener(
+        events.EventType.CrisisEnd,
+        (e: events.Event) => {
+          const crisis: Crisis = e.value;
+          game.hud = game.hud.setMessage('"' + crisis.description + '" Ended.');
+        }
+      );
     }
 
     // Enable keyboard.
@@ -154,8 +160,12 @@ export default class Main extends Phaser.State {
 
   private tickCrises(elapsed: number) {
     game.crisisGenerator.tick(elapsed).forEach((e: CrisisEvent) => {
-      game.gameEvents.emit(EventType.CrisisStart, e.crisis);
-      game.gameEvents.schedule(EventType.CrisisEnd, e.crisis, e.duration);
+      game.gameEvents.emit(events.EventType.CrisisStart, e.crisis);
+      game.gameEvents.schedule(
+        events.EventType.CrisisEnd,
+        e.crisis,
+        e.duration
+      );
     });
   }
 
