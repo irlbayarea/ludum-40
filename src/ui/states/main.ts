@@ -44,7 +44,7 @@ export default class Main extends Phaser.State {
     game.physics.p2.enable(this.playerSprite);
     this.playerSprite.body.fixedRotation = true;
     game.camera.follow(this.playerSprite);
-    (window as any).$D.move = (x: number, y:number) => {
+    (window as any).$D.move = (x: number, y: number) => {
       this.playerSprite.reset(x, y);
       game.camera.follow(this.playerSprite);
     };
