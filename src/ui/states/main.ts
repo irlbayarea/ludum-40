@@ -35,7 +35,12 @@ export default class Main extends Phaser.State {
     game.physics.startSystem(Phaser.Physics.P2JS);
 
     // Main character.
-    this.playerSprite = this.game.add.sprite(64 * 20, 64 * 20, 'characters', 325);
+    this.playerSprite = this.game.add.sprite(
+      64 * 20,
+      64 * 20,
+      'characters',
+      325
+    );
     this.playerSprite.scale = new Phaser.Point(4.0, 4.0);
     game.physics.p2.enable(this.playerSprite);
     this.playerSprite.body.fixedRotation = true;
