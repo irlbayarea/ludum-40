@@ -5,6 +5,7 @@ import Grid from './grid';
 import Path from './path';
 import Character from '../character/character';
 import { game } from '../index';
+import { Weapon } from '../ui/sprites/weapon';
 import { remove } from 'lodash';
 
 /**
@@ -44,7 +45,7 @@ export default class WorldState {
   }
 
   public readonly grid: Grid;
-  public readonly characters: Character[];
+  private readonly characters: Character[];
 
   private readonly astar: EasyStar.js;
 
@@ -83,10 +84,23 @@ export default class WorldState {
     for (let y = 0; y < map.height; y++) {
       for (let x = 0; x < map.width; x++) {
         const tile = map.getTile(x, y, layer);
-        this.grid.collisions[x][y] = tile !== null ? 1 : 0;
+        this.grid.collisions[y][x] = tile !== null ? 1 : 0;
       }
     }
     this.astar.setGrid(this.grid.collisions);
+  }
+
+  /**
+   * Adds a character to the game state, initializing its physics. Expects a Character object with a sprite.
+   */
+  public addCharacter(character: Character): void {
+    this.characters.push(character);
+    // Hack to set player follow cam.
+    if (this.characters.length === 1) {
+      game.camera.follow(character.getSprite());
+      this.playerCharacter = character;
+      this.playerCharacter.arm(new Weapon(game));
+    }
   }
 
   /**
@@ -95,7 +109,7 @@ export default class WorldState {
    */
   public pathfind(from: Phaser.Point, to: Phaser.Point): Path | null {
     const points: Array<{ x: number; y: number }> = [];
-    this.astar.setIterationsPerCalculation(10000000000);
+    this.astar.setIterationsPerCalculation(10000000);
     this.astar.findPath(
       Math.floor(from.x),
       Math.floor(from.y),
@@ -103,16 +117,13 @@ export default class WorldState {
       Math.floor(to.y),
       path => {
         if (path !== null) {
-          for (let i = 1; i < path.length; i++) {
-            // Flip x,y because of the way it's stored inside pathfinding algo.
-            points[i - 1] = { x: path[i].y, y: path[i].x };
+          for (let i = 0; i < path.length; i++) {
+            points[i] = { x: path[i].x, y: path[i].y };
           }
         }
       }
     );
     this.astar.enableSync();
-    // this.astar.disableDiagonals();
-    // this.astar.enableCornerCutting();
     this.astar.enableDiagonals();
     this.astar.disableCornerCutting();
     this.astar.calculate();
@@ -151,7 +162,7 @@ export default class WorldState {
       this.maybeChasePlayer(char);
     });
     this.characters.forEach(char => {
-      if (char.path !== null && char.path !== undefined) {
+      if (char.path !== null) {
         const body = char.getSprite().body;
         const pos: Phaser.Point = new Phaser.Point(body.x / 64, body.y / 64);
         const path = char.path;
@@ -181,9 +192,17 @@ export default class WorldState {
 
   private stopCharacter(character: Character) {
     character.path = null;
+    // Try to find a new wander path.
     if (character.isWandering) {
-      const p = this.nearby(character.getWorldPosition(), 10);
-      this.directCharacterToPoint(character, p);
+      let p = null;
+      let tries = 0;
+      do {
+        p = this.nearby(character.getWorldPosition(), 10);
+        tries++;
+      } while (this.grid.collisionWorldPoint(p) && tries < 10);
+      if (!this.grid.collisionWorldPoint(p)) {
+        this.directCharacterToPoint(character, p);
+      }
     }
   }
 

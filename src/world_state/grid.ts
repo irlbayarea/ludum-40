@@ -34,6 +34,17 @@ export default class Grid {
     return this.collisions[x][y] === 1;
   }
 
+  /**
+   * Returns whether the given position (in world coordinates, 1 tile = 1.00) is blocked.
+   * Returns true when the point is outside the grid.
+   */
+  public collisionWorldPoint(p: Phaser.Point): boolean {
+    if (p.x < 0 || p.y < 0 || p.x >= this.w || p.y >= this.h) {
+      return true;
+    }
+    return this.collisions[Math.floor(p.x)][Math.floor(p.y)] === 1;
+  }
+
   public getEmptyCells(): Array<{ x: number; y: number }> {
     const arr: Array<{ x: number; y: number }> = [];
     for (let xx = 0; xx < this.w; xx++) {
