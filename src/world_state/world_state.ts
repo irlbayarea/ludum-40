@@ -84,7 +84,7 @@ export default class WorldState {
     for (let y = 0; y < map.height; y++) {
       for (let x = 0; x < map.width; x++) {
         const tile = map.getTile(x, y, layer);
-        this.grid.collisions[x][y] = tile !== null ? 1 : 0;
+        this.grid.collisions[y][x] = tile !== null ? 1 : 0;
       }
     }
     this.astar.setGrid(this.grid.collisions);
@@ -118,15 +118,12 @@ export default class WorldState {
       path => {
         if (path !== null) {
           for (let i = 1; i < path.length; i++) {
-            // Flip x,y because of the way it's stored inside pathfinding algo.
             points[i - 1] = { x: path[i].x, y: path[i].y };
           }
         }
       }
     );
     this.astar.enableSync();
-    // this.astar.disableDiagonals();
-    // this.astar.enableCornerCutting();
     this.astar.enableDiagonals();
     this.astar.disableCornerCutting();
     this.astar.calculate();
@@ -165,7 +162,7 @@ export default class WorldState {
       this.maybeChasePlayer(char);
     });
     this.characters.forEach(char => {
-      if (char.path !== null && char.path !== undefined) {
+      if (char.path !== null) {
         const body = char.getSprite().body;
         const pos: Phaser.Point = new Phaser.Point(body.x / 64, body.y / 64);
         const path = char.path;
@@ -174,7 +171,7 @@ export default class WorldState {
           this.stopCharacter(char);
           return;
         }
-        if (path!.isNearGoal(pos)) {
+        if (path!.isNearGoal(pos) || this.grid.collisionWorldPoint(new Phaser.Point(goalPoint.x, goalPoint.y))) {
           char.path!.advance();
           goalPoint = char.path!.currentGoal();
           if (goalPoint === null) {
@@ -195,9 +192,17 @@ export default class WorldState {
 
   private stopCharacter(character: Character) {
     character.path = null;
+    // Try to find a new wander path.
     if (character.isWandering) {
-      const p = this.nearby(character.getWorldPosition(), 10);
-      this.directCharacterToPoint(character, p);
+      let p = null;
+      let tries = 0;
+      do {
+        p = this.nearby(character.getWorldPosition(), 10);
+        tries++;
+      } while (this.grid.collisionWorldPoint(p) && tries < 10);
+      if (!this.grid.collisionWorldPoint(p)) {
+        this.directCharacterToPoint(character, p);
+      }
     }
   }
 

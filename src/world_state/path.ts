@@ -1,7 +1,7 @@
 import * as Phaser from 'phaser-ce';
 
 export default class Path {
-  public static readonly CLOSE_DISTANCE: number = 10 / 64;
+  public static readonly CLOSE_DISTANCE: number = 8 / 64.;
 
   public curIndex: number;
 
