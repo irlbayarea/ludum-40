@@ -257,7 +257,6 @@ export default class WorldState {
       }
     });
     if (closestEnemy && !character.path) {
-      console.log('ATTACK PATTERN DELTA');
       this.directCharacterToPoint(character, closestEnemy.getWorldPosition());
     }
   }
