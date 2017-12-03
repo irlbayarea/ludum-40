@@ -4,6 +4,7 @@ export class Weapon {
   private readonly sprite: Phaser.Sprite;
 
   private mIsSwinging: boolean;
+  private mIsHitting: boolean;
   private swingTimer?: Phaser.TimerEvent;
 
   constructor(private readonly game: Phaser.Game) {
@@ -27,6 +28,7 @@ export class Weapon {
       this.swingTimer = this.game.time.events.add(150, () => {
         this.reset();
         this.swingTimer = undefined;
+        this.mIsHitting = true;
       });
     }
   }
@@ -35,6 +37,11 @@ export class Weapon {
     if (this.isSwinging) {
       this.sprite.rotation -= 0.25;
     }
+    this.mIsHitting = false;
+  }
+
+  get isHitting(): boolean {
+    return this.mIsHitting;
   }
 
   get isSwinging(): boolean {

@@ -19,6 +19,7 @@ import { ITicker } from './ticker';
 import Controller from './input/controller';
 import { SpawnConfig } from './character/spawn_config';
 import { Armory } from './ui/sprites/armory';
+import BloodFactory from './ui/sprites/blood';
 
 export class Game extends phaser.Game {
   public generators: ITicker[];
@@ -27,6 +28,7 @@ export class Game extends phaser.Game {
   public worldState: WorldState;
   public controller: Controller;
   public readonly armory: Armory;
+  public readonly blood: BloodFactory;
 
   constructor() {
     super({
@@ -42,6 +44,7 @@ export class Game extends phaser.Game {
     this.state.start('Boot');
 
     this.armory = new Armory(this);
+    this.blood = new BloodFactory(this);
     this.worldState = new WorldState(40, 40);
 
     // Enable events.
