@@ -158,7 +158,7 @@ export default class Character {
   }
 
   public setSprite(sprite: Phaser.Sprite) {
-    if (this.sprite === undefined) {
+    if (this.sprite === undefined || this.sprite === null) {
       this.sprite = sprite;
     } else {
       throw new Error('Sprite already defined.');

@@ -15,13 +15,19 @@ import HudBuilder from '../hud/hud_builder';
 import { ITicker } from '../../ticker';
 
 import * as demo from '../demo';
+import { Weapon } from '../sprites/weapon';
 
 /**
  * Main state (i.e. in the game).
  */
 export default class Main extends Phaser.State {
+  private controller: Controller;
   private alwaysOnTop: Phaser.Group;
   private hudRenderer: HudRenderer;
+
+  private playerSprite: Phaser.Sprite;
+  private playerCharacter: Character;
+  private playerSword: Weapon;
 
   public create(): void {
     // Enable keyboard.
@@ -53,7 +59,6 @@ export default class Main extends Phaser.State {
     }
 
     this.createDemos();
-
     this.createPlayerCharacter();
 
     if (common.experiment('pathfinding')) {
@@ -74,11 +79,6 @@ export default class Main extends Phaser.State {
 
     const elapsed: number = game.time.elapsed;
     game.gameEvents.tick(elapsed);
-
-    if (common.experiment('demo-huts')) {
-      const huts = new HutFactory(this.game);
-      huts.sprite(5, 5);
-    }
 
     if (common.experiment('generators')) {
       game.generators.forEach((generator: ITicker) => generator.tick(elapsed));
@@ -167,7 +167,8 @@ export default class Main extends Phaser.State {
     }
     if (common.experiment('demo-huts')) {
       const huts = new HutFactory(this.game);
-      huts.sprite(5, 5);
+      huts.hut(64 * 1, 64);
+      huts.den(64 * 3, 64);
     }
   }
 }

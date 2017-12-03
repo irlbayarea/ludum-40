@@ -18,6 +18,7 @@ import HudModel from './ui/hud/hud_model';
 import { ITicker } from './ticker';
 import Controller from './input/controller';
 import { SpawnConfig } from './character/spawn_config';
+import { Armory } from './ui/sprites/armory';
 
 export class Game extends phaser.Game {
   public generators: ITicker[];
@@ -39,12 +40,12 @@ export class Game extends phaser.Game {
     this.state.add('Main', Main);
     this.state.start('Boot');
 
+    this.armory = new Armory(this);
     this.worldState = new WorldState(40, 40);
 
     // Enable events.
-    const globalHandlers = new events.EventHandlers();
-    this.gameEvents = new events.GameEvents(globalHandlers);
-    events.registerGlobalHandlers(this, globalHandlers);
+    this.gameEvents = new events.GameEvents();
+    events.registerGlobalHandlers(this);
 
     // Enable event generators.
     generators.initGenerators(this);

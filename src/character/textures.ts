@@ -5,6 +5,7 @@ import {
   ShirtColor,
   PantsColor,
   ShieldColor,
+  HairColor,
 } from '../ui/sprites/armory';
 
 export function goblin(armory: Armory): RenderTexture {
@@ -16,5 +17,21 @@ export function goblin(armory: Armory): RenderTexture {
     },
     pants: PantsColor.Green,
     shield: ShieldColor.OrangeGreen,
+  });
+}
+
+export function guard(armory: Armory): RenderTexture {
+  return armory.peonTexture({
+    hair: HairColor.Brown,
+    skin: SkinColor.Tan,
+    shirt: {
+      color: ShirtColor.Orange,
+      style: 13,
+    },
+    pants: PantsColor.Black,
+    shield: {
+      color: ShieldColor.Silver,
+      style: 9,
+    },
   });
 }
