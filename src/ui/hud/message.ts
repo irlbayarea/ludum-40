@@ -20,7 +20,7 @@ export default class MessagePanel extends Phaser.Plugin {
   public static readonly mainTextPanel = new Phaser.Rectangle(
     MessagePanel.mainPanel.x + MessagePanel.textPadX,
     MessagePanel.mainPanel.y + MessagePanel.textPadY,
-    MessagePanel.mainPanel.width / (MessagePanel.gr ** MessagePanel.gr) -
+    MessagePanel.mainPanel.width / MessagePanel.gr ** MessagePanel.gr -
       2 * MessagePanel.textPadX,
     MessagePanel.mainPanel.height - 2 * MessagePanel.textPadY
   );
@@ -37,7 +37,7 @@ export default class MessagePanel extends Phaser.Plugin {
   );
 
   public static readonly messageClearCountdownTIme: number = 200;
-  
+
   private messageClearCountdown: number = 0;
 
   private text: Phaser.Text;
@@ -45,7 +45,6 @@ export default class MessagePanel extends Phaser.Plugin {
   private mainPanel: Phaser.Sprite;
   private choicePanel: Phaser.Sprite;
   private optionList: Phaser.Text[] = [];
-
 
   /**
    * MessagePanel constructor
@@ -89,9 +88,6 @@ export default class MessagePanel extends Phaser.Plugin {
         MessagePanel.mainTextPanel.height / MessagePanel.numOptions +
         'px Consolas',
     });
-    console.log(MessagePanel.mainTextPanel.height / MessagePanel.numOptions);
-    console.log(MessagePanel.mainTextPanel.height);
-    console.log(MessagePanel.numOptions);
     text.setShadow(3, 3, 'rgba(0, 0, 0, 0.5)', 2);
     text.setTextBounds(
       MessagePanel.mainTextPanel.x,
@@ -175,7 +171,6 @@ export default class MessagePanel extends Phaser.Plugin {
   }
 
   public setOptions(optionListInput: string[]): void {
-    
     if (optionListInput.length > MessagePanel.numOptions) {
       throw new Error(
         '>' + MessagePanel.numOptions + ' questions not yet supported'
@@ -184,10 +179,11 @@ export default class MessagePanel extends Phaser.Plugin {
       this.choicePanel.visible = true;
       this.mainPanel.visible = true;
       this.text.setTextBounds(
-        MessagePanel.mainTextPanel.x, 
+        MessagePanel.mainTextPanel.x,
         MessagePanel.mainTextPanel.y,
-        MessagePanel.mainTextPanel.width, 
-        MessagePanel.mainTextPanel.height);
+        MessagePanel.mainTextPanel.width,
+        MessagePanel.mainTextPanel.height
+      );
       for (let i = 0; i < optionListInput.length; i++) {
         this.optionList[i].text = `[ ${i + 1} ] ${optionListInput[i]}`;
         this.optionList[i].visible = true;
@@ -196,16 +192,16 @@ export default class MessagePanel extends Phaser.Plugin {
   }
 
   public clearOptions(): void {
-
     for (const opt of this.optionList) {
       opt.text = '';
       opt.visible = true;
     }
     this.text.setTextBounds(
-      MessagePanel.mainTextPanel.x, 
+      MessagePanel.mainTextPanel.x,
       MessagePanel.mainTextPanel.y,
-      MessagePanel.mainPanel.width, 
-      MessagePanel.mainTextPanel.height);
+      MessagePanel.mainPanel.width,
+      MessagePanel.mainTextPanel.height
+    );
     this.mainPanel.visible = false;
     this.choicePanel.visible = false;
   }
@@ -225,14 +221,11 @@ export default class MessagePanel extends Phaser.Plugin {
   }
 
   public countdown(): boolean {
-    if (this.messageClearCountdown > 0)
-    {
+    if (this.messageClearCountdown > 0) {
       this.messageClearCountdown -= 1;
-      console.log(this.messageClearCountdown);
-      return this.messageClearCountdown <= 0
+      return this.messageClearCountdown <= 0;
     } else {
       return false;
     }
   }
-
 }

@@ -28,8 +28,6 @@ export default class HudRenderer {
     this.renderQuestion(this.model.question);
     this.renderKillCount(this.model.killCount);
     this.renderScore(this.model.score);
-
-
   }
 
   public setMessagePanelClearCountdown() {
