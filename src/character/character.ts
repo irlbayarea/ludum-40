@@ -7,6 +7,7 @@ import Crisis from '../crisis/crisis';
 import CrisisOption from '../crisis/option';
 import { randomName } from './names';
 import Path from '../world_state/path';
+import { Weapon } from '../ui/sprites/weapon';
 
 export default class Character {
   public static readonly minSpeed: number = 10;
@@ -35,6 +36,8 @@ export default class Character {
   private sprite: Phaser.Sprite;
   private isGuard: boolean;
   private salary: number;
+
+  private mWeapon: Weapon;
 
   constructor(
     name: string = randomName(),
@@ -139,6 +142,27 @@ export default class Character {
     this.isGuard = isGuard;
     this.setSalary();
     this.path = null;
+  }
+
+  public arm(weapon: Weapon): void {
+    this.mWeapon = weapon;
+    weapon.attach(this.sprite);
+  }
+
+  public swing(): void {
+    this.weapon.markInUse();
+  }
+
+  get isArmed(): boolean {
+    return this.weapon != null;
+  }
+
+  get isAttacking(): boolean {
+    return this.weapon.isSwinging;
+  }
+
+  get weapon(): Weapon {
+    return this.mWeapon;
   }
 
   public getName(): string {
