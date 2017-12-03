@@ -23,17 +23,19 @@ export default class Main extends Phaser.State {
   public create(): void {
     this.createMap();
 
-    game.gameEvents.addListener(EventType.CrisisStart, (e: Event) => {
-      const crisis: Crisis = e.value;
-      this.messages.setText(
-        '🔥🔥 CRISIS! "' + crisis.description + '" Started'
-      );
-    });
+    if (common.experiment('demo-criss')) {
+      game.gameEvents.addListener(EventType.CrisisStart, (e: Event) => {
+        const crisis: Crisis = e.value;
+        this.messages.setText(
+          '🔥🔥 CRISIS! "' + crisis.description + '" Started'
+        );
+      });
 
-    game.gameEvents.addListener(EventType.CrisisEnd, (e: Event) => {
-      const crisis: Crisis = e.value;
-      this.messages.setText('"' + crisis.description + '" Ended.');
-    });
+      game.gameEvents.addListener(EventType.CrisisEnd, (e: Event) => {
+        const crisis: Crisis = e.value;
+        this.messages.setText('"' + crisis.description + '" Ended.');
+      });
+    }
 
     // Enable keyboard.
     this.controller = new Controller(this.game);
@@ -56,19 +58,24 @@ export default class Main extends Phaser.State {
       this.controller
     );
     this.messages.setText('Welcome to Guard Captain');
-    this.messages.askUser('Sushi', 'Tacos', option =>
-      common.debug.log(
-        `Selected: ${option === 1 ? 'Great Choice' : 'Eh, not bad'}`
-      )
-    );
+
+    if (common.experiment('demo-ask-user')) {
+      this.messages.askUser('Sushi', 'Tacos', option =>
+        common.debug.log(
+          `Selected: ${option === 1 ? 'Great Choice' : 'Eh, not bad'}`
+        )
+      );
+    }
   }
 
   public update(): void {
     this.character.body.setZeroVelocity();
 
-    const elapsed: number = game.time.elapsed;
-    this.tickEvents(elapsed);
-    this.tickCrises(elapsed);
+    if (common.experiment('demo-criss')) {
+      const elapsed: number = game.time.elapsed;
+      this.tickEvents(elapsed);
+      this.tickCrises(elapsed);
+    }
 
     this.game.camera.follow(this.character);
     if (this.controller.isLeft && !this.controller.isRight) {
