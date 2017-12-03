@@ -31,7 +31,7 @@ export const globals: IGlobals = {
   experiments: userExperiments,
   gameplay: {
     goblinSpawnRateMs: 10 * 1000,
-    contractRateMs: 2 * 1000,
+    contractRateMs: 5 * 1000,
     crisisRateMs: 10 * 1000,
   },
 };
