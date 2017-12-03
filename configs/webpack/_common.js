@@ -12,8 +12,11 @@ module.exports = {
    * @param extend Object to merge into the default options.
    * @returns {Object}
    */
-  config: extend => {
+  config: (extend, env) => {
     'use strict';
+    /// Whether to run the type checker.
+    const noTsCheck = env && !!env.NOTSCHECK;
+    console.log('NOTSCHECK', !!noTsCheck);
     return Object.assign(extend, {
       /**
        * Entrypoint to the bundles that should be output.
@@ -70,7 +73,12 @@ module.exports = {
           { test: /pixi\.js$/, loader: 'expose-loader?PIXI' },
           { test: /phaser-split\.js$/, loader: 'expose-loader?Phaser' },
           { test: /p2\.js$/, loader: 'expose-loader?p2' },
-          { test: /\.ts$/, use: 'ts-loader', exclude: '/node_modules/' },
+          {
+            test: /\.ts$/,
+            loader: 'ts-loader',
+            exclude: '/node_modules/',
+            options: { transpileOnly: noTsCheck },
+          },
         ],
       },
     });

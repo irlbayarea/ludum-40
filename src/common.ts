@@ -29,6 +29,11 @@ export const globals: IGlobals = {
     width: __DIMENSIONS.width,
   },
   experiments: userExperiments,
+  gameplay: {
+    goblinSpawnRateMs: 10 * 1000,
+    guardSpawnRateMs: 20 * 1000,
+    crisisRateMs: 10 * 1000,
+  },
 };
 
 /**
@@ -62,5 +67,14 @@ interface IGlobals {
    */
   readonly experiments: {
     [key: string]: boolean;
+  };
+
+  /**
+   * Gampeplay configuration.
+   */
+  readonly gameplay: {
+    goblinSpawnRateMs: number;
+    guardSpawnRateMs: number;
+    crisisRateMs: number;
   };
 }

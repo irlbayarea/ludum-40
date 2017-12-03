@@ -1,33 +1,32 @@
-import Event from './event';
-import EventType from './event_type';
+import * as events from '../events';
 
-export default class EventQueue {
+export class EventQueue {
   private time: number;
-  private events: Event[];
-  private unscheduled: Event[];
+  private queue: events.Event[];
+  private unscheduled: events.Event[];
 
   constructor(time: number) {
     this.time = time;
-    this.events = [];
+    this.queue = [];
     this.unscheduled = [];
   }
 
   // Adds e to the end of the queue.
-  public add(type: EventType, value: any, duration: number) {
-    this.unscheduled.push(new Event(type, value, this.time + duration));
+  public add(type: events.EventType, value: any, duration: number) {
+    this.unscheduled.push(new events.Event(type, value, this.time + duration));
   }
 
   public isEmpty(): boolean {
-    return this.events.length < 1;
+    return this.queue.length < 1;
   }
 
   // Records that the given time is the current game time and returns all
   // events that have completed.
-  public tick(elapsed: number): Event[] {
+  public tick(elapsed: number): events.Event[] {
     this.time += elapsed;
-    const completed: Event[] = [];
+    const completed: events.Event[] = [];
 
-    this.unscheduled.forEach(e => this.events.push(e));
+    this.unscheduled.forEach(e => this.queue.push(e));
     this.unscheduled = [];
 
     while (!this.isEmpty() && this.isComplete(this.peek())) {
@@ -40,14 +39,14 @@ export default class EventQueue {
     return completed;
   }
 
-  private peek(): Event {
+  private peek(): events.Event {
     if (this.isEmpty()) {
       throw new RangeError();
     }
-    return this.events[0];
+    return this.queue[0];
   }
 
-  private isComplete(event: Event) {
+  private isComplete(event: events.Event) {
     return event.time < this.time;
   }
 
@@ -57,6 +56,6 @@ export default class EventQueue {
     if (this.isEmpty()) {
       throw new RangeError();
     }
-    return this.events.pop();
+    return this.queue.pop();
   }
 }
