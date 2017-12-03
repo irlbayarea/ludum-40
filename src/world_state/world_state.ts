@@ -103,27 +103,29 @@ export default class WorldState {
     this.characters.forEach(char => {
       char.getSprite().body.setZeroVelocity();
     });
-    this.characters.filter(char => char.path !== null).forEach(char => {
-      const body = char.getSprite().body;
-      const pos: Phaser.Point = new Phaser.Point(body.x / 64, body.y / 64);
-      const path = char.path;
-      let goalPoint: { x: number; y: number } | null = path!.currentGoal();
-      if (goalPoint === null) {
-        char.path = null;
-        return;
-      }
-      if (path!.isNearGoal(pos)) {
-        char.path!.advance();
-        goalPoint = char.path!.currentGoal();
+    this.characters
+      .filter(char => char.path !== null && char.path !== undefined)
+      .forEach(char => {
+        const body = char.getSprite().body;
+        const pos: Phaser.Point = new Phaser.Point(body.x / 64, body.y / 64);
+        const path = char.path;
+        let goalPoint: { x: number; y: number } | null = path!.currentGoal();
         if (goalPoint === null) {
           char.path = null;
           return;
         }
-      }
-      WorldState.moveCharacterTick(
-        char,
-        new Phaser.Point(goalPoint.x * 64, goalPoint.y * 64)
-      );
-    });
+        if (path!.isNearGoal(pos)) {
+          char.path!.advance();
+          goalPoint = char.path!.currentGoal();
+          if (goalPoint === null) {
+            char.path = null;
+            return;
+          }
+        }
+        WorldState.moveCharacterTick(
+          char,
+          new Phaser.Point(goalPoint.x * 64, goalPoint.y * 64)
+        );
+      });
   }
 }

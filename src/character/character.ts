@@ -28,10 +28,10 @@ export default class Character {
   public readonly charisma: number;
   public readonly randomness: number;
   public readonly goodness: number;
+  public readonly name: string;
 
   public path: Path | null;
 
-  private name: string;
   private sprite: Phaser.Sprite;
   private isGuard: boolean;
   private salary: number;
@@ -251,7 +251,7 @@ function scoreOption(c: Character, o: CrisisOption): number {
 /**
  * randomGuard()
  */
-export function randomGuard(): Character {
+export function randomCharacter(): Character {
   return new Character(
     randomName(),
     Math.random() * (Character.maxSpeed - Character.minSpeed) +

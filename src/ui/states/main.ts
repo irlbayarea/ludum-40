@@ -10,7 +10,6 @@ import { game } from '../../index';
 import Character from '../../character/character';
 import { generateMap, convertToTiles } from '../../map/generator';
 import HudRenderer from '../hud/hud_renderer';
-import UserQuestion from '../../user_question';
 import HutFactory from '../sprites/hut';
 import HudBuilder from '../hud/hud_builder';
 import { ITicker } from '../../ticker';
@@ -52,16 +51,14 @@ export default class Main extends Phaser.State {
     game.hud = game.hud.setMessage('Welcome to Guard Captain');
     if (common.experiment('demo-ask-users')) {
       game.hud = game.hud.setQuestion(
-        new UserQuestion(
-          'Choose a food!',
-          ['Sushi', 'Tacos'],
-          (option: number) => {
-            common.debug.log(
-              `Selected: ${option === 1 ? 'Great Choice' : 'Eh, not bad'}`
-            );
-            game.hud = game.hud.setQuestion(null);
-          }
-        )
+        'Choose a food!',
+        ['Sushi', 'Tacos'],
+        (option: number) => {
+          common.debug.log(
+            `Selected: ${option === 1 ? 'Great Choice' : 'Eh, not bad'}`
+          );
+          game.hud = game.hud.clearQuestion();
+        }
       );
     }
 
