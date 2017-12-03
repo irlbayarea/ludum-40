@@ -27,7 +27,6 @@ export default class WorldState {
     char.getSprite().body.moveRight(dir.x);
   }
 
-
   public readonly grid: Grid;
   public readonly characters: Character[];
 
