@@ -15,6 +15,8 @@ import HutFactory from '../sprites/hut';
 import HudBuilder from '../hud/hud_builder';
 import { ITicker } from '../../ticker';
 
+import * as demo from '../demo';
+
 /**
  * Main state (i.e. in the game).
  */
@@ -63,18 +65,18 @@ export default class Main extends Phaser.State {
       );
     }
 
-    if (common.experiment('demo-huts')) {
-      const huts = new HutFactory(this.game);
-      huts.sprite(5, 5);
-    }
+    this.createDemos();
 
     this.playerCharacter = new Character();
     this.playerCharacter.setSprite(this.playerSprite);
-    game.worldState.characters[0] = this.playerCharacter;
-    game.worldState.directCharacterToPoint(
-      this.playerCharacter,
-      new Phaser.Point(15, 15)
-    );
+
+    if (common.experiment('pathfinding')) {
+      game.worldState.characters[0] = this.playerCharacter;
+      game.worldState.directCharacterToPoint(
+        this.playerCharacter,
+        new Phaser.Point(15, 15)
+      );
+    }
   }
 
   public preload(): void {
@@ -97,6 +99,9 @@ export default class Main extends Phaser.State {
       game.generators.forEach((generator: ITicker) => generator.tick(elapsed));
     }
 
+    // Run conditional logic for demos.
+    this.updateDemos();
+    
     // Render
     this.hudRenderer.render(game.hud);
 
@@ -163,5 +168,27 @@ export default class Main extends Phaser.State {
   private createGeneratedMap(): Phaser.Tilemap {
     const map = generateMap(43, 43);
     return convertToTiles(map, this.game, 'tiles');
+  }
+  
+  private createDemos(): void {
+    if (common.experiment('demo-armory')) {
+      demo.armoryDemo(this.game);
+    }
+    if (common.experiment('demo-huts')) {
+      const huts = new HutFactory(this.game);
+      huts.sprite(5, 5);
+    }
+  }
+
+  private updateDemos(): void {
+    // Used by demos below.
+    const elapsed: number = game.time.elapsed;
+    if (common.experiment('demo-crisis')) {
+      this.tickEvents(elapsed);
+      this.tickCrises(elapsed);
+    }
+    if (common.experiment('goblin')) {
+      this.tickGoblinGenerator(elapsed);
+    }
   }
 }
