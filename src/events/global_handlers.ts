@@ -1,9 +1,10 @@
 import * as events from '../events';
 import * as common from '../common';
+import * as textures from '../character/textures';
+
 import { Game } from '../index';
 import Crisis from '../crisis/crisis';
 import Character from '../character/character';
-import { Armory } from '../ui/sprites/armory';
 import { SpawnConfig, randomSpawnLocation } from '../character/spawn_config';
 
 export function registerGlobalHandlers(game: Game): void {
@@ -47,7 +48,7 @@ export function registerGlobalHandlers(game: Game): void {
           game.hud = game.hud.setMessage('You hired ' + character.name + '!');
           game.gameEvents.emit(
             events.EventType.CharacterSpawn,
-            new SpawnConfig(character, new Armory(game).peonTexture(), x, y)
+            new SpawnConfig(character, textures.guard(game.armory), x, y)
           );
         }
       }
