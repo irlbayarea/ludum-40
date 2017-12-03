@@ -33,6 +33,7 @@ export default class Character {
 
   public path: Path | null;
 
+  private wandering: boolean;
   private sprite: Phaser.Sprite;
   private isGuard: boolean;
   private salary: number;
@@ -163,6 +164,18 @@ export default class Character {
 
   get weapon(): Weapon {
     return this.mWeapon;
+  }
+
+  public wander() {
+    this.wandering = true;
+  }
+
+  public stopWandering() {
+    this.wandering = false;
+  }
+
+  public isWandering(): boolean {
+    return this.wandering;
   }
 
   public getName(): string {
