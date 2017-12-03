@@ -292,6 +292,7 @@ export default class WorldState {
 
   private updatePlayerCharacter(): void {
     if (game.worldState.playerCharacter.getSprite().health === 0) {
+      remove(this.characters, _ => true);
       game.state.start('Over');
     }
     if (game.controller.isLeft && !game.controller.isRight) {
