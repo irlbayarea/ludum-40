@@ -20,37 +20,22 @@ import * as demo from '../demo';
  * Main state (i.e. in the game).
  */
 export default class Main extends Phaser.State {
-  private controller: Controller;
-  private playerSprite: Phaser.Sprite;
-  private playerCharacter: Character;
   private alwaysOnTop: Phaser.Group;
   private hudRenderer: HudRenderer;
 
   public create(): void {
     // Enable keyboard.
-    this.controller = new Controller(this.game);
+    game.controller = new Controller(this.game);
 
     // Enable physics.
     game.physics.startSystem(Phaser.Physics.P2JS);
-
-    // Main character.
-    this.playerSprite = this.game.add.sprite(
-      64 * 20,
-      64 * 20,
-      'characters',
-      325
-    );
-    this.playerSprite.scale = new Phaser.Point(4.0, 4.0);
-    game.physics.p2.enable(this.playerSprite);
-    this.playerSprite.body.fixedRotation = true;
-    game.camera.follow(this.playerSprite);
 
     // Enable HUD.
     game.hud = new HudBuilder().build();
     this.alwaysOnTop = this.game.add.group();
     this.hudRenderer = new HudRenderer(
       game,
-      this.game.plugins.add(MessagePanel, this.alwaysOnTop, this.controller)
+      this.game.plugins.add(MessagePanel, this.alwaysOnTop, game.controller)
     );
 
     game.hud = game.hud.setMessage('Welcome to Guard Captain');
@@ -69,13 +54,11 @@ export default class Main extends Phaser.State {
 
     this.createDemos();
 
-    this.playerCharacter = new Character();
-    this.playerCharacter.setSprite(this.playerSprite);
+    this.createPlayerCharacter();
 
     if (common.experiment('pathfinding')) {
-      game.worldState.characters[0] = this.playerCharacter;
       game.worldState.directCharacterToPoint(
-        this.playerCharacter,
+        game.worldState.playerCharacter,
         new Phaser.Point(15, 15)
       );
     }
@@ -103,17 +86,23 @@ export default class Main extends Phaser.State {
 
     // Render
     this.hudRenderer.render(game.hud);
+  }
 
-    if (this.controller.isLeft && !this.controller.isRight) {
-      this.playerCharacter.getSprite().body.moveLeft(400);
-    } else if (this.controller.isRight) {
-      this.playerCharacter.getSprite().body.moveRight(400);
-    }
-    if (this.controller.isDown && !this.controller.isUp) {
-      this.playerCharacter.getSprite().body.moveUp(400);
-    } else if (this.controller.isUp) {
-      this.playerCharacter.getSprite().body.moveDown(400);
-    }
+  private createPlayerCharacter(): void {
+    const playerSprite: Phaser.Sprite = this.game.add.sprite(
+      64 * 5,
+      64 * 5,
+      'characters',
+      325
+    );
+    playerSprite.scale = new Phaser.Point(4.0, 4.0);
+    game.physics.p2.enable(playerSprite);
+    playerSprite.body.fixedRotation = true;
+    game.camera.follow(playerSprite);
+
+    const playerCharacter: Character = new Character();
+    playerCharacter.setSprite(playerSprite);
+    game.worldState.playerCharacter = playerCharacter;
   }
 
   private createMap(): Phaser.Tilemap {

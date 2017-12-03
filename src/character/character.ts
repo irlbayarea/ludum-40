@@ -138,6 +138,7 @@ export default class Character {
 
     this.isGuard = isGuard;
     this.setSalary();
+    this.path = null;
   }
 
   public getName(): string {
