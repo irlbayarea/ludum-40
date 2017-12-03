@@ -72,7 +72,7 @@ export default class Character {
       goodness: average(Character.minGoodness, Character.maxGoodness),
     };
     stats = assign(defaultStats, stats);
-    
+
     this.name = name;
 
     if (
