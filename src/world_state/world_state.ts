@@ -4,10 +4,25 @@ import * as EasyStar from 'easystarjs';
 import Grid from './grid';
 import Path from './path';
 import Character from '../character/character';
+import { game } from '../index';
 
 /**
  */
 export default class WorldState {
+  public static toWorldCoords(physicsCoords: {
+    x: number;
+    y: number;
+  }): { x: number; y: number } {
+    return { x: physicsCoords.x / 64, y: physicsCoords.y / 64 };
+  }
+
+  public static fromWordCoords(physicsCoords: {
+    x: number;
+    y: number;
+  }): { x: number; y: number } {
+    return { x: physicsCoords.x * 64, y: physicsCoords.y * 64 };
+  }
+
   /**
    * Moves a character on a given tick toward the target point. Use functions
    * like `directCharacterToPoint` to control character movement.
@@ -144,5 +159,19 @@ export default class WorldState {
           new Phaser.Point(goalPoint.x * 64, goalPoint.y * 64)
         );
       });
+    this.updatePlayerCharacter();
+  }
+
+  private updatePlayerCharacter(): void {
+    if (game.controller.isLeft && !game.controller.isRight) {
+      game.worldState.playerCharacter.getSprite().body.moveLeft(400);
+    } else if (game.controller.isRight) {
+      game.worldState.playerCharacter.getSprite().body.moveRight(400);
+    }
+    if (game.controller.isDown && !game.controller.isUp) {
+      game.worldState.playerCharacter.getSprite().body.moveUp(400);
+    } else if (game.controller.isUp) {
+      game.worldState.playerCharacter.getSprite().body.moveDown(400);
+    }
   }
 }

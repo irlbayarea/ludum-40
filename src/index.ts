@@ -16,6 +16,7 @@ import Main from './ui/states/main';
 import WorldState from './world_state/world_state';
 import HudModel from './ui/hud/hud_model';
 import { ITicker } from './ticker';
+import Controller from './input/controller';
 import { SpawnConfig } from './character/spawn_config';
 import { Armory } from './ui/sprites/armory';
 
@@ -24,7 +25,8 @@ export class Game extends phaser.Game {
   public gameEvents: events.GameEvents;
   public hud: HudModel;
   public worldState: WorldState;
-  public armory: Armory;
+  public controller: Controller;
+  public readonly armory: Armory;
 
   constructor() {
     super({
