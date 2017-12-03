@@ -2,12 +2,10 @@ import Character from './character';
 
 export default class Player {
   private money: number;
-  private popularity: number;
   private character: Character;
 
   constructor(name: string) {
-    this.money = 100;
-    this.popularity = 100;
+    this.money = 0;
     this.character = new Character(name);
   }
 
@@ -19,17 +17,8 @@ export default class Player {
     return this.money;
   }
 
-  public getPopularity(): number {
-    return this.popularity;
-  }
-
   public modMoney(mod: number): number {
     this.money += mod;
     return this.money;
-  }
-
-  public modPopularity(mod: number): number {
-    this.popularity += mod;
-    return this.popularity;
   }
 }

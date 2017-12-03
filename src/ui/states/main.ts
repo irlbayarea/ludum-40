@@ -49,6 +49,10 @@ export default class Main extends Phaser.State {
     game.camera.follow(this.playerSprite);
     this.playerSword = new Weapon(this.game);
     this.playerSword.attach(this.playerSprite);
+    (window as any).$D.move = (x: number, y: number) => {
+      this.playerSprite.reset(x, y);
+      game.camera.follow(this.playerSprite);
+    };
 
     // Enable HUD.
     game.hud = new HudBuilder().build();
@@ -180,7 +184,8 @@ export default class Main extends Phaser.State {
     }
     if (common.experiment('demo-huts')) {
       const huts = new HutFactory(this.game);
-      huts.sprite(5, 5);
+      huts.hut(64 * 1, 64);
+      huts.den(64 * 3, 64);
     }
   }
 }
