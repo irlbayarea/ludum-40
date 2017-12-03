@@ -1,5 +1,12 @@
 import * as Phaser from 'phaser-ce';
-import { Armory, HairColor, ShirtColor, SkinColor } from './sprites/armory';
+import {
+  Armory,
+  HairColor,
+  ShirtColor,
+  SkinColor,
+  PantsColor,
+  ShieldColor,
+} from './sprites/armory';
 
 export function armoryDemo(game: Phaser.Game): void {
   const armory = new Armory(game);
@@ -11,15 +18,22 @@ export function armoryDemo(game: Phaser.Game): void {
       color: ShirtColor.Green,
       style: 9,
     },
+    pants: PantsColor.Green,
+    shield: ShieldColor.OrangeGreen,
   });
 
-  // White Guy With Dark Hair.
+  // Tan Guy With Short Dark Hair.
   armory.peonSprite(64 * 5, 64 * 6, {
     hair: HairColor.Brown,
     skin: SkinColor.Tan,
     shirt: {
       color: ShirtColor.Orange,
       style: 13,
+    },
+    pants: PantsColor.Black,
+    shield: {
+      color: ShieldColor.Silver,
+      style: 9,
     },
   });
 
@@ -37,6 +51,7 @@ export function armoryDemo(game: Phaser.Game): void {
       color: HairColor.White,
       style: 1,
     },
+    hat: 32,
   });
 
   // With Custom Hair.
