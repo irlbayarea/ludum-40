@@ -67,23 +67,6 @@ export default class Main extends Phaser.State {
     }
   }
 
-  private createPlayerCharacter(): void {
-    let playerSprite: Phaser.Sprite = this.game.add.sprite(
-      64 * 5,
-      64 * 5,
-      'characters',
-      325
-    );
-    playerSprite.scale = new Phaser.Point(4.0, 4.0);
-    game.physics.p2.enable(playerSprite);
-    playerSprite.body.fixedRotation = true;
-    game.camera.follow(playerSprite);
-
-    let playerCharacter: Character = new Character();
-    playerCharacter.setSprite(playerSprite);
-    game.worldState.playerCharacter = playerCharacter;
-  }
-
   public preload(): void {
     this.createMap();
   }
@@ -106,6 +89,23 @@ export default class Main extends Phaser.State {
 
     // Render
     this.hudRenderer.render(game.hud);
+  }
+
+  private createPlayerCharacter(): void {
+    const playerSprite: Phaser.Sprite = this.game.add.sprite(
+      64 * 5,
+      64 * 5,
+      'characters',
+      325
+    );
+    playerSprite.scale = new Phaser.Point(4.0, 4.0);
+    game.physics.p2.enable(playerSprite);
+    playerSprite.body.fixedRotation = true;
+    game.camera.follow(playerSprite);
+
+    const playerCharacter: Character = new Character();
+    playerCharacter.setSprite(playerSprite);
+    game.worldState.playerCharacter = playerCharacter;
   }
 
   private createMap(): Phaser.Tilemap {
