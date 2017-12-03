@@ -6,10 +6,11 @@ import * as Phaser from 'phaser-ce';
 import Crisis from '../crisis/crisis';
 import CrisisOption from '../crisis/option';
 import { randomName } from './names';
+import Path from '../world_state/path';
 
 export default class Character {
-  public static readonly minSpeed: number = 1;
-  public static readonly maxSpeed: number = 10;
+  public static readonly minSpeed: number = 10;
+  public static readonly maxSpeed: number = 500;
   public static readonly minStrength: number = 0;
   public static readonly maxStrength: number = 10;
   public static readonly minIntelligence: number = 0;
@@ -27,6 +28,8 @@ export default class Character {
   public readonly charisma: number;
   public readonly randomness: number;
   public readonly goodness: number;
+
+  public path: Path | null;
 
   private name: string;
   private sprite: Phaser.Sprite;
@@ -153,6 +156,13 @@ export default class Character {
 
   public getSalary(): number {
     return this.salary;
+  }
+
+  /**
+   * Returns the position of the character in world coordinates (1 tile = 1.00 distance).
+   */
+  public getWorldPosition(): Phaser.Point {
+    return new Phaser.Point(this.sprite.x / 64, this.sprite.y / 64);
   }
 
   /**
