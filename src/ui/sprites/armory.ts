@@ -13,32 +13,37 @@ export class Armory extends SpriteFactory {
     super(game);
   }
 
-  public peonSprite(x?: number, y?: number, options?: {
-    skin?: SkinColor,
-    hair?: HairColor | {color: HairColor, style: number} | null,
-    beard?: HairColor | {color: HairColor, style: number} | null,
-    lips?: boolean
-  }): Phaser.Sprite {
+  public peonSprite(
+    x?: number,
+    y?: number,
+    options?: {
+      skin?: SkinColor;
+      hair?: HairColor | { color: HairColor; style: number } | null;
+      beard?: HairColor | { color: HairColor; style: number } | null;
+      lips?: boolean;
+    }
+  ): Phaser.Sprite {
     const sprite = this.game.add.sprite(x, y, this.peonTexture(options));
     sprite.scale = new Phaser.Point(4.0, 4.0);
     return sprite;
   }
 
   public peonTexture(options?: {
-    skin?: SkinColor,
-    hair?: HairColor | {color: HairColor, style: number} | null,
-    beard?: HairColor | {color: HairColor, style: number} | null,
-    lips?: boolean
+    skin?: SkinColor;
+    hair?: HairColor | { color: HairColor; style: number } | null;
+    beard?: HairColor | { color: HairColor; style: number } | null;
+    lips?: boolean;
   }): Phaser.RenderTexture {
-    options = assign({
-      skin: SkinColor.White,
-      hair: null,
-      beard: null,
-      lips: false,
-    }, options);
-    const parts = [
-      this.body(options.skin as SkinColor, options.lips),
-    ];
+    options = assign(
+      {
+        skin: SkinColor.White,
+        hair: null,
+        beard: null,
+        lips: false,
+      },
+      options
+    );
+    const parts = [this.body(options.skin as SkinColor, options.lips)];
     if (options.hair) {
       if (isNumber(options.hair)) {
         parts.push(this.hair(options.hair));
@@ -53,14 +58,14 @@ export class Armory extends SpriteFactory {
         parts.push(this.beard(options.beard.color, options.beard.style));
       }
     }
-    return this.flattenedAsTexture(parts, {width: 16, height: 16});
+    return this.flattenedAsTexture(parts, { width: 16, height: 16 });
   }
 
   /**
    * Returns the sprite for a body.
    *
-   * @param color 
-   * @param lips 
+   * @param color
+   * @param lips
    */
   protected body(color: SkinColor, lips: boolean = false): Phaser.Sprite {
     const index = color * Armory.sheetWidth + (lips ? 1 : 0);
@@ -72,7 +77,7 @@ export class Armory extends SpriteFactory {
    *
    * @param style Index, numbers 0 -> 11, inclusive.
    */
-  protected hair(color: HairColor, style: number = 0) : any {
+  protected hair(color: HairColor, style: number = 0): any {
     let offset: number;
     switch (color) {
       case HairColor.Brown:
@@ -102,10 +107,10 @@ export class Armory extends SpriteFactory {
 
   /**
    * Returns the sprite for a specific beard style.
-   * 
+   *
    * @param style Index, numbers 0 -> 3, inclusive.
    */
-  protected beard(color: HairColor, style: number = 0) : any {
+  protected beard(color: HairColor, style: number = 0): any {
     return this.hair(color, style + 12);
   }
 }

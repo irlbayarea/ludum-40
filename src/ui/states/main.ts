@@ -88,7 +88,7 @@ export default class Main extends Phaser.State {
     this.playerCharacter = new Character(this.playerSprite);
 
     if (common.experiment('pathfinding')) {
-    game.worldState.characters[0] = this.playerCharacter;
+      game.worldState.characters[0] = this.playerCharacter;
       game.worldState.directCharacterToPoint(
         this.playerCharacter,
         new Phaser.Point(15, 15)
