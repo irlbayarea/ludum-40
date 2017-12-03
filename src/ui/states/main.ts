@@ -5,6 +5,7 @@ import Controller from '../../input/controller';
 import MessagePanel from '../hud/message';
 
 import * as common from '../../common';
+import * as textures from '../../character/textures';
 
 import { game } from '../../index';
 import Character from '../../character/character';
@@ -14,7 +15,7 @@ import HutFactory from '../sprites/hut';
 import { ITicker } from '../../ticker';
 
 import * as demo from '../demo';
-import { Weapon } from '../sprites/weapon';
+import { SpawnConfig } from '../../character/spawn_config';
 
 /**
  * Main state (i.e. in the game).
@@ -98,21 +99,14 @@ export default class Main extends Phaser.State {
   }
 
   private createPlayerCharacter(): void {
-    const playerSprite: Phaser.Sprite = this.game.add.sprite(
-      64 * 5,
-      64 * 5,
-      'characters',
-      325
+    const playerCharacterTemplate: Character = new Character('Porgby', 400);
+    const sc: SpawnConfig = new SpawnConfig(
+      playerCharacterTemplate,
+      textures.guard(game.armory),
+      15,
+      15
     );
-    playerSprite.scale = new Phaser.Point(4.0, 4.0);
-    game.physics.p2.enable(playerSprite);
-    playerSprite.body.fixedRotation = true;
-    game.camera.follow(playerSprite);
-
-    const playerCharacter: Character = new Character();
-    playerCharacter.setSprite(playerSprite);
-    game.worldState.playerCharacter = playerCharacter;
-    playerCharacter.arm(new Weapon(game));
+    game.spawn(sc);
   }
 
   private createMap(): Phaser.Tilemap {

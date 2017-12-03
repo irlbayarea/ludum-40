@@ -5,6 +5,7 @@ import Grid from './grid';
 import Path from './path';
 import Character from '../character/character';
 import { game } from '../index';
+import { Weapon } from '../ui/sprites/weapon';
 
 /**
  */
@@ -43,7 +44,7 @@ export default class WorldState {
   }
 
   public readonly grid: Grid;
-  public readonly characters: Character[];
+  private readonly characters: Character[];
 
   private readonly astar: EasyStar.js;
 
@@ -89,12 +90,25 @@ export default class WorldState {
   }
 
   /**
+   * Adds a character to the game state, initializing its physics. Expects a Character object with a sprite.
+   */
+  public addCharacter(character: Character): void {
+    this.characters.push(character);
+    // Hack to set player follow cam.
+    if (this.characters.length === 1) {
+      game.camera.follow(character.getSprite());
+      this.playerCharacter = character;
+      this.playerCharacter.arm(new Weapon(game));
+    }
+  }
+
+  /**
    * Takes `from` and `to` which must be world space coordinates, or a distance
    * of 1.00 every tile. Returns a Path or null if no path could be found.
    */
   public pathfind(from: Phaser.Point, to: Phaser.Point): Path | null {
     const points: Array<{ x: number; y: number }> = [];
-    this.astar.setIterationsPerCalculation(10000000000);
+    this.astar.setIterationsPerCalculation(10000000);
     this.astar.findPath(
       Math.floor(from.x),
       Math.floor(from.y),
@@ -104,7 +118,7 @@ export default class WorldState {
         if (path !== null) {
           for (let i = 1; i < path.length; i++) {
             // Flip x,y because of the way it's stored inside pathfinding algo.
-            points[i - 1] = { x: path[i].y, y: path[i].x };
+            points[i - 1] = { x: path[i].x, y: path[i].y };
           }
         }
       }

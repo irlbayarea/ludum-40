@@ -66,17 +66,18 @@ export class Game extends phaser.Game {
   }
 
   public spawn(config: SpawnConfig) {
-    if (common.experiment('spawn')) {
-      const sprite = game.add.sprite(
-        config.x * 64,
-        config.y * 64,
-        config.texture
-      );
-      sprite.scale = new Phaser.Point(4.0, 4.0);
-      game.physics.p2.enable(sprite);
-      config.character.setSprite(sprite);
-      game.worldState.characters.push(config.character);
-    }
+    const sprite = game.add.sprite(
+      config.x * 64,
+      config.y * 64,
+      config.texture
+    );
+    sprite.scale = new Phaser.Point(4.0, 4.0);
+    game.physics.p2.enable(sprite);
+    sprite.body.fixedRotation = true;
+    sprite.body.clearShapes();
+    sprite.body.addCircle(17, 0, 0, 0);
+    config.character.setSprite(sprite);
+    game.worldState.addCharacter(config.character);
   }
 
   public offerContract(character: Character) {
