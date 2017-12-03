@@ -1,5 +1,5 @@
 import * as Debug from 'debug';
-import { forIn } from 'lodash';
+import { forIn, assign } from 'lodash';
 import { parse } from 'query-string';
 
 /**
@@ -30,13 +30,18 @@ export const globals: IGlobals = {
   },
   experiments: userExperiments,
   gameplay: {
+    goblinSpawnRateMs: 15 * 100,
+    goblinThinkRateMs: 1000,
+    npcAttackRateMs: 300,
+
     aggroRange: 15,
     contractRateMs: 20 * 1000,
     crisisRateMs: 10 * 1000,
-    goblinSpawnRateMs: 15 * 100,
     defaultWeaponRange: 1.25,
     playerRangeModifier: 0.75,
     playerStartingHP: 100,
+    hutSpawnRateMs: 15 * 1000,
+    denSpawnRateMs: 20 * 1000,
   },
 };
 
@@ -47,6 +52,13 @@ export const globals: IGlobals = {
  */
 export function experiment(name: string): boolean {
   return globals.experiments[name] === true;
+}
+
+if (experiment('accelerated')) {
+  assign(globals.gameplay, {
+    hutSpawnRateMs: globals.gameplay.hutSpawnRateMs / 10,
+    denSpawnRateMs: globals.gameplay.denSpawnRateMs / 10,
+  });
 }
 
 /**
@@ -78,11 +90,29 @@ interface IGlobals {
    */
   readonly gameplay: {
     aggroRange: number;
+    /**
+     * How often to spawn goblins at dens.
+     */
     goblinSpawnRateMs: number;
+
+    /**
+     * How often to have goblins think about objectives.
+     */
+    goblinThinkRateMs: number;
+
+    /**
+     * How often to have armed NPCs swing their weapon.
+     *
+     * TODO: We should allow this number to be accelerated for stronger NPCs.
+     */
+    npcAttackRateMs: number;
+
     contractRateMs: number;
     crisisRateMs: number;
     defaultWeaponRange: number;
     playerRangeModifier: number;
     playerStartingHP: number;
+    hutSpawnRateMs: number;
+    denSpawnRateMs: number;
   };
 }
