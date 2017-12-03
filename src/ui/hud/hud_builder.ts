@@ -10,8 +10,8 @@ export default class HudBuilder {
   public build(): HudModel {
     return new HudModel(
       this,
-      this.score,
-      this.killCount,
+      (this.score = 0),
+      (this.killCount = 0),
       this.message,
       this.question
     );
