@@ -22,6 +22,8 @@ import CharacterGenerator from '../../character/character_generator';
 import ContractGenerator from '../../character/contract_generator';
 import { randomName } from '../../character/names';
 
+import * as demo from '../demo';
+
 /**
  * Main state (i.e. in the game).
  */
@@ -94,18 +96,18 @@ export default class Main extends Phaser.State {
       );
     }
 
-    if (common.experiment('demo-huts')) {
-      const huts = new HutFactory(this.game);
-      huts.sprite(5, 5);
-    }
+    this.createDemos();
 
     this.playerCharacter = new Character();
     this.playerCharacter.setSprite(this.playerSprite);
-    game.worldState.characters[0] = this.playerCharacter;
-    game.worldState.directCharacterToPoint(
-      this.playerCharacter,
-      new Phaser.Point(15, 15)
-    );
+
+    if (common.experiment('pathfinding')) {
+      game.worldState.characters[0] = this.playerCharacter;
+      game.worldState.directCharacterToPoint(
+        this.playerCharacter,
+        new Phaser.Point(15, 15)
+      );
+    }
   }
 
   public preload(): void {
@@ -116,23 +118,8 @@ export default class Main extends Phaser.State {
     game.world.bringToTop(this.alwaysOnTop);
     game.worldState.update();
 
-    const elapsed: number = game.time.elapsed;
-    this.tickEvents(elapsed);
-
-    if (common.experiment('demo-huts')) {
-      const huts = new HutFactory(this.game);
-      huts.sprite(5, 5);
-    }
-
-    if (common.experiment('crisis')) {
-      this.tickCrises(elapsed);
-    }
-    if (common.experiment('spawn')) {
-      this.tickGoblinGenerator(elapsed);
-    }
-    if (common.experiment('contract')) {
-      this.tickContracts(elapsed);
-    }
+    // Run conditional logic for demos.
+    this.updateDemos();
 
     // Render
     this.hudRenderer.render(game.hud);
@@ -226,9 +213,25 @@ export default class Main extends Phaser.State {
     });
   }
 
-  private tickContracts(elapsed: number) {
-    game.contractGenerator.tick(elapsed).forEach(contract => {
-      game.gameEvents.schedule(events.EventType.Contract, contract, 1000);
-    });
+  private createDemos(): void {
+    if (common.experiment('demo-armory')) {
+      demo.armoryDemo(this.game);
+    }
+    if (common.experiment('demo-huts')) {
+      const huts = new HutFactory(this.game);
+      huts.sprite(5, 5);
+    }
+  }
+
+  private updateDemos(): void {
+    // Used by demos below.
+    const elapsed: number = game.time.elapsed;
+    if (common.experiment('demo-crisis')) {
+      this.tickEvents(elapsed);
+      this.tickCrises(elapsed);
+    }
+    if (common.experiment('goblin')) {
+      this.tickGoblinGenerator(elapsed);
+    }
   }
 }
