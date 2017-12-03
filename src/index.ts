@@ -32,6 +32,7 @@ export class Game extends phaser.Game {
       resolution: 1,
       width: common.globals.dimensions.width,
     });
+    let q;
 
     this.hud = new HudBuilder().build();
 
