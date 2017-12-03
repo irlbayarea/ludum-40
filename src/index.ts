@@ -16,10 +16,13 @@ import ICrisisGenerator from './crisis/crisis_generator';
 import GameEvents from './game_events';
 import { jsonCrises } from './crisis/crises';
 import CrisisSerializer from './crisis/crisis_serializer';
+import HudModel from './ui/hud/hud_model';
+import HudBuilder from './ui/hud/hud_builder';
 
 class Game extends phaser.Game {
   public crisisGenerator: ICrisisGenerator;
   public gameEvents: GameEvents;
+  public hud: HudModel;
 
   constructor() {
     super({
@@ -30,10 +33,11 @@ class Game extends phaser.Game {
       width: common.globals.dimensions.width,
     });
 
+    this.hud = new HudBuilder().build();
     this.gameEvents = new GameEvents();
 
     const crises = CrisisSerializer.unserializeAll(JSON.stringify(jsonCrises));
-    this.crisisGenerator = new PeriodicCrisisGenerator(10000, crises);
+    this.crisisGenerator = new PeriodicCrisisGenerator(15000, crises);
 
     this.state.add('Boot', Boot);
     this.state.add('Main', Main);
