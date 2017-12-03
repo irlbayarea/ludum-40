@@ -4,13 +4,14 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "webpack --config ./configs/webpack/webpack.dev.js $f",
+    "build": "webpack --config ./configs/webpack/webpack.dev.js",
     "clean": "rimraf -- dist",
     "format": "prettier --config .prettier --write \"src/**/*.ts\" \"configs/*/**.js\"",
     "format:check": "prettier-check --config '.prettier' --list-different \"src/**/*.ts\" \"configs/*/**.js\"",
     "lint": "tslint --project .",
     "lint:fix": "tslint --fix --project .",
-    "serve": "webpack-dev-server --watch --config ./configs/webpack/webpack.dev.js",
+    "serve": "webpack-dev-server --env.NOTSCHECK=true --watch --config ./configs/webpack/webpack.dev.js",
+    "serve:checked": "webpack-dev-server --watch --config ./configs/webpack/webpack.dev.js",
     "test": "jest"
   },
   "repository": {

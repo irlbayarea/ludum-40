@@ -16,7 +16,7 @@ declare module 'dungeon-factory' {
    */
   interface IDungeon {
     readonly rooms: IRoom[];
-    readonly tiles: ITile[];
+    readonly tiles: ITile[][];
   }
 
   interface IRoom {
