@@ -1,4 +1,4 @@
-import Character from './character';
+import Character, { CharacterType } from './character';
 
 export default class Player {
   private money: number;
@@ -6,7 +6,7 @@ export default class Player {
 
   constructor(name: string) {
     this.money = 0;
-    this.character = new Character(name);
+    this.character = new Character(name, CharacterType.Player);
   }
 
   public getCharacter(): Character {

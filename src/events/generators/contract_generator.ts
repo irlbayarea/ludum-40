@@ -1,7 +1,10 @@
 import { Game } from '../../index';
 import PeriodicGenerator from '../../periodic_generator';
 import { ITicker } from '../../ticker';
-import Character, { randomCharacter } from '../../character/character';
+import Character, {
+  randomCharacter,
+  CharacterType,
+} from '../../character/character';
 
 export default class ContractGenerator implements ITicker {
   private periodicGenerator: PeriodicGenerator<Character>;
@@ -11,7 +14,7 @@ export default class ContractGenerator implements ITicker {
     this.game = game;
     this.periodicGenerator = new PeriodicGenerator<Character>(
       period,
-      (_: number) => randomCharacter()
+      (_: number) => randomCharacter(CharacterType.Guard)
     );
   }
 
