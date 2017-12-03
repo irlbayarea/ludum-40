@@ -12,6 +12,7 @@ import CrisisEvent from '../../crisis/crisis_event';
 import { generateMap, convertToTiles } from '../../map/generator';
 import HudRenderer from '../hud/hud_renderer';
 import UserQuestion from '../../user_question';
+import HutFactory from '../sprites/hut';
 import HudBuilder from '../hud/hud_builder';
 import CrisisSerializer from '../../crisis/crisis_serializer';
 import { jsonCrises } from '../../crisis/crises';
@@ -76,6 +77,11 @@ export default class Main extends Phaser.State {
           game.hud = game.hud.setQuestion(null);
         })
       );
+    }
+
+    if (common.experiment('demo-huts')) {
+      const huts = new HutFactory(this.game);
+      huts.sprite(5, 5);
     }
   }
 
