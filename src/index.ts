@@ -12,17 +12,17 @@ import * as events from './events';
 import Boot from './ui/states/boot';
 import { generateMap } from './map/generator';
 import Main from './ui/states/main';
-import PeriodicCrisisGenerator from './crisis/periodic_crisis_generator';
 import ICrisisGenerator from './crisis/crisis_generator';
-import { jsonCrises } from './crisis/crises';
-import CrisisSerializer from './crisis/crisis_serializer';
+import WorldState from './world_state/world_state';
 import HudModel from './ui/hud/hud_model';
-import HudBuilder from './ui/hud/hud_builder';
+import GoblinGenerator from './character/character_generator';
 
 export class Game extends phaser.Game {
   public crisisGenerator: ICrisisGenerator;
+  public goblinGenerator: GoblinGenerator;
   public gameEvents: events.GameEvents;
   public hud: HudModel;
+  public worldState: WorldState;
 
   constructor() {
     super({
@@ -33,18 +33,11 @@ export class Game extends phaser.Game {
       width: common.globals.dimensions.width,
     });
 
-    this.hud = new HudBuilder().build();
-
-    const globalHandlers = new events.EventHandlers();
-    events.registerGlobalHandlers(globalHandlers, this);
-    this.gameEvents = new events.GameEvents(globalHandlers);
-
-    const crises = CrisisSerializer.unserializeAll(JSON.stringify(jsonCrises));
-    this.crisisGenerator = new PeriodicCrisisGenerator(15000, crises);
-
     this.state.add('Boot', Boot);
     this.state.add('Main', Main);
     this.state.start('Boot');
+
+    this.worldState = new WorldState(40, 40);
   }
 }
 
