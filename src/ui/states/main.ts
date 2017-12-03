@@ -15,16 +15,19 @@ import HudBuilder from '../hud/hud_builder';
 import { ITicker } from '../../ticker';
 
 import * as demo from '../demo';
+import { Weapon } from '../sprites/weapon';
 
 /**
  * Main state (i.e. in the game).
  */
 export default class Main extends Phaser.State {
   private controller: Controller;
-  private playerSprite: Phaser.Sprite;
-  private playerCharacter: Character;
   private alwaysOnTop: Phaser.Group;
   private hudRenderer: HudRenderer;
+
+  private playerSprite: Phaser.Sprite;
+  private playerCharacter: Character;
+  private playerSword: Weapon;
 
   public create(): void {
     // Enable keyboard.
@@ -44,6 +47,8 @@ export default class Main extends Phaser.State {
     game.physics.p2.enable(this.playerSprite);
     this.playerSprite.body.fixedRotation = true;
     game.camera.follow(this.playerSprite);
+    this.playerSword = new Weapon(this.game);
+    this.playerSword.attach(this.playerSprite);
     (window as any).$D.move = (x: number, y: number) => {
       this.playerSprite.reset(x, y);
       game.camera.follow(this.playerSprite);
@@ -113,6 +118,8 @@ export default class Main extends Phaser.State {
     } else if (this.controller.isUp) {
       this.playerCharacter.getSprite().body.moveDown(400);
     }
+
+    this.playerSword.update(this.controller.isSpace);
   }
 
   private createMap(): Phaser.Tilemap {
