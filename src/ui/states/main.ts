@@ -83,7 +83,10 @@ export default class Main extends Phaser.State {
   }
 
   private createPlayerCharacter(): void {
-    const playerCharacterTemplate: Character = new Character('Porgby', CharacterType.Player);
+    const playerCharacterTemplate: Character = new Character(
+      'Porgby',
+      CharacterType.Player
+    );
     const sc: SpawnConfig = new SpawnConfig(
       playerCharacterTemplate,
       textures.guard(game.armory),

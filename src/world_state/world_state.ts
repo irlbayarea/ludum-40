@@ -106,7 +106,8 @@ export default class WorldState {
     // Hack to set player follow cam.
     if (this.characters.length === 1) {
       game.camera.follow(character.getSprite());
-      character.getSprite().health = character.getSprite().maxHealth = common.globals.gameplay.playerStartingHP;
+      character.getSprite().health = character.getSprite().maxHealth =
+        common.globals.gameplay.playerStartingHP;
       this.playerCharacter = character;
       this.playerCharacter.arm(Weapon.sword());
     }
