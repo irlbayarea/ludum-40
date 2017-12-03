@@ -32,6 +32,23 @@ export default class WorldState {
 
   private readonly astar: EasyStar.js;
 
+  public get playerCharacter(): Character {
+    return this.mPlayerCharacter;
+  }
+  public set playerCharacter(character: Character) {
+    this.mPlayerCharacter = character;
+    let isNewCharacter: boolean = true;
+    for (const char of this.characters) {
+      if (char === character) {
+        isNewCharacter = false;
+      }
+    }
+    if (isNewCharacter) {
+      this.characters.push(character);
+    }
+  }
+  private mPlayerCharacter: Character;
+
   public constructor(gridw: number, gridh: number) {
     this.grid = new Grid(gridw, gridh);
     this.astar = new EasyStar.js();
