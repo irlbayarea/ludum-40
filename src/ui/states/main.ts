@@ -87,6 +87,9 @@ export default class Main extends Phaser.State {
   }
 
   private _createMap(): Phaser.Tilemap {
+    // Initialize the physics system (P2).
+    this.game.physics.startSystem(Phaser.Physics.P2JS);
+
     if (common.experiment('use-generated-map')) {
       return this.createGeneratedMap();
     } else {
@@ -95,9 +98,6 @@ export default class Main extends Phaser.State {
   }
 
   private createDefaultMap(): Phaser.Tilemap {
-    // Initialize the physics system (P2).
-    this.game.physics.startSystem(Phaser.Physics.P2JS);
-
     // Create the map.
     const map = game.add.tilemap('Tilemap');
 
