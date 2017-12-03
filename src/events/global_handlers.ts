@@ -26,11 +26,18 @@ export function registerGlobalHandlers(game: Game): void {
   }
 
   if (common.experiment('spawn')) {
-    // Message that a character has spawned.
+    // Spawns a character.
     h.addListener(events.EventType.CharacterSpawn, (e: events.Event) => {
       const config: SpawnConfig = e.value;
-      game.hud = game.hud.setMessage(config.character.name + ' spawned');
-      game.spawn(config);
+      const sprite = game.add.sprite(
+        config.x * 64,
+        config.y * 64,
+        config.texture
+      );
+      sprite.scale = new Phaser.Point(4.0, 4.0);
+      game.physics.p2.enable(sprite);
+      config.character.setSprite(sprite);
+      game.worldState.characters.push(config.character);
     });
   }
 
@@ -46,8 +53,7 @@ export function registerGlobalHandlers(game: Game): void {
         game.hud = game.hud.clearQuestion();
         if (option === 1) {
           game.hud = game.hud.setMessage('You hired ' + character.name + '!');
-          game.gameEvents.emit(
-            events.EventType.CharacterSpawn,
+          game.spawn(
             new SpawnConfig(character, textures.guard(game.armory), x, y)
           );
         }
