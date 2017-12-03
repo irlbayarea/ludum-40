@@ -13,6 +13,7 @@ import Boot from './ui/states/boot';
 import { generateMap } from './map/generator';
 import Main from './ui/states/main';
 import ICrisisGenerator from './crisis/crisis_generator';
+import WorldState from './world_state/world_state';
 import HudModel from './ui/hud/hud_model';
 import GoblinGenerator from './character/character_generator';
 
@@ -21,6 +22,7 @@ export class Game extends phaser.Game {
   public goblinGenerator: GoblinGenerator;
   public gameEvents: events.GameEvents;
   public hud: HudModel;
+  public worldState: WorldState;
 
   constructor() {
     super({
@@ -34,6 +36,8 @@ export class Game extends phaser.Game {
     this.state.add('Boot', Boot);
     this.state.add('Main', Main);
     this.state.start('Boot');
+
+    this.worldState = new WorldState(40, 40);
   }
 }
 

@@ -8,6 +8,7 @@ import * as common from '../../common';
 import * as events from '../../events';
 
 import { game } from '../../index';
+import Character from '../../character/character';
 import CrisisEvent from '../../crisis/crisis_event';
 import { generateMap, convertToTiles } from '../../map/generator';
 import HudRenderer from '../hud/hud_renderer';
@@ -24,8 +25,9 @@ import CharacterGenerator from '../../character/character_generator';
  */
 export default class Main extends Phaser.State {
   private controller: Controller;
-  private character: Phaser.Sprite;
+  private playerSprite: Phaser.Sprite;
   private alwaysOnTop: Phaser.Group;
+  private playerCharacter: Character;
   private hudRenderer: HudRenderer;
 
   public create(): void {
@@ -33,14 +35,14 @@ export default class Main extends Phaser.State {
     this.controller = new Controller(this.game);
 
     // Enable physics.
-    this.game.physics.startSystem(Phaser.Physics.P2JS);
+    game.physics.startSystem(Phaser.Physics.P2JS);
 
-    // Example of the main character.
-    this.character = this.game.add.sprite(0, 64 * 4, 'characters', 325);
-    this.character.scale = new Phaser.Point(4.0, 4.0);
-    this.game.physics.p2.enable(this.character);
-    this.character.body.fixedRotation = true;
-    this.game.camera.follow(this.character);
+    // Main character.
+    this.playerSprite = this.game.add.sprite(64 * 5, 64 * 5, 'characters', 325);
+    this.playerSprite.scale = new Phaser.Point(4.0, 4.0);
+    game.physics.p2.enable(this.playerSprite);
+    this.playerSprite.body.fixedRotation = true;
+    game.camera.follow(this.playerSprite);
 
     // Enable events.
     const globalHandlers = new events.EventHandlers();
@@ -83,15 +85,29 @@ export default class Main extends Phaser.State {
       const huts = new HutFactory(this.game);
       huts.sprite(5, 5);
     }
+
+    this.playerCharacter = new Character(this.playerSprite);
+    game.worldState.characters[0] = this.playerCharacter;
+    game.worldState.directCharacterToPoint(
+      this.playerCharacter,
+      new Phaser.Point(15, 15)
+    );
   }
 
   public preload(): void {
-    this._createMap();
+    this.createMap();
   }
 
   public update(): void {
-    this.character.body.setZeroVelocity();
+    game.world.bringToTop(this.alwaysOnTop);
+    game.worldState.update();
+
     const elapsed: number = game.time.elapsed;
+
+    if (common.experiment('demo-huts')) {
+      const huts = new HutFactory(this.game);
+      huts.sprite(5, 5);
+    }
 
     if (common.experiment('demo-crisis')) {
       this.tickEvents(elapsed);
@@ -104,24 +120,21 @@ export default class Main extends Phaser.State {
     // Render
     this.hudRenderer.render(game.hud);
 
-    this.game.camera.follow(this.character);
     if (this.controller.isLeft && !this.controller.isRight) {
-      this.character.body.moveLeft(400);
+      this.playerCharacter.getSprite().body.moveLeft(400);
     } else if (this.controller.isRight) {
-      this.character.body.moveRight(400);
+      this.playerCharacter.getSprite().body.moveRight(400);
     }
     if (this.controller.isDown && !this.controller.isUp) {
-      this.character.body.moveUp(400);
+      this.playerCharacter.getSprite().body.moveUp(400);
     } else if (this.controller.isUp) {
-      this.character.body.moveDown(400);
+      this.playerCharacter.getSprite().body.moveDown(400);
     }
-
-    this.game.world.bringToTop(this.alwaysOnTop);
   }
 
-  private _createMap(): Phaser.Tilemap {
+  private createMap(): Phaser.Tilemap {
     // Initialize the physics system (P2).
-    this.game.physics.startSystem(Phaser.Physics.P2JS);
+    game.physics.startSystem(Phaser.Physics.P2JS);
 
     if (common.experiment('use-generated-map')) {
       return this.createGeneratedMap();
@@ -153,7 +166,7 @@ export default class Main extends Phaser.State {
       layer.wrap = true;
     });
 
-    const collision = last(layers)!;
+    const collision: Phaser.TilemapLayer = last(layers)!;
     collision.visible = false;
 
     const p2 = this.game.physics.p2;
@@ -161,7 +174,8 @@ export default class Main extends Phaser.State {
     map.setCollision(collisionIndex, true, collision);
     p2.convertTilemap(map, collision, true, true);
     p2.setBoundsToWorld(true, true, true, true, false);
-    p2.restitution = 0.2; // Bounciness of '1' is very bouncy.
+    p2.restitution = 0.2; // Bounciness. '1' is very bouncy.
+    game.worldState.setCollisionFromTilemap(map, collision);
 
     return map;
   }
