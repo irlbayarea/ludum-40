@@ -1,4 +1,3 @@
-import * as events from '../../events';
 import * as textures from '../../character/textures';
 
 import { Game } from '../../index';
@@ -21,8 +20,8 @@ export default class EnemyGenerator implements ITicker {
   }
 
   public tick(elapsed: number) {
-    this.periodicGenerator.tick(elapsed).forEach(character => {
-      this.game.gameEvents.emit(events.EventType.CharacterSpawn, character);
+    this.periodicGenerator.tick(elapsed).forEach(spawnConfig => {
+      this.game.spawn(spawnConfig);
     });
   }
 

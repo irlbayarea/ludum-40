@@ -11,7 +11,6 @@ import Character from '../../character/character';
 import { generateMap, convertToTiles } from '../../map/generator';
 import HudRenderer from '../hud/hud_renderer';
 import HutFactory from '../sprites/hut';
-import HudBuilder from '../hud/hud_builder';
 import { ITicker } from '../../ticker';
 
 import * as demo from '../demo';
@@ -31,7 +30,6 @@ export default class Main extends Phaser.State {
     game.physics.startSystem(Phaser.Physics.P2JS);
 
     // Enable HUD.
-    game.hud = new HudBuilder().build();
     this.alwaysOnTop = this.game.add.group();
     this.hudRenderer = new HudRenderer(
       game,
