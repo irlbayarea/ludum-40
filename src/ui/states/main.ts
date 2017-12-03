@@ -23,8 +23,8 @@ import * as demo from '../demo';
 export default class Main extends Phaser.State {
   private controller: Controller;
   private playerSprite: Phaser.Sprite;
-  private alwaysOnTop: Phaser.Group;
   private playerCharacter: Character;
+  private alwaysOnTop: Phaser.Group;
   private hudRenderer: HudRenderer;
 
   public create(): void {
