@@ -159,7 +159,7 @@ export default class Character {
   }
 
   get isAttacking(): boolean {
-    return this.weapon.isSwinging;
+    return this.isArmed && this.weapon.isSwinging;
   }
 
   get weapon(): Weapon {

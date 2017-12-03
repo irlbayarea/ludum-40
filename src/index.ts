@@ -19,6 +19,7 @@ import { ITicker } from './ticker';
 import Controller from './input/controller';
 import { SpawnConfig, randomSpawnLocation } from './character/spawn_config';
 import { Armory } from './ui/sprites/armory';
+import BloodFactory from './ui/sprites/blood';
 import Character from './character/character';
 import HudBuilder from './ui/hud/hud_builder';
 
@@ -29,6 +30,7 @@ export class Game extends phaser.Game {
   public worldState: WorldState;
   public controller: Controller;
   public readonly armory: Armory;
+  public readonly blood: BloodFactory;
   public isOfferingContract: boolean;
 
   constructor() {
@@ -47,6 +49,7 @@ export class Game extends phaser.Game {
     this.isOfferingContract = false;
     this.hud = new HudBuilder().build();
     this.armory = new Armory(this);
+    this.blood = new BloodFactory(this);
     this.worldState = new WorldState(40, 40);
 
     // Enable events.
