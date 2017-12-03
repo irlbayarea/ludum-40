@@ -20,6 +20,8 @@ import { jsonCrises } from '../../crisis/crises';
 import PeriodicCrisisGenerator from '../../crisis/periodic_crisis_generator';
 import CharacterGenerator from '../../character/character_generator';
 
+import * as demo from '../demo';
+
 /**
  * Main state (i.e. in the game).
  */
@@ -81,17 +83,17 @@ export default class Main extends Phaser.State {
       );
     }
 
-    if (common.experiment('demo-huts')) {
-      const huts = new HutFactory(this.game);
-      huts.sprite(5, 5);
-    }
+    this.createDemos();
 
     this.playerCharacter = new Character(this.playerSprite);
+
+    if (common.experiment('pathfinding')) {
     game.worldState.characters[0] = this.playerCharacter;
-    game.worldState.directCharacterToPoint(
-      this.playerCharacter,
-      new Phaser.Point(15, 15)
-    );
+      game.worldState.directCharacterToPoint(
+        this.playerCharacter,
+        new Phaser.Point(15, 15)
+      );
+    }
   }
 
   public preload(): void {
@@ -102,20 +104,8 @@ export default class Main extends Phaser.State {
     game.world.bringToTop(this.alwaysOnTop);
     game.worldState.update();
 
-    const elapsed: number = game.time.elapsed;
-
-    if (common.experiment('demo-huts')) {
-      const huts = new HutFactory(this.game);
-      huts.sprite(5, 5);
-    }
-
-    if (common.experiment('demo-crisis')) {
-      this.tickEvents(elapsed);
-      this.tickCrises(elapsed);
-    }
-    if (common.experiment('goblin')) {
-      this.tickGoblinGenerator(elapsed);
-    }
+    // Run conditional logic for demos.
+    this.updateDemos();
 
     // Render
     this.hudRenderer.render(game.hud);
@@ -207,5 +197,27 @@ export default class Main extends Phaser.State {
         spawnEvent.spriteName
       );
     });
+  }
+
+  private createDemos(): void {
+    if (common.experiment('demo-armory')) {
+      demo.armoryDemo(this.game);
+    }
+    if (common.experiment('demo-huts')) {
+      const huts = new HutFactory(this.game);
+      huts.sprite(5, 5);
+    }
+  }
+
+  private updateDemos(): void {
+    // Used by demos below.
+    const elapsed: number = game.time.elapsed;
+    if (common.experiment('demo-crisis')) {
+      this.tickEvents(elapsed);
+      this.tickCrises(elapsed);
+    }
+    if (common.experiment('goblin')) {
+      this.tickGoblinGenerator(elapsed);
+    }
   }
 }
