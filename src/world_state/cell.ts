@@ -1,3 +1,1 @@
-export default class Cell {
-  public constructor() {}
-}
+export default class Cell {}
