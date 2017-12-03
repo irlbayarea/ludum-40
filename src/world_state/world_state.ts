@@ -134,6 +134,9 @@ export default class WorldState {
   private updateCharacters(): void {
     this.characters.forEach(char => {
       char.getSprite().body.setZeroVelocity();
+      if (char.isArmed) {
+        char.weapon.update();
+      }
     });
     this.characters
       .filter(char => char.path !== null && char.path !== undefined)
@@ -172,6 +175,9 @@ export default class WorldState {
       game.worldState.playerCharacter.getSprite().body.moveUp(400);
     } else if (game.controller.isUp) {
       game.worldState.playerCharacter.getSprite().body.moveDown(400);
+    }
+    if (game.worldState.playerCharacter.isArmed && game.controller.isSpace) {
+      game.worldState.playerCharacter.weapon.markInUse();
     }
   }
 }
