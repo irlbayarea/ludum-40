@@ -99,7 +99,8 @@ export default class Main extends Phaser.State {
       huts.sprite(5, 5);
     }
 
-    this.playerCharacter = new Character(this.playerSprite);
+    this.playerCharacter = new Character();
+    this.playerCharacter.setSprite(this.playerSprite);
     game.worldState.characters[0] = this.playerCharacter;
     game.worldState.directCharacterToPoint(
       this.playerCharacter,

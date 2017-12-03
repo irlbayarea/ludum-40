@@ -37,7 +37,6 @@ export default class Character {
   private salary: number;
 
   constructor(
-    sprite: Phaser.Sprite,
     name: string = randomName(),
     speed: number = average(Character.minSpeed, Character.maxSpeed),
     strength: number = average(Character.minStrength, Character.maxStrength),
@@ -54,7 +53,6 @@ export default class Character {
     isGuard: boolean = false
   ) {
     this.name = name;
-    this.sprite = sprite;
 
     if (Character.maxSpeed >= speed && speed >= Character.minSpeed) {
       this.speed = speed;
@@ -158,6 +156,13 @@ export default class Character {
     return this.salary;
   }
 
+  public setSprite(sprite: Phaser.Sprite) {
+    if (this.sprite === undefined) {
+      this.sprite = sprite;
+    } else {
+      throw new Error('Sprite already defined.');
+    }
+  }
   /**
    * Returns the position of the character in world coordinates (1 tile = 1.00 distance).
    */
@@ -246,9 +251,8 @@ function scoreOption(c: Character, o: CrisisOption): number {
 /**
  * randomGuard()
  */
-export function randomGuard(sprite: Phaser.Sprite): Character {
+export function randomGuard(): Character {
   return new Character(
-    sprite,
     randomName(),
     Math.random() * (Character.maxSpeed - Character.minSpeed) +
       Character.minSpeed,
