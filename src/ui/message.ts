@@ -1,4 +1,3 @@
-import Rectangle from '../map/rectangle';
 import * as Phaser from 'phaser-ce';
 import Controller from '../input/controller';
 
@@ -22,7 +21,7 @@ export default class MessagePanel extends Phaser.Plugin {
     const bitmap = game.add.bitmapData(game.width, game.height);
 
     const goldenRatio = 0.5 * (1 + Math.sqrt(5));
-    const mainPanel = new Rectangle(
+    const mainPanel = new Phaser.Rectangle(
       0,
       game.height * (1 - 1 / goldenRatio ** 3),
       game.width,
@@ -31,7 +30,12 @@ export default class MessagePanel extends Phaser.Plugin {
 
     bitmap.ctx.beginPath();
     bitmap.ctx.globalAlpha = goldenRatio;
-    bitmap.ctx.rect(mainPanel.x, mainPanel.y, mainPanel.w, mainPanel.h);
+    bitmap.ctx.rect(
+      mainPanel.x,
+      mainPanel.y,
+      mainPanel.width,
+      mainPanel.height
+    );
     bitmap.ctx.fillStyle = '#333333';
     bitmap.ctx.fill();
 
@@ -39,15 +43,15 @@ export default class MessagePanel extends Phaser.Plugin {
     sprite.fixedToCamera = true;
     group.add(sprite);
 
-    const textPadX = mainPanel.w / goldenRatio ** 8;
-    const textPadY = mainPanel.h / goldenRatio ** 4;
+    const textPadX = mainPanel.width / goldenRatio ** 8;
+    const textPadY = mainPanel.height / goldenRatio ** 4;
     const numLines = 4;
 
-    const mainTextPanel = new Rectangle(
+    const mainTextPanel = new Phaser.Rectangle(
       mainPanel.x + textPadX,
       mainPanel.y + textPadY,
-      mainPanel.w / goldenRatio ** goldenRatio - 2 * textPadX,
-      mainPanel.h - 2 * textPadY
+      mainPanel.width / goldenRatio ** goldenRatio - 2 * textPadX,
+      mainPanel.height - 2 * textPadY
     );
 
     const text = game.add.text(0, 0, '...', {
@@ -56,15 +60,15 @@ export default class MessagePanel extends Phaser.Plugin {
       align: 'center',
       fill: '#FFF',
       wordWrap: true,
-      wordWrapWidth: mainTextPanel.w,
-      font: 'bold ' + mainTextPanel.h / numLines + 'px Consolas',
+      wordWrapWidth: mainTextPanel.width,
+      font: 'bold ' + mainTextPanel.height / numLines + 'px Consolas',
     });
     text.setShadow(3, 3, 'rgba(0, 0, 0, 0.5)', 2);
     text.setTextBounds(
       mainTextPanel.x,
       mainTextPanel.y,
-      mainTextPanel.w,
-      mainTextPanel.h
+      mainTextPanel.width,
+      mainTextPanel.height
     );
     text.fixedToCamera = true;
     group.add(text);
@@ -73,19 +77,19 @@ export default class MessagePanel extends Phaser.Plugin {
 
     const options = game.add.bitmapData(game.width, game.height);
 
-    const choicePanel = new Rectangle(
-      mainTextPanel.x + mainTextPanel.w + 2 * textPadX,
+    const choicePanel = new Phaser.Rectangle(
+      mainTextPanel.x + mainTextPanel.width + 2 * textPadX,
       mainTextPanel.y,
-      mainPanel.w - mainTextPanel.w - 4 * textPadX,
-      mainTextPanel.h
+      mainPanel.width - mainTextPanel.width - 4 * textPadX,
+      mainTextPanel.height
     );
 
     options.ctx.beginPath();
     options.ctx.rect(
       choicePanel.x,
       choicePanel.y,
-      choicePanel.w,
-      choicePanel.h
+      choicePanel.width,
+      choicePanel.height
     );
     options.ctx.fillStyle = '#787C8B';
     options.ctx.fill();
@@ -93,8 +97,8 @@ export default class MessagePanel extends Phaser.Plugin {
     options.ctx.strokeRect(
       choicePanel.x,
       choicePanel.y,
-      choicePanel.w,
-      choicePanel.h
+      choicePanel.width,
+      choicePanel.height
     );
     this.oSprite = game.add.sprite(0, 0, options);
     this.oSprite.fixedToCamera = true;
@@ -103,29 +107,29 @@ export default class MessagePanel extends Phaser.Plugin {
     // const optionStrings: string[] = ['Hello There', 'What are you doing in there?' , 'Where are all the Ps?' ,'Yes, business trip...'];
     this.oSprite.visible = false;
     for (let i = 0; i < 4; i++) {
-      const choicePanelOption: Rectangle = new Rectangle(
+      const choicePanelOption: Phaser.Rectangle = new Phaser.Rectangle(
         choicePanel.x +
           textPadX +
-          choicePanel.w / 2 * (i === 0 || i === 2 ? 0 : 1),
+          choicePanel.width / 2 * (i === 0 || i === 2 ? 0 : 1),
         choicePanel.y +
           textPadY * (2 / 3) +
-          choicePanel.h / 2 * (i === 0 || i === 1 ? 0 : 1),
-        choicePanel.w / 2,
-        choicePanel.h / 2
+          choicePanel.height / 2 * (i === 0 || i === 1 ? 0 : 1),
+        choicePanel.width / 2,
+        choicePanel.height / 2
       );
       this.optionList.push(
         game.add.text(0, 0, '[ ]', {
           fill: '#FFFFFF',
-          font: (choicePanel.h - 2 * textPadY) / 4 + 'px Consolas',
+          font: (choicePanel.height - 2 * textPadY) / 4 + 'px Consolas',
           wordWrap: true,
-          wordWrapWidth: choicePanel.w / 2 - textPadX,
+          wordWrapWidth: choicePanel.width / 2 - textPadX,
         })
       );
       this.optionList[i].setTextBounds(
         choicePanelOption.x,
         choicePanelOption.y,
-        choicePanelOption.w,
-        choicePanelOption.h
+        choicePanelOption.width,
+        choicePanelOption.height
       );
       group.add(this.optionList[i]);
       this.optionList[i].visible = false;

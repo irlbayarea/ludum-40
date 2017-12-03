@@ -19,6 +19,8 @@ import CrisisSerializer from '../../crisis/crisis_serializer';
 import { jsonCrises } from '../../crisis/crises';
 import PeriodicCrisisGenerator from '../../crisis/periodic_crisis_generator';
 import CharacterGenerator from '../../character/character_generator';
+import ContractGenerator from '../../character/contract_generator';
+import { randomName } from '../../character/names';
 
 import * as demo from '../demo';
 
@@ -64,28 +66,40 @@ export default class Main extends Phaser.State {
       'guard'
     );
 
+    // Enable contract events.
+    game.contractGenerator = new ContractGenerator(
+      common.globals.gameplay.contractRateMs,
+      randomName
+    );
+
     // Enable HUD.
     game.hud = new HudBuilder().build();
     this.alwaysOnTop = this.game.add.group();
     this.hudRenderer = new HudRenderer(
+      game,
       this.game.plugins.add(MessagePanel, this.alwaysOnTop, this.controller)
     );
 
     game.hud = game.hud.setMessage('Welcome to Guard Captain');
     if (common.experiment('demo-ask-users')) {
       game.hud = game.hud.setQuestion(
-        new UserQuestion(['Sushi', 'Tacos'], (option: number) => {
-          common.debug.log(
-            `Selected: ${option === 1 ? 'Great Choice' : 'Eh, not bad'}`
-          );
-          game.hud = game.hud.setQuestion(null);
-        })
+        new UserQuestion(
+          'Choose a food!',
+          ['Sushi', 'Tacos'],
+          (option: number) => {
+            common.debug.log(
+              `Selected: ${option === 1 ? 'Great Choice' : 'Eh, not bad'}`
+            );
+            game.hud = game.hud.setQuestion(null);
+          }
+        )
       );
     }
 
     this.createDemos();
 
-    this.playerCharacter = new Character(this.playerSprite);
+    this.playerCharacter = new Character();
+    this.playerCharacter.setSprite(this.playerSprite);
 
     if (common.experiment('pathfinding')) {
       game.worldState.characters[0] = this.playerCharacter;

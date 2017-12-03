@@ -5,10 +5,10 @@ export default class Player {
   private popularity: number;
   private character: Character;
 
-  constructor(sprite: Phaser.Sprite, name: string) {
+  constructor(name: string) {
     this.money = 100;
     this.popularity = 100;
-    this.character = new Character(sprite, name);
+    this.character = new Character(name);
   }
 
   public getCharacter(): Character {

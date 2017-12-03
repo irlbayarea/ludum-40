@@ -16,10 +16,12 @@ import ICrisisGenerator from './crisis/crisis_generator';
 import WorldState from './world_state/world_state';
 import HudModel from './ui/hud/hud_model';
 import GoblinGenerator from './character/character_generator';
+import ContractGenerator from './character/contract_generator';
 
 export class Game extends phaser.Game {
   public crisisGenerator: ICrisisGenerator;
   public goblinGenerator: GoblinGenerator;
+  public contractGenerator: ContractGenerator;
   public gameEvents: events.GameEvents;
   public hud: HudModel;
   public worldState: WorldState;

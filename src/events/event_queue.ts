@@ -25,7 +25,6 @@ export class EventQueue {
   public tick(elapsed: number): events.Event[] {
     this.time += elapsed;
     const completed: events.Event[] = [];
-
     this.unscheduled.forEach(e => this.queue.push(e));
     this.unscheduled = [];
 
