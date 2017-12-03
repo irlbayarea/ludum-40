@@ -71,6 +71,7 @@ export default class WorldState {
     this.astar = new EasyStar.js();
     this.astar.setGrid(this.grid.collisions);
     this.astar.setAcceptableTiles([0]);
+    this.astar.setDirectionalCondition
     this.characters = [];
   }
 
@@ -117,8 +118,8 @@ export default class WorldState {
       Math.floor(to.y),
       path => {
         if (path !== null) {
-          for (let i = 1; i < path.length; i++) {
-            points[i - 1] = { x: path[i].x, y: path[i].y };
+          for (let i = 0; i < path.length; i++) {
+            points[i] = { x: path[i].x, y: path[i].y };
           }
         }
       }
@@ -171,7 +172,7 @@ export default class WorldState {
           this.stopCharacter(char);
           return;
         }
-        if (path!.isNearGoal(pos) || this.grid.collisionWorldPoint(new Phaser.Point(goalPoint.x, goalPoint.y))) {
+        if (path!.isNearGoal(pos)) {
           char.path!.advance();
           goalPoint = char.path!.currentGoal();
           if (goalPoint === null) {

@@ -107,8 +107,8 @@ export default class Main extends Phaser.State {
     const sc: SpawnConfig = new SpawnConfig(
       playerCharacterTemplate,
       textures.guard(game.armory),
-      15,
-      15
+      12,
+      12
     );
     game.spawn(sc);
   }
