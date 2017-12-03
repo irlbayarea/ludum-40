@@ -134,11 +134,11 @@ export class Armory extends SpriteFactory {
 
   /**
    * Returns the sprite for a pair of shoes.
-   * 
+   *
    * @param color
    */
   protected pants(color: PantsColor): Phaser.Sprite {
-    const index = 3 + (color * Armory.sheetWidth);
+    const index = 3 + color * Armory.sheetWidth;
     return this.game.add.sprite(0, 0, 'characters', index);
   }
 
@@ -183,9 +183,9 @@ export class Armory extends SpriteFactory {
 
   /**
    * Returns the sprite for a specific shield style.
-   * 
+   *
    * @param color
-   * @param style 
+   * @param style
    */
   protected shield(color: ShieldColor, style: number = 0): Phaser.Sprite {
     let offset: number;
@@ -217,7 +217,7 @@ export class Armory extends SpriteFactory {
 
   /**
    * Returns the sprite for a specific hat style.
-   * 
+   *
    * @param style
    */
   protected hat(style: number = 0): Phaser.Sprite {

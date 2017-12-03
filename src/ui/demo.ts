@@ -1,5 +1,12 @@
 import * as Phaser from 'phaser-ce';
-import { Armory, HairColor, ShirtColor, SkinColor, PantsColor, ShieldColor } from './sprites/armory';
+import {
+  Armory,
+  HairColor,
+  ShirtColor,
+  SkinColor,
+  PantsColor,
+  ShieldColor,
+} from './sprites/armory';
 
 export function armoryDemo(game: Phaser.Game): void {
   const armory = new Armory(game);
@@ -27,7 +34,7 @@ export function armoryDemo(game: Phaser.Game): void {
     shield: {
       color: ShieldColor.Silver,
       style: 9,
-    }
+    },
   });
 
   // Wizard Like Character.
