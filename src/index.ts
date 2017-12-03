@@ -96,6 +96,8 @@ export class Game extends phaser.Game {
           this.spawn(
             new SpawnConfig(character, textures.guard(game.armory), x, y)
           );
+        } else if (option === 2) {
+          this.hud = this.hud.setMessage('Oh. Okay.');
         }
       }
     );

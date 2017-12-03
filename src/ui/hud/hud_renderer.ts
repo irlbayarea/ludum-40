@@ -17,6 +17,9 @@ export default class HudRenderer {
   }
 
   public render(hud: HudModel) {
+    if (this.messages.countdown()) {
+      this.messages.clearText();
+    }
     if (this.model === hud) {
       return;
     }
@@ -25,6 +28,10 @@ export default class HudRenderer {
     this.renderQuestion(this.model.question);
     this.renderKillCount(this.model.killCount);
     this.renderScore(this.model.score);
+  }
+
+  public setMessagePanelClearCountdown() {
+    this.messages.startCountdown();
   }
 
   private renderMessage(m: any) {

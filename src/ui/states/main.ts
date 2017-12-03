@@ -81,15 +81,19 @@ export default class Main extends Phaser.State {
       if (game.controller.is1JustDown) {
         game.hud.question.callback(1);
         game.hud.clearQuestion();
+        this.hudRenderer.setMessagePanelClearCountdown();
       } else if (game.controller.is2JustDown) {
         game.hud.question.callback(2);
         game.hud.clearQuestion();
+        this.hudRenderer.setMessagePanelClearCountdown();
       } else if (game.controller.is3JustDown) {
         game.hud.question.callback(3);
         game.hud.clearQuestion();
+        this.hudRenderer.setMessagePanelClearCountdown();
       } else if (game.controller.is4JustDown) {
         game.hud.question.callback(4);
         game.hud.clearQuestion();
+        this.hudRenderer.setMessagePanelClearCountdown();
       }
     }
 
