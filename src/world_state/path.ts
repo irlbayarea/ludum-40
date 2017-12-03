@@ -21,7 +21,8 @@ export default class Path {
   }
 
   /**
-   * Returns true if the given position is near the goal. Expects that currentGoal() does not return null.
+   * Returns true if the given position is near the goal. Expects that
+   * currentGoal() does not return null.
    */
   public isNearGoal(pos: { x: number; y: number }): boolean {
     const currentGoalPos: { x: number; y: number } | null = this.currentGoal();
@@ -31,7 +32,7 @@ export default class Path {
       ) <= Path.CLOSE_DISTANCE
     );
   }
-
+  
   /**
    * Advances to the next goal.
    */
