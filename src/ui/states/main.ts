@@ -48,10 +48,16 @@ export default class Main extends Phaser.State {
 
     // Enable crisis events.
     const crises = CrisisSerializer.unserializeAll(JSON.stringify(jsonCrises));
-    game.crisisGenerator = new PeriodicCrisisGenerator(15000, crises);
+    game.crisisGenerator = new PeriodicCrisisGenerator(
+      common.globals.gameplay.crisisRateMs,
+      crises
+    );
 
     // Enable character events.
-    game.goblinGenerator = new CharacterGenerator(1000, 'guard');
+    game.goblinGenerator = new CharacterGenerator(
+      common.globals.gameplay.goblinSpawnRateMs,
+      'guard'
+    );
 
     // Enable HUD.
     game.hud = new HudBuilder().build();
