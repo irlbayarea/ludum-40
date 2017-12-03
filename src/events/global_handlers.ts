@@ -2,6 +2,8 @@ import * as events from '../events';
 import * as common from '../common';
 import { Game } from '../index';
 import Crisis from '../crisis/crisis';
+import UserQuestion from '../user_question';
+import Contract from '../contract/contract';
 
 export function registerGlobalHandlers(
   h: events.EventHandlers,
@@ -27,6 +29,26 @@ export function registerGlobalHandlers(
       game.hud = game.hud.setMessage(String(e.value) + ' spawned');
       const character = game.add.sprite(0, 64 * 4, e.value, 325);
       character.scale = new Phaser.Point(4.0, 4.0);
+    });
+
+    // Display prompts when contracts are available
+    h.register(events.EventType.Contract, (e: events.Event) => {
+      console.log('HI');
+      const contract: Contract = e.value;
+      game.hud = game.hud.setQuestion(
+        new UserQuestion(
+          'Do you want to hire ' + contract.name + '?',
+          ['yes', 'no'],
+          (option: number) => {
+            game.hud = game.hud.setQuestion(null);
+            if (option == 0) {
+              game.hud = game.hud.setMessage(
+                'You hired ' + contract.name + '!'
+              );
+            }
+          }
+        )
+      );
     });
   }
 }

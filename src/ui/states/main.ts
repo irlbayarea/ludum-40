@@ -19,6 +19,8 @@ import CrisisSerializer from '../../crisis/crisis_serializer';
 import { jsonCrises } from '../../crisis/crises';
 import PeriodicCrisisGenerator from '../../crisis/periodic_crisis_generator';
 import CharacterGenerator from '../../character/character_generator';
+import ContractGenerator from '../../character/contract_generator';
+import { randomName } from '../../character/names';
 
 /**
  * Main state (i.e. in the game).
@@ -62,6 +64,12 @@ export default class Main extends Phaser.State {
       'guard'
     );
 
+    // Enable contract events.
+    game.contractGenerator = new ContractGenerator(
+      common.globals.gameplay.contractRateMs,
+      randomName
+    );
+
     // Enable HUD.
     game.hud = new HudBuilder().build();
     this.alwaysOnTop = this.game.add.group();
@@ -72,12 +80,16 @@ export default class Main extends Phaser.State {
     game.hud = game.hud.setMessage('Welcome to Guard Captain');
     if (common.experiment('demo-ask-users')) {
       game.hud = game.hud.setQuestion(
-        new UserQuestion(['Sushi', 'Tacos'], (option: number) => {
-          common.debug.log(
-            `Selected: ${option === 1 ? 'Great Choice' : 'Eh, not bad'}`
-          );
-          game.hud = game.hud.setQuestion(null);
-        })
+        new UserQuestion(
+          'Choose a food!',
+          ['Sushi', 'Tacos'],
+          (option: number) => {
+            common.debug.log(
+              `Selected: ${option === 1 ? 'Great Choice' : 'Eh, not bad'}`
+            );
+            game.hud = game.hud.setQuestion(null);
+          }
+        )
       );
     }
 
@@ -115,6 +127,9 @@ export default class Main extends Phaser.State {
     }
     if (common.experiment('goblin')) {
       this.tickGoblinGenerator(elapsed);
+    }
+    if (common.experiment('contract')) {
+      this.tickContracts(elapsed);
     }
 
     // Render
@@ -206,6 +221,12 @@ export default class Main extends Phaser.State {
         events.EventType.CharacterSpawn,
         spawnEvent.spriteName
       );
+    });
+  }
+
+  private tickContracts(elapsed: number) {
+    game.contractGenerator.tick(elapsed).forEach(contract => {
+      game.gameEvents.schedule(events.EventType.Contract, contract, 1000);
     });
   }
 }
