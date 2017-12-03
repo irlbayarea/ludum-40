@@ -36,9 +36,11 @@ export default class Grid {
 
   public getEmptyCells(): Array<{ x: number; y: number }> {
     const arr: Array<{ x: number; y: number }> = [];
-    for (let x = 0; x < this.w; x++) {
-      for (let y = 0; y < this.h; y++) {
-        if (this.collisions[x][y] == 1) arr.push({ x: x, y: y });
+    for (let xx = 0; xx < this.w; xx++) {
+      for (let yy = 0; yy < this.h; yy++) {
+        if (this.collisions[xx][yy] === 1) {
+          arr.push({ x: xx, y: yy });
+        }
       }
     }
     return arr;
