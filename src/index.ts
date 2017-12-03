@@ -52,7 +52,14 @@ export class Game extends phaser.Game {
     generators.initGenerators(this);
   }
 
-  // Schedules a character spawn from config.
+  public getUserInput(
+    message: string,
+    options: string[],
+    callback: (x: number) => void
+  ) {
+    this.hud = this.hud.setQuestion(message, options, callback);
+  }
+
   public spawn(config: SpawnConfig) {
     const e = new events.Event(events.EventType.CharacterSpawn, config, 0);
     this.gameEvents.emit(e.type, e);

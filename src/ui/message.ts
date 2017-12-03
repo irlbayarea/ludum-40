@@ -1,10 +1,7 @@
 import * as Phaser from 'phaser-ce';
-import Controller from '../input/controller';
 // import { debug } from '../common';
 
 export default class MessagePanel extends Phaser.Plugin {
-  private controller: Controller;
-
   private text: Phaser.Text;
 
   // private hudYSpeed: number = 0;
@@ -12,15 +9,12 @@ export default class MessagePanel extends Phaser.Plugin {
   private panelSprite: Phaser.Sprite;
   private oSprite: Phaser.Sprite;
   private optionList: Phaser.Text[] = [];
-  private callback: (option: number) => void;
 
   constructor(game: Phaser.Game, manager: Phaser.PluginManager) {
     super(game, manager);
   }
 
-  public init(group: Phaser.Group, controller: Controller): void {
-    this.controller = controller;
-
+  public init(group: Phaser.Group): void {
     const game = this.game;
     const bitmap = game.add.bitmapData(game.width, game.height);
 
@@ -141,102 +135,26 @@ export default class MessagePanel extends Phaser.Plugin {
     }
   }
 
-  public askUser(
-    optionListInput: string[],
-    callback: (option: number) => void
-  ): void {
-    this.oSprite.visible = true;
-    this.callback = callback;
-    for (let i = 0; i < optionListInput.length; i++) {
-      this.optionList[i].text = `[ ${i + 1} ] ${optionListInput[i]}`;
-      this.optionList[i].visible = true;
+  public setOptions(optionListInput: string[]): void {
+    if (optionListInput.length > 4) {
+      throw new Error('> 4 questions not yet supported');
+    } else {
+      this.oSprite.visible = true;
+      for (let i = 0; i < optionListInput.length; i++) {
+        this.optionList[i].text = `[ ${i + 1} ] ${optionListInput[i]}`;
+        this.optionList[i].visible = true;
+      }
+    }
+  }
+
+  public clearOptions(): void {
+    for (const opt of this.optionList) {
+      opt.text = `[ - ]`;
+      opt.visible = true;
     }
   }
 
   public setText(message: string): void {
     this.text.text = message;
-  }
-
-  public moveUpDown(): void {
-    this.game.camera.y += 4;
-    // this.oSprite.cameraOffset.y += this.hudYSpeed;
-    // this.panelSprite.cameraOffset.y += this.hudYSpeed;
-    // for (let i = 0; i < this.optionList.length; i++) {
-    //   this.optionList[i].cameraOffset.y += this.hudYSpeed;
-    // }
-  }
-
-  public setCameraFixed(cameraFixed: boolean): void {
-    this.oSprite.fixedToCamera = cameraFixed;
-    this.panelSprite.fixedToCamera = cameraFixed;
-    this.text.fixedToCamera = cameraFixed;
-    for (const opt of this.optionList) {
-      opt.fixedToCamera = cameraFixed;
-    }
-  }
-
-  public setVisibility(visibility: boolean): void {
-    this.oSprite.visible = visibility;
-    this.panelSprite.visible = visibility;
-    this.text.visible = visibility;
-
-    for (const opt of this.optionList) {
-      opt.visible = visibility;
-    }
-  }
-
-  public toggle(): void {
-    this.oSprite.visible ? this.setVisibility(false) : this.setVisibility(true);
-
-    // if ((this.panelSprite.y <= this.game.height - this.panelSprite.height) ||
-    //     (this.panelSprite.y >= this.game.height)) {
-    //
-    //   this.setCameraFixed(false);
-    //
-    //   if (this.panelSprite.y >= this.game.height) {
-    //     this.hudYSpeed = -1;
-    //   } else {
-    //     this.hudYSpeed = 1;
-    //   }
-    // }
-  }
-
-  public update(): void {
-    if (this.controller.isSpaceJustDown) {
-      this.toggle();
-    }
-
-    // if (this.hudYSpeed !== 0) {
-    //   this.moveUpDown();
-    // }
-
-    // if ((this.panelSprite.y > this.game.height) ||
-    //     (this.panelSprite.y < this.game.height - this.panelSprite.height)){
-
-    //   this.setCameraFixed(true);
-
-    //   this.hudYSpeed = 0;
-
-    //   // Reset Y location if necessary. Should be okay if hudYspeed is 1
-
-    //   // if (this.panelSprite.y > this.game.height) {
-    //   //   this.setVisibility(false);
-    //   // } else {
-    //   //   this.setVisibility(true);
-    //   // }
-
-    // }
-
-    if (this.oSprite.visible) {
-      if (this.controller.is1) {
-        this.callback(1);
-      } else if (this.controller.is2) {
-        this.callback(2);
-      } else if (this.controller.is3) {
-        this.callback(3);
-      } else if (this.controller.is4) {
-        this.callback(4);
-      }
-    }
   }
 }
