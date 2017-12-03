@@ -21,13 +21,8 @@ import { Weapon } from '../sprites/weapon';
  * Main state (i.e. in the game).
  */
 export default class Main extends Phaser.State {
-  private controller: Controller;
   private alwaysOnTop: Phaser.Group;
   private hudRenderer: HudRenderer;
-
-  private playerSprite: Phaser.Sprite;
-  private playerCharacter: Character;
-  private playerSword: Weapon;
 
   public create(): void {
     // Enable keyboard.
