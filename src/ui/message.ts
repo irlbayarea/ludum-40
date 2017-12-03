@@ -107,7 +107,7 @@ export default class MessagePanel extends Phaser.Plugin {
     // const optionStrings: string[] = ['Hello There', 'What are you doing in there?' , 'Where are all the Ps?' ,'Yes, business trip...'];
     this.oSprite.visible = false;
     for (let i = 0; i < 4; i++) {
-      const choicePanelOption: Rectangle = new Phaser.Rectangle(
+      const choicePanelOption: Phaser.Rectangle = new Phaser.Rectangle(
         choicePanel.x +
           textPadX +
           choicePanel.width / 2 * (i === 0 || i === 2 ? 0 : 1),
