@@ -8,20 +8,17 @@ import 'phaser';
 import * as phaser from 'phaser-ce';
 import * as common from './common';
 import * as events from './events';
+import * as generators from './events/generators';
 
 import Boot from './ui/states/boot';
 import { generateMap } from './map/generator';
 import Main from './ui/states/main';
-import ICrisisGenerator from './crisis/crisis_generator';
 import WorldState from './world_state/world_state';
 import HudModel from './ui/hud/hud_model';
-import GoblinGenerator from './character/character_generator';
-import ContractGenerator from './character/contract_generator';
+import { ITicker } from './ticker';
 
 export class Game extends phaser.Game {
-  public crisisGenerator: ICrisisGenerator;
-  public goblinGenerator: GoblinGenerator;
-  public contractGenerator: ContractGenerator;
+  public generators: ITicker[];
   public gameEvents: events.GameEvents;
   public hud: HudModel;
   public worldState: WorldState;
@@ -40,6 +37,14 @@ export class Game extends phaser.Game {
     this.state.start('Boot');
 
     this.worldState = new WorldState(40, 40);
+
+    // Enable events.
+    const globalHandlers = new events.EventHandlers();
+    events.registerGlobalHandlers(globalHandlers, this);
+    this.gameEvents = new events.GameEvents(globalHandlers);
+
+    // Enable event generators.
+    generators.initGenerators(this);
   }
 }
 
