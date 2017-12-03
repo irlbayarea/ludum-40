@@ -2,6 +2,7 @@
  * Character class
  * Encapsulates all information about a character
  */
+import { SpriteHUD } from '../ui/sprites/hud';
 import * as Phaser from 'phaser-ce';
 import Crisis from '../crisis/crisis';
 import CrisisOption from '../crisis/option';
@@ -38,6 +39,7 @@ export default class Character {
   public readonly name: string;
 
   public path: Path | null;
+  public hud: SpriteHUD;
 
   private wandering: boolean;
   private sprite?: Phaser.Sprite;
@@ -218,6 +220,7 @@ export default class Character {
   public setSprite(sprite: Phaser.Sprite) {
     if (!this.sprite) {
       this.sprite = sprite;
+      this.hud = new SpriteHUD(this);
       if (this.mWeapon) {
         this.mWeapon.attach(sprite);
       }
