@@ -52,17 +52,10 @@ export class Game extends phaser.Game {
     generators.initGenerators(this);
   }
 
+  // Schedules a character spawn from config.
   public spawn(config: SpawnConfig) {
-    const sprite = game.add.sprite(
-      config.x * 64,
-      config.y * 64,
-      config.texture
-    );
-    sprite.scale = new Phaser.Point(4.0, 4.0);
-    game.physics.p2.enable(sprite);
-
-    config.character.setSprite(sprite);
-    game.worldState.characters.push(config.character);
+    const e = new events.Event(events.EventType.CharacterSpawn, config, 0);
+    this.gameEvents.emit(e.type, e);
   }
 }
 
