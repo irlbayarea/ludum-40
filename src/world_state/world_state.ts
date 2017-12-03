@@ -8,6 +8,7 @@ import Character from '../character/character';
 import { game } from '../index';
 import { Weapon } from '../ui/sprites/weapon';
 import { remove } from 'lodash';
+import { GameMechanics } from './mechanics';
 
 /**
  */
@@ -45,9 +46,9 @@ export default class WorldState {
     char.getSprite().body.moveRight(dir.x);
   }
 
-  public readonly grid: Grid;
-  private readonly characters: Character[];
+  public readonly characters: Character[];
 
+  public readonly grid: Grid;
   private readonly astar: EasyStar.js;
 
   /**
@@ -56,6 +57,8 @@ export default class WorldState {
    * This prevents holding down the attack key for infinite attacks.
    */
   private releasedSwing: boolean = true;
+  private mMap: Phaser.Tilemap;
+  private mechanics: GameMechanics;
 
   public get playerCharacter(): Character {
     return this.mPlayerCharacter;
@@ -83,12 +86,29 @@ export default class WorldState {
   }
 
   /**
+   * Sets the map parameter based on the provided map.
+   *
+   * @param map
+   */
+  public setMap(map: Phaser.Tilemap): void {
+    this.mMap = map;
+  }
+
+  /**
+   * Returns the current map instance.
+   */
+  public getMap(): Phaser.Tilemap {
+    return this.mMap;
+  }
+
+  /**
    * Updates collision based on the given tilemap layer. Any tiles that exist in the layer are blocking.
    */
   public setCollisionFromTilemap(
     map: Phaser.Tilemap,
     layer: Phaser.TilemapLayer
   ): void {
+    this.mechanics = new GameMechanics(map);
     for (let y = 0; y < map.height; y++) {
       for (let x = 0; x < map.width; x++) {
         const tile = map.getTile(x, y, layer);
@@ -158,6 +178,7 @@ export default class WorldState {
 
   public update(): void {
     this.updateCharacters();
+    this.mechanics.mainLoop();
   }
 
   /**
@@ -173,17 +194,6 @@ export default class WorldState {
   private updateCharacters(): void {
     this.characters.forEach(char => {
       char.getSprite().body.setZeroVelocity();
-      if (char.isArmed) {
-        char.weapon.update();
-      }
-      if (char.isAttacking) {
-        let range = char.weapon.range;
-        if (char === this.playerCharacter) {
-          range += common.globals.gameplay.playerRangeModifier;
-        }
-        this.hitWithWeapon(char, range);
-      }
-      this.runAggroBehavior(char);
     });
     this.characters.forEach(char => {
       if (char.path !== null) {
