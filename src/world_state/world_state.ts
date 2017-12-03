@@ -71,7 +71,6 @@ export default class WorldState {
     this.astar = new EasyStar.js();
     this.astar.setGrid(this.grid.collisions);
     this.astar.setAcceptableTiles([0]);
-    this.astar.setDirectionalCondition
     this.characters = [];
   }
 

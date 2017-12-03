@@ -39,8 +39,9 @@ export default class Grid {
    * Returns true when the point is outside the grid.
    */
   public collisionWorldPoint(p: Phaser.Point): boolean {
-    if (p.x < 0. || p.y < 0. || p.x >= this.w || p.y >= this.h)
+    if (p.x < 0 || p.y < 0 || p.x >= this.w || p.y >= this.h) {
       return true;
+    }
     return this.collisions[Math.floor(p.x)][Math.floor(p.y)] === 1;
   }
 
