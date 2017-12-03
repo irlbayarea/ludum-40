@@ -4,12 +4,14 @@ import { game } from '../index';
 export class GameEvents {
   private eventQueue: events.EventQueue;
   private eventHandlers: events.EventHandlers;
+
+  // Global event handlers that can't be unregistered.
   private globalHandlers: events.EventHandlers;
 
-  constructor() {
+  constructor(globalHandlers: events.EventHandlers) {
     this.eventQueue = new events.EventQueue(0);
     this.eventHandlers = new events.EventHandlers();
-    this.globalHandlers = new events.EventHandlers();
+    this.globalHandlers = globalHandlers;
   }
 
   public schedule(type: events.EventType, value: any, delay: number) {

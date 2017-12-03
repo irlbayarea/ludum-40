@@ -46,6 +46,8 @@ export function convertToTiles(
 
   const layout = tilemap.createLayer(0);
   layout.resizeWorld();
+  tilemap.setCollisionBetween(31, 31, true, layout);
+  game.physics.p2.convertTilemap(tilemap, layout, true, true);
 
   return tilemap;
 }

@@ -19,7 +19,7 @@ import CrisisSerializer from './crisis/crisis_serializer';
 import HudModel from './ui/hud/hud_model';
 import HudBuilder from './ui/hud/hud_builder';
 
-class Game extends phaser.Game {
+export class Game extends phaser.Game {
   public crisisGenerator: ICrisisGenerator;
   public gameEvents: events.GameEvents;
   public hud: HudModel;
@@ -34,7 +34,10 @@ class Game extends phaser.Game {
     });
 
     this.hud = new HudBuilder().build();
-    this.gameEvents = new events.GameEvents();
+
+    const globalHandlers = new events.EventHandlers();
+    events.registerGlobalHandlers(globalHandlers, this);
+    this.gameEvents = new events.GameEvents(globalHandlers);
 
     const crises = CrisisSerializer.unserializeAll(JSON.stringify(jsonCrises));
     this.crisisGenerator = new PeriodicCrisisGenerator(15000, crises);
