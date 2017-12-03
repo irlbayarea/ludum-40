@@ -141,6 +141,7 @@ export default class WorldState {
       if (char.isAttacking) {
         this.hitWithWeapon(char);
       }
+      this.maybeChasePlayer(char);
     });
     this.characters
       .filter(char => char.path !== null && char.path !== undefined)
@@ -167,6 +168,18 @@ export default class WorldState {
         );
       });
     this.updatePlayerCharacter();
+  }
+
+  private maybeChasePlayer(goblin: Character) {
+    if (goblin === this.playerCharacter || goblin.path) {
+      return;
+    }
+    const them = goblin.getWorldPosition();
+    const target = this.playerCharacter.getWorldPosition();
+    const distance = them.distance(target);
+    if (distance <= 15) {
+      this.directCharacterToPoint(goblin, target);
+    }
   }
 
   private hitWithWeapon(attacking: Character): void {
