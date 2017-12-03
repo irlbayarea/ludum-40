@@ -11,8 +11,7 @@ export class SpawnConfig {
   ) {}
 }
 
-export function randomSpawnLocation(_: Grid): { x: number; y: number } {
-  //   const spawnOptions = game.worldState.grid.getEmptyCells()
-  const spawnOptions = [{ x: 100, y: 100 }, { x: 200, y: 200 }];
+export function randomSpawnLocation(grid: Grid): { x: number; y: number } {
+  const spawnOptions = grid.getEmptyCells();
   return spawnOptions[Math.floor(Math.random() * spawnOptions.length)];
 }
