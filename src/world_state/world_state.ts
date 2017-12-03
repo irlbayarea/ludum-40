@@ -5,6 +5,7 @@ import Grid from './grid';
 import Path from './path';
 import Character from '../character/character';
 import { game } from '../index';
+import { remove } from 'lodash';
 
 /**
  */
@@ -127,6 +128,13 @@ export default class WorldState {
     return char.path !== null;
   }
 
+  public nearby(point: Phaser.Point, distance: number): Phaser.Point {
+    return new Phaser.Point(
+      this.clamp((Math.random() - 0.5) * 2 * distance + point.x),
+      this.clamp((Math.random() - 0.5) * 2 * distance + point.y)
+    );
+  }
+
   public update(): void {
     this.updateCharacters();
   }
@@ -137,23 +145,26 @@ export default class WorldState {
       if (char.isArmed) {
         char.weapon.update();
       }
+      if (char.isAttacking) {
+        this.hitWithWeapon(char);
+      }
+      this.maybeChasePlayer(char);
     });
-    this.characters
-      .filter(char => char.path !== null && char.path !== undefined)
-      .forEach(char => {
+    this.characters.forEach(char => {
+      if (char.path !== null && char.path !== undefined) {
         const body = char.getSprite().body;
         const pos: Phaser.Point = new Phaser.Point(body.x / 64, body.y / 64);
         const path = char.path;
         let goalPoint: { x: number; y: number } | null = path!.currentGoal();
         if (goalPoint === null) {
-          char.path = null;
+          this.stopCharacter(char);
           return;
         }
         if (path!.isNearGoal(pos)) {
           char.path!.advance();
           goalPoint = char.path!.currentGoal();
           if (goalPoint === null) {
-            char.path = null;
+            this.stopCharacter(char);
             return;
           }
         }
@@ -161,8 +172,60 @@ export default class WorldState {
           char,
           new Phaser.Point(goalPoint.x * 64, goalPoint.y * 64)
         );
-      });
+      } else {
+        this.stopCharacter(char);
+      }
+    });
     this.updatePlayerCharacter();
+  }
+
+  private stopCharacter(character: Character) {
+    character.path = null;
+    if (character.isWandering) {
+      const p = this.nearby(character.getWorldPosition(), 10);
+      this.directCharacterToPoint(character, p);
+    }
+  }
+
+  private clamp(n: number) {
+    return Math.max(0, Math.min(this.grid.h - 0.001, n));
+  }
+
+  private maybeChasePlayer(goblin: Character) {
+    if (goblin === this.playerCharacter || goblin.path) {
+      return;
+    }
+    const them = goblin.getWorldPosition();
+    const target = this.playerCharacter.getWorldPosition();
+    const distance = them.distance(target);
+    if (distance <= 15) {
+      this.directCharacterToPoint(goblin, target);
+    }
+  }
+
+  private hitWithWeapon(attacking: Character): void {
+    const attacker = attacking.getWorldPosition();
+    remove(this.characters, c => {
+      if (c === attacking) {
+        return false;
+      }
+      const defender = c.getWorldPosition();
+      const distance = attacker.distance(defender);
+      if (distance <= 1.5) {
+        return this.dealDamage(c);
+      }
+      return false;
+    });
+  }
+
+  private dealDamage(injure: Character): boolean {
+    const sprite = injure.getSprite();
+    sprite.damage(1);
+    game.blood.sprite(sprite);
+    if (sprite.health === 0) {
+      return true;
+    }
+    return false;
   }
 
   private updatePlayerCharacter(): void {
