@@ -15,6 +15,7 @@ import HudBuilder from '../hud/hud_builder';
 import { ITicker } from '../../ticker';
 
 import * as demo from '../demo';
+import { Weapon } from '../sprites/weapon';
 
 /**
  * Main state (i.e. in the game).
@@ -97,6 +98,7 @@ export default class Main extends Phaser.State {
     const playerCharacter: Character = new Character();
     playerCharacter.setSprite(playerSprite);
     game.worldState.playerCharacter = playerCharacter;
+    playerCharacter.arm(new Weapon(game));
   }
 
   private createMap(): Phaser.Tilemap {
