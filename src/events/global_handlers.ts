@@ -6,14 +6,11 @@ import Character from '../character/character';
 import { Armory } from '../ui/sprites/armory';
 import { SpawnConfig, randomSpawnLocation } from '../character/spawn_config';
 
-export function registerGlobalHandlers(
-  game: Game,
-  globalHandlers: events.EventHandlers
-): void {
-  const h = globalHandlers;
+export function registerGlobalHandlers(game: Game): void {
+  const h = game.gameEvents;
   if (common.experiment('crisis')) {
     // Message that a crisis has started.
-    h.register(events.EventType.CrisisStart, (e: events.Event) => {
+    h.addListener(events.EventType.CrisisStart, (e: events.Event) => {
       const crisis: Crisis = e.value;
       game.hud = game.hud.setMessage(
         '🔥🔥 CRISIS! "' + crisis.description + '" Started'
@@ -21,7 +18,7 @@ export function registerGlobalHandlers(
     });
 
     // Message that a crisis has ended.
-    h.register(events.EventType.CrisisEnd, (e: events.Event) => {
+    h.addListener(events.EventType.CrisisEnd, (e: events.Event) => {
       const crisis: Crisis = e.value;
       game.hud = game.hud.setMessage('"' + crisis.description + '" Ended.');
     });
@@ -29,7 +26,7 @@ export function registerGlobalHandlers(
 
   if (common.experiment('spawn')) {
     // Message that a character has spawned.
-    h.register(events.EventType.CharacterSpawn, (e: events.Event) => {
+    h.addListener(events.EventType.CharacterSpawn, (e: events.Event) => {
       const config: SpawnConfig = e.value;
       game.hud = game.hud.setMessage(config.character.name + ' spawned');
       game.spawn(config);
@@ -37,7 +34,7 @@ export function registerGlobalHandlers(
   }
 
   // Display prompts when contracts are available
-  h.register(events.EventType.Contract, (e: events.Event) => {
+  h.addListener(events.EventType.Contract, (e: events.Event) => {
     const character: Character = e.value;
     const { x, y } = randomSpawnLocation(game.worldState.grid);
 

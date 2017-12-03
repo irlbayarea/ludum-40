@@ -40,9 +40,8 @@ export class Game extends phaser.Game {
     this.worldState = new WorldState(40, 40);
 
     // Enable events.
-    const globalHandlers = new events.EventHandlers();
-    this.gameEvents = new events.GameEvents(globalHandlers);
-    events.registerGlobalHandlers(this, globalHandlers);
+    this.gameEvents = new events.GameEvents();
+    events.registerGlobalHandlers(this);
 
     // Enable event generators.
     generators.initGenerators(this);
