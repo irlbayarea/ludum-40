@@ -25,17 +25,19 @@ export default class Main extends Phaser.State {
   public create(): void {
     this.createMap();
 
-    game.gameEvents.addListener(EventType.CrisisStart, (e: Event) => {
-      const crisis: Crisis = e.value;
-      game.hud = game.hud.setMessage(
-        '🔥🔥 CRISIS! "' + crisis.description + '" Started'
-      );
-    });
+    if (common.experiment('demo-crisis')) {
+      game.gameEvents.addListener(EventType.CrisisStart, (e: Event) => {
+        const crisis: Crisis = e.value;
+        game.hud = game.hud.setMessage(
+          '🔥🔥 CRISIS! "' + crisis.description + '" Started'
+        );
+      });
 
-    game.gameEvents.addListener(EventType.CrisisEnd, (e: Event) => {
-      const crisis: Crisis = e.value;
-      game.hud = game.hud.setMessage('"' + crisis.description + '" Ended.');
-    });
+      game.gameEvents.addListener(EventType.CrisisEnd, (e: Event) => {
+        const crisis: Crisis = e.value;
+        game.hud = game.hud.setMessage('"' + crisis.description + '" Ended.');
+      });
+    }
 
     // Enable keyboard.
     this.controller = new Controller(this.game);
@@ -50,13 +52,11 @@ export default class Main extends Phaser.State {
     this.character.body.fixedRotation = true;
     this.game.camera.follow(this.character);
 
-    // Messages.
+    // Setup HUD.
     this.alwaysOnTop = this.game.add.group();
-    this.hudRenderer = new HudRenderer(this.game.plugins.add(
-        MessagePanel,
-        this.alwaysOnTop,
-        this.controller
-    ));
+    this.hudRenderer = new HudRenderer(
+      this.game.plugins.add(MessagePanel, this.alwaysOnTop, this.controller)
+    );
     game.hud = game.hud.setMessage('Welcome to Guard Captain');
     game.hud = game.hud.setQuestion(
       new UserQuestion(['Sushi', 'Tacos'], (option: number) => {
@@ -71,10 +71,11 @@ export default class Main extends Phaser.State {
   public update(): void {
     this.character.body.setZeroVelocity();
 
-    // Tick services
-    const elapsed: number = game.time.elapsed;
-    this.tickEvents(elapsed);
-    this.tickCrises(elapsed);
+    if (common.experiment('demo-crisis')) {
+      const elapsed: number = game.time.elapsed;
+      this.tickEvents(elapsed);
+      this.tickCrises(elapsed);
+    }
 
     // Render
     this.hudRenderer.render(game.hud);
