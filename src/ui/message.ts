@@ -1,13 +1,13 @@
 import * as Phaser from 'phaser-ce';
 import Controller from '../input/controller';
-import { debug } from '../common';
+// import { debug } from '../common';
 
 export default class MessagePanel extends Phaser.Plugin {
   private controller: Controller;
 
   private text: Phaser.Text;
 
-  private hudYSpeed: number = 0;
+  // private hudYSpeed: number = 0;
 
   private panelSprite: Phaser.Sprite;
   private oSprite: Phaser.Sprite;
