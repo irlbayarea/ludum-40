@@ -66,6 +66,7 @@ export default class Main extends Phaser.State {
     game.hud = new HudBuilder().build();
     this.alwaysOnTop = this.game.add.group();
     this.hudRenderer = new HudRenderer(
+      game,
       this.game.plugins.add(MessagePanel, this.alwaysOnTop, this.controller)
     );
 
