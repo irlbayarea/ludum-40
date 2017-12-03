@@ -15,7 +15,7 @@ const root = require('app-root-path') + '';
  * - Customizes the HTML output.
  * - Development server.
  */
-module.exports = common.config({
+module.exports = (env) => common.config({
   /**
    * Cheap simple source-map implementation.
    */
@@ -59,4 +59,4 @@ module.exports = common.config({
       ignored: /node_modules/,
     },
   },
-});
+}, env);
