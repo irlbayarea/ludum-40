@@ -48,6 +48,14 @@ export class Game extends phaser.Game {
     generators.initGenerators(this);
   }
 
+  public getUserInput(
+    message: string,
+    options: string[],
+    callback: (x: number) => void
+  ) {
+    this.hud = this.hud.setQuestion(message, options, callback);
+  }
+
   public spawn(config: SpawnConfig) {
     const sprite = game.add.sprite(
       config.x * 64,
