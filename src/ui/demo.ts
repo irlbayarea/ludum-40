@@ -5,28 +5,39 @@ export function armoryDemo(game: Phaser.Game): void {
   const armory = new Armory(game);
 
   // Green Goblin.
-  armory.peonSprite(64 * 3, 64 * 6, { skin: SkinColor.Green, shirt: {
-    color: ShirtColor.Green,
-    style: 9,
-  } });
+  armory.peonSprite(64 * 3, 64 * 6, {
+    skin: SkinColor.Green,
+    shirt: {
+      color: ShirtColor.Green,
+      style: 9,
+    },
+  });
 
   // White Guy With Dark Hair.
-  armory.peonSprite(64 * 5, 64 * 6, { hair: HairColor.Brown, skin: SkinColor.Tan, shirt: {
-    color: ShirtColor.Orange,
-    style: 13,
-  } });
+  armory.peonSprite(64 * 5, 64 * 6, {
+    hair: HairColor.Brown,
+    skin: SkinColor.Tan,
+    shirt: {
+      color: ShirtColor.Orange,
+      style: 13,
+    },
+  });
 
   // Wizard Like Character.
-  armory.peonSprite(64 * 7, 64 * 6, { beard: {
-    color: HairColor.White,
-    style: 2,  
-  }, shirt: {
-    color: ShirtColor.Tan,
-    style: 8,
-  }, hair: {
-    color: HairColor.White,
-    style: 1,
-  } });
+  armory.peonSprite(64 * 7, 64 * 6, {
+    beard: {
+      color: HairColor.White,
+      style: 2,
+    },
+    shirt: {
+      color: ShirtColor.Tan,
+      style: 8,
+    },
+    hair: {
+      color: HairColor.White,
+      style: 1,
+    },
+  });
 
   // With Custom Hair.
   armory.peonSprite(64 * 9, 64 * 6, {

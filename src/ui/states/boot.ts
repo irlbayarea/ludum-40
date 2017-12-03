@@ -42,7 +42,7 @@ export default class Boot extends Phaser.State {
       16,
       616,
       undefined,
-      1,
+      1
     );
 
     // Load a simple default map.

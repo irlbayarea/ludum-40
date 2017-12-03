@@ -21,7 +21,7 @@ export class Armory extends SpriteFactory {
       hair?: HairColor | { color: HairColor; style: number } | null;
       beard?: HairColor | { color: HairColor; style: number } | null;
       lips?: boolean;
-      shirt?: ShirtColor | {color: ShirtColor, style: number } | null;
+      shirt?: ShirtColor | { color: ShirtColor; style: number } | null;
     }
   ): Phaser.Sprite {
     const sprite = this.game.add.sprite(x, y, this.peonTexture(options));
@@ -34,7 +34,7 @@ export class Armory extends SpriteFactory {
     hair?: HairColor | { color: HairColor; style: number } | null;
     beard?: HairColor | { color: HairColor; style: number } | null;
     lips?: boolean;
-    shirt?: ShirtColor | {color: ShirtColor, style: number } | null;
+    shirt?: ShirtColor | { color: ShirtColor; style: number } | null;
   }): Phaser.RenderTexture {
     options = assign(
       {
@@ -85,7 +85,7 @@ export class Armory extends SpriteFactory {
    * Returns the sprite for a shirt.
    *
    * @param color
-   * @param style 
+   * @param style
    */
   protected shirt(color: ShirtColor, style: number = 0): Phaser.Sprite {
     let offset: number;
@@ -156,10 +156,10 @@ export class Armory extends SpriteFactory {
 
   /**
    * Returns the absolute offset in the tilset.
-   * 
+   *
    * @param offset
-   * @param style 
-   * @param width 
+   * @param style
+   * @param width
    */
   private point(offset: number, style: number, width: number = 4): number {
     const col = style % width;
