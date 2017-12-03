@@ -170,7 +170,7 @@ export default class WorldState {
         }
         this.hitWithWeapon(char, range);
       }
-      this.tryToKillPlayer(char);
+      this.runAggroBehavior(char);
     });
     this.characters.forEach(char => {
       if (char.path !== null && char.path !== undefined) {
@@ -216,18 +216,28 @@ export default class WorldState {
     return Math.max(0, Math.min(this.grid.h - 0.001, n));
   }
 
-  private tryToKillPlayer(goblin: Character) {
-    if (goblin === this.playerCharacter) {
+  private runAggroBehavior(character: Character): void {
+    if (character === this.mPlayerCharacter) {
       return;
     }
-    const them = goblin.getWorldPosition();
-    const target = this.playerCharacter.getWorldPosition();
-    const distance = them.distance(target);
-    if (!goblin.path && distance <= 15) {
-      this.directCharacterToPoint(goblin, target);
-    }
-    if (distance <= 2 && goblin.isArmed) {
-      goblin.swing();
+    const position = character.getWorldPosition();
+    let closestEnemy: Character | undefined;
+    let closestDistance: number = common.globals.gameplay.aggroRange;
+    this.characters.forEach(target => {
+      if (target === character || !this.isOpposed(target, character)) {
+        return;
+      }
+      const distance = position.distance(target.getWorldPosition());
+      if (distance < closestDistance) {
+        closestEnemy = target;
+        closestDistance = distance;
+      }
+      if (distance <= 2 && character.isArmed) {
+        character.swing();
+      }
+    });
+    if (closestEnemy) {
+      this.directCharacterToPoint(character, closestEnemy.getWorldPosition());
     }
   }
 

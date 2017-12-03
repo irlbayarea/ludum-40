@@ -89,7 +89,8 @@ export default class Main extends Phaser.State {
       325
     );
     playerSprite.scale = new Phaser.Point(4.0, 4.0);
-    playerSprite.health = playerSprite.maxHealth = common.globals.gameplay.playerStartingHP;
+    playerSprite.health = playerSprite.maxHealth =
+      common.globals.gameplay.playerStartingHP;
     game.physics.p2.enable(playerSprite);
     playerSprite.body.fixedRotation = true;
     game.camera.follow(playerSprite);

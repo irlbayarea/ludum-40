@@ -32,7 +32,8 @@ export class Weapon {
 
   private constructor(style: number = 368, options?: { range: number }) {
     this.sprite = game.make.sprite(-6, 4, 'characters', style);
-    this.range = (options && options.range) || common.globals.gameplay.defaultWeaponRange;
+    this.range =
+      (options && options.range) || common.globals.gameplay.defaultWeaponRange;
   }
 
   public attach(sprite: Phaser.Sprite): void {

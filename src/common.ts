@@ -30,6 +30,7 @@ export const globals: IGlobals = {
   },
   experiments: userExperiments,
   gameplay: {
+    aggroRange: 15,
     contractRateMs: 20 * 1000,
     crisisRateMs: 10 * 1000,
     goblinSpawnRateMs: 15 * 100,
@@ -76,6 +77,7 @@ interface IGlobals {
    * Gampeplay configuration.
    */
   readonly gameplay: {
+    aggroRange: number;
     goblinSpawnRateMs: number;
     contractRateMs: number;
     crisisRateMs: number;
