@@ -57,14 +57,16 @@ export default class Main extends Phaser.State {
       this.game.plugins.add(MessagePanel, this.alwaysOnTop, this.controller)
     );
     game.hud = game.hud.setMessage('Welcome to Guard Captain');
-    game.hud = game.hud.setQuestion(
-      new UserQuestion(['Sushi', 'Tacos'], (option: number) => {
-        common.debug.log(
-          `Selected: ${option === 1 ? 'Great Choice' : 'Eh, not bad'}`
-        );
-        game.hud = game.hud.setQuestion(null);
-      })
-    );
+    if (common.experiment('demo-ask-users')) {
+      game.hud = game.hud.setQuestion(
+        new UserQuestion(['Sushi', 'Tacos'], (option: number) => {
+          common.debug.log(
+            `Selected: ${option === 1 ? 'Great Choice' : 'Eh, not bad'}`
+          );
+          game.hud = game.hud.setQuestion(null);
+        })
+      );
+    }
   }
 
   public preload(): void {
