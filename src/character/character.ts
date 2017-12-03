@@ -21,8 +21,6 @@ export default class Character {
   public static readonly minGoodness: number = -5;
   public static readonly maxGoodness: number = 10;
 
-  public static readonly maxSalary: number = 100;
-
   public readonly speed: number;
   public readonly strength: number;
   public readonly intelligence: number;
@@ -50,8 +48,7 @@ export default class Character {
       Character.maxRandomness
     ),
     goodness: number = average(Character.minGoodness, Character.maxGoodness),
-    isGuard: boolean = false,
-    salary: number = 0
+    isGuard: boolean = false
   ) {
     this.name = name;
     this.sprite = sprite;
@@ -139,7 +136,7 @@ export default class Character {
     }
 
     this.isGuard = isGuard;
-    this.setSalary(salary);
+    this.setSalary();
   }
 
   public getName(): string {
@@ -202,12 +199,13 @@ export default class Character {
     }
   }
 
-  private setSalary(salary: number): void {
-    if (salary >= 0) {
-      this.salary = salary;
-    } else {
-      throw new RangeError('salary must be >= 0');
-    }
+  private setSalary(): void {
+    this.salary = Math.sqrt(
+      this.strength ** 2 +
+        this.intelligence ** 2 +
+        this.charisma ** 2 +
+        this.goodness ** 2
+    );
   }
 }
 
@@ -254,7 +252,6 @@ export function randomGuard(sprite: Phaser.Sprite): Character {
       Character.minRandomness,
     Math.random() * (Character.maxGoodness - Character.minGoodness) +
       Character.minGoodness,
-    true,
-    Math.random() * Character.maxSalary
+    true
   );
 }
