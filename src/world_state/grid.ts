@@ -6,8 +6,12 @@ import Cell from './cell';
 export default class Grid {
   public readonly cells: Cell[];
   public readonly collisions: number[][]; // Need for pathfinding.
+  public readonly w: number;
+  public readonly h: number;
 
-  public constructor(public readonly w: number, public readonly h: number) {
+  public constructor(w: number, h: number) {
+    this.w = w;
+    this.h = h;
     this.cells = [];
     this.collisions = [];
     for (let x: number = 0; x < w; x++) {
@@ -21,5 +25,24 @@ export default class Grid {
 
   public cell(x: number, y: number): Cell {
     return this.cells[x + y * this.w];
+  }
+
+  /**
+   * Returns whether the cell at the given location is blocking.
+   */
+  public collision(x: number, y: number): boolean {
+    return this.collisions[x][y] === 1;
+  }
+
+  public getEmptyCells(): Array<{ x: number; y: number }> {
+    const arr: Array<{ x: number; y: number }> = [];
+    for (let xx = 0; xx < this.w; xx++) {
+      for (let yy = 0; yy < this.h; yy++) {
+        if (this.collisions[xx][yy] === 1) {
+          arr.push({ x: xx, y: yy });
+        }
+      }
+    }
+    return arr;
   }
 }
