@@ -13,7 +13,8 @@ export default class Controller {
 
   private one: Phaser.Key;
   private two: Phaser.Key;
-
+  private three: Phaser.Key;
+  private four: Phaser.Key;
   /**
    * Create a game controller from the current game object.
    * @param game
@@ -28,6 +29,8 @@ export default class Controller {
 
     this.one = game.input.keyboard.addKey(Phaser.Keyboard.ONE);
     this.two = game.input.keyboard.addKey(Phaser.Keyboard.TWO);
+    this.three = game.input.keyboard.addKey(Phaser.Keyboard.THREE);
+    this.four = game.input.keyboard.addKey(Phaser.Keyboard.FOUR);
   }
 
   get is1(): boolean {
@@ -36,6 +39,14 @@ export default class Controller {
 
   get is2(): boolean {
     return this.two.isDown;
+  }
+
+  get is3(): boolean {
+    return this.three.isDown;
+  }
+
+  get is4(): boolean {
+    return this.four.isDown;
   }
 
   get isUp(): boolean {

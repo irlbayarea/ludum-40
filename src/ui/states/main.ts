@@ -57,9 +57,10 @@ export default class Main extends Phaser.State {
     this.hudRenderer = new HudRenderer(
       this.game.plugins.add(MessagePanel, this.alwaysOnTop, this.controller)
     );
-    game.hud = game.hud.setMessage('Welcome to Guard Captain');
+    game.hud = game.hud.setMessage('Welcome to\n<Insert Game Name Here>');
     game.hud = game.hud.setQuestion(
-      new UserQuestion(['Sushi', 'Tacos'], (option: number) => {
+      new UserQuestion(['Hello There', 'What are you doing in there?' , 'Where are all the Ps?' ,'Yes, business trip...']
+      , (option: number) => {
         common.debug.log(
           `Selected: ${option === 1 ? 'Great Choice' : 'Eh, not bad'}`
         );
