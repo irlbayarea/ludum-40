@@ -24,9 +24,9 @@ export default class MessagePanel extends Phaser.Plugin {
     const goldenRatio = 0.5 * (1 + Math.sqrt(5));
     const mainPanel = new Rectangle(
       0,
-      game.height * (1 - 1/(goldenRatio**3)),
+      game.height * (1 - 1 / goldenRatio ** 3),
       game.width,
-      game.height * (1/(goldenRatio**3))
+      game.height * (1 / goldenRatio ** 3)
     );
 
     bitmap.ctx.beginPath();
@@ -39,17 +39,17 @@ export default class MessagePanel extends Phaser.Plugin {
     sprite.fixedToCamera = true;
     group.add(sprite);
 
-    const textPadX = mainPanel.w/(goldenRatio**8);
-    const textPadY = mainPanel.h/(goldenRatio**4);
+    const textPadX = mainPanel.w / goldenRatio ** 8;
+    const textPadY = mainPanel.h / goldenRatio ** 4;
     const numLines = 4;
 
     const mainTextPanel = new Rectangle(
       mainPanel.x + textPadX,
       mainPanel.y + textPadY,
-      mainPanel.w/(goldenRatio**goldenRatio) - 2 * textPadX,
+      mainPanel.w / goldenRatio ** goldenRatio - 2 * textPadX,
       mainPanel.h - 2 * textPadY
-    )
-    
+    );
+
     const text = game.add.text(0, 0, '...', {
       boundsAlignH: 'center',
       boundsAlignV: 'middle',
@@ -57,7 +57,7 @@ export default class MessagePanel extends Phaser.Plugin {
       fill: '#FFF',
       wordWrap: true,
       wordWrapWidth: mainTextPanel.w,
-      font: 'bold ' + (mainTextPanel.h / numLines) + 'px Consolas',
+      font: 'bold ' + mainTextPanel.h / numLines + 'px Consolas',
     });
     text.setShadow(3, 3, 'rgba(0, 0, 0, 0.5)', 2);
     text.setTextBounds(
@@ -73,39 +73,60 @@ export default class MessagePanel extends Phaser.Plugin {
 
     const options = game.add.bitmapData(game.width, game.height);
 
-    const choicePanel  = new Rectangle(
-      mainTextPanel.x + mainTextPanel.w + 2*textPadX,
+    const choicePanel = new Rectangle(
+      mainTextPanel.x + mainTextPanel.w + 2 * textPadX,
       mainTextPanel.y,
-      mainPanel.w - mainTextPanel.w - 4*textPadX,
+      mainPanel.w - mainTextPanel.w - 4 * textPadX,
       mainTextPanel.h
     );
 
     options.ctx.beginPath();
-    options.ctx.rect(choicePanel.x,choicePanel.y,choicePanel.w,choicePanel.h);
+    options.ctx.rect(
+      choicePanel.x,
+      choicePanel.y,
+      choicePanel.w,
+      choicePanel.h
+    );
     options.ctx.fillStyle = '#787C8B';
     options.ctx.fill();
     options.ctx.strokeStyle = '#565869';
-    options.ctx.strokeRect(choicePanel.x,choicePanel.y,choicePanel.w,choicePanel.h);
+    options.ctx.strokeRect(
+      choicePanel.x,
+      choicePanel.y,
+      choicePanel.w,
+      choicePanel.h
+    );
     this.oSprite = game.add.sprite(0, 0, options);
     this.oSprite.fixedToCamera = true;
     group.add(this.oSprite);
 
     // const optionStrings: string[] = ['Hello There', 'What are you doing in there?' , 'Where are all the Ps?' ,'Yes, business trip...'];
     this.oSprite.visible = false;
-    for (let i = 0; i < 4 ; i++) {
+    for (let i = 0; i < 4; i++) {
       const choicePanelOption: Rectangle = new Rectangle(
-        choicePanel.x + textPadX + choicePanel.w/2 * ( (i == 0 || i == 2) ? 0 : 1),
-        choicePanel.y + textPadY*(2/3) + choicePanel.h/2 * ( (i == 0 || i == 1) ? 0 : 1),
-        choicePanel.w/2,
-        choicePanel.h/2
+        choicePanel.x +
+          textPadX +
+          choicePanel.w / 2 * (i === 0 || i === 2 ? 0 : 1),
+        choicePanel.y +
+          textPadY * (2 / 3) +
+          choicePanel.h / 2 * (i === 0 || i === 1 ? 0 : 1),
+        choicePanel.w / 2,
+        choicePanel.h / 2
       );
-      this.optionList.push(game.add.text(0, 0, '[ ]', {
-        fill: '#FFFFFF', font: ((choicePanel.h - 2*textPadY )/4)+'px Consolas', wordWrap: true, wordWrapWidth: (choicePanel.w/2-textPadX)}));
+      this.optionList.push(
+        game.add.text(0, 0, '[ ]', {
+          fill: '#FFFFFF',
+          font: (choicePanel.h - 2 * textPadY) / 4 + 'px Consolas',
+          wordWrap: true,
+          wordWrapWidth: choicePanel.w / 2 - textPadX,
+        })
+      );
       this.optionList[i].setTextBounds(
         choicePanelOption.x,
         choicePanelOption.y,
         choicePanelOption.w,
-        choicePanelOption.h);  
+        choicePanelOption.h
+      );
       group.add(this.optionList[i]);
       this.optionList[i].visible = false;
       this.optionList[i].fixedToCamera = true;
@@ -120,8 +141,8 @@ export default class MessagePanel extends Phaser.Plugin {
   ): void {
     this.oSprite.visible = true;
     this.callback = callback;
-    for (let i = 0; i < optionListInput.length ; i++) {
-      this.optionList[i].text = `[ ${i+1} ] ${optionListInput[i]}`;
+    for (let i = 0; i < optionListInput.length; i++) {
+      this.optionList[i].text = `[ ${i + 1} ] ${optionListInput[i]}`;
       this.optionList[i].visible = true;
     }
   }
@@ -145,15 +166,14 @@ export default class MessagePanel extends Phaser.Plugin {
       }
 
       this.oSprite.visible = false;
-      for (let i = 0 ; i < this.optionList.length ; i++){
-        this.optionList[i].visible = false;
+      for (const i of this.optionList) {
+        i.visible = false;
       }
-    }
-    else {
+    } else {
       if (this.controller.isSpace) {
         this.oSprite.visible = true;
-        for (let i = 0 ; i < this.optionList.length ; i++){
-          this.optionList[i].visible = true;
+        for (const i of this.optionList) {
+          i.visible = true;
         }
       }
     }

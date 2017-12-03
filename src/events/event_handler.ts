@@ -1,16 +1,15 @@
-import Event from './event';
-import EventType from './event_type';
+import * as events from '../events';
 
-export type EventHandler = (e: Event) => void;
+export type EventHandler = (e: events.Event) => void;
 
-export default class EventHandlers {
-  private eventHandlers: Map<EventType, EventHandler[]>;
+export class EventHandlers {
+  private eventHandlers: Map<events.EventType, EventHandler[]>;
 
   constructor() {
     this.eventHandlers = new Map();
   }
 
-  public register(type: EventType, callback: EventHandler) {
+  public register(type: events.EventType, callback: events.EventHandler) {
     if (this.eventHandlers.has(type)) {
       this.eventHandlers.get(type)!.push(callback);
     } else {
@@ -18,14 +17,14 @@ export default class EventHandlers {
     }
   }
 
-  public unregister(type: EventType) {
+  public unregister(type: events.EventType) {
     if (this.eventHandlers.has(type)) {
       this.eventHandlers.delete(type);
     }
     this.eventHandlers.delete(type);
   }
 
-  public handle(event: Event) {
+  public handle(event: events.Event) {
     if (this.eventHandlers.has(event.type)) {
       this.eventHandlers.get(event.type)!.forEach(handler => {
         handler(event);

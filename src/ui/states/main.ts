@@ -5,13 +5,18 @@ import Controller from '../../input/controller';
 import MessagePanel from '../message';
 
 import * as common from '../../common';
+import * as events from '../../events';
+
 import { game } from '../../index';
 import CrisisEvent from '../../crisis/crisis_event';
-import EventType from '../../event_type';
-import Event from '../../event';
-import Crisis from '../../crisis/crisis';
+import { generateMap, convertToTiles } from '../../map/generator';
 import HudRenderer from '../hud/hud_renderer';
 import UserQuestion from '../../user_question';
+import HudBuilder from '../hud/hud_builder';
+import CrisisSerializer from '../../crisis/crisis_serializer';
+import { jsonCrises } from '../../crisis/crises';
+import PeriodicCrisisGenerator from '../../crisis/periodic_crisis_generator';
+import CharacterGenerator from '../../character/character_generator';
 
 /**
  * Main state (i.e. in the game).
@@ -23,22 +28,6 @@ export default class Main extends Phaser.State {
   private hudRenderer: HudRenderer;
 
   public create(): void {
-    this.createMap();
-
-    if (common.experiment('demo-crisis')) {
-      game.gameEvents.addListener(EventType.CrisisStart, (e: Event) => {
-        const crisis: Crisis = e.value;
-        game.hud = game.hud.setMessage(
-          '🔥🔥 CRISIS! "' + crisis.description + '" Started'
-        );
-      });
-
-      game.gameEvents.addListener(EventType.CrisisEnd, (e: Event) => {
-        const crisis: Crisis = e.value;
-        game.hud = game.hud.setMessage('"' + crisis.description + '" Ended.');
-      });
-    }
-
     // Enable keyboard.
     this.controller = new Controller(this.game);
 
@@ -52,30 +41,58 @@ export default class Main extends Phaser.State {
     this.character.body.fixedRotation = true;
     this.game.camera.follow(this.character);
 
-    // Setup HUD.
+    // Enable events.
+    const globalHandlers = new events.EventHandlers();
+    events.registerGlobalHandlers(globalHandlers, game);
+    game.gameEvents = new events.GameEvents(globalHandlers);
+
+    // Enable crisis events.
+    const crises = CrisisSerializer.unserializeAll(JSON.stringify(jsonCrises));
+    game.crisisGenerator = new PeriodicCrisisGenerator(
+      common.globals.gameplay.crisisRateMs,
+      crises
+    );
+
+    // Enable character events.
+    game.goblinGenerator = new CharacterGenerator(
+      common.globals.gameplay.goblinSpawnRateMs,
+      'guard'
+    );
+
+    // Enable HUD.
+    game.hud = new HudBuilder().build();
     this.alwaysOnTop = this.game.add.group();
     this.hudRenderer = new HudRenderer(
       this.game.plugins.add(MessagePanel, this.alwaysOnTop, this.controller)
     );
-    game.hud = game.hud.setMessage('Welcome to\n<Insert Game Name Here>');
-    game.hud = game.hud.setQuestion(
-      new UserQuestion(['Hello There', 'What are you doing in there?' , 'Where are all the Ps?' ,'Yes, business trip...']
-      , (option: number) => {
-        common.debug.log(
-          `Selected: ${option === 1 ? 'Great Choice' : 'Eh, not bad'}`
-        );
-        game.hud = game.hud.setQuestion(null);
-      })
-    );
+
+    game.hud = game.hud.setMessage('Welcome to Guard Captain');
+    if (common.experiment('demo-ask-users')) {
+      game.hud = game.hud.setQuestion(
+        new UserQuestion(['Sushi', 'Tacos'], (option: number) => {
+          common.debug.log(
+            `Selected: ${option === 1 ? 'Great Choice' : 'Eh, not bad'}`
+          );
+          game.hud = game.hud.setQuestion(null);
+        })
+      );
+    }
+  }
+
+  public preload(): void {
+    this._createMap();
   }
 
   public update(): void {
     this.character.body.setZeroVelocity();
+    const elapsed: number = game.time.elapsed;
 
     if (common.experiment('demo-crisis')) {
-      const elapsed: number = game.time.elapsed;
       this.tickEvents(elapsed);
       this.tickCrises(elapsed);
+    }
+    if (common.experiment('goblin')) {
+      this.tickGoblinGenerator(elapsed);
     }
 
     // Render
@@ -96,10 +113,18 @@ export default class Main extends Phaser.State {
     this.game.world.bringToTop(this.alwaysOnTop);
   }
 
-  private createMap(): Phaser.Tilemap {
+  private _createMap(): Phaser.Tilemap {
     // Initialize the physics system (P2).
     this.game.physics.startSystem(Phaser.Physics.P2JS);
 
+    if (common.experiment('use-generated-map')) {
+      return this.createGeneratedMap();
+    } else {
+      return this.createDefaultMap();
+    }
+  }
+
+  private createDefaultMap(): Phaser.Tilemap {
     // Create the map.
     const map = game.add.tilemap('Tilemap');
 
@@ -135,14 +160,32 @@ export default class Main extends Phaser.State {
     return map;
   }
 
+  private createGeneratedMap(): Phaser.Tilemap {
+    const map = generateMap(43, 43);
+    return convertToTiles(map, this.game, 'tiles');
+  }
+
   private tickCrises(elapsed: number) {
     game.crisisGenerator.tick(elapsed).forEach((e: CrisisEvent) => {
-      game.gameEvents.emit(EventType.CrisisStart, e.crisis);
-      game.gameEvents.schedule(EventType.CrisisEnd, e.crisis, e.duration);
+      game.gameEvents.emit(events.EventType.CrisisStart, e.crisis);
+      game.gameEvents.schedule(
+        events.EventType.CrisisEnd,
+        e.crisis,
+        e.duration
+      );
     });
   }
 
   private tickEvents(elapsed: number) {
     game.gameEvents.tick(elapsed);
+  }
+
+  private tickGoblinGenerator(elapsed: number) {
+    game.goblinGenerator.tick(elapsed).forEach(spawnEvent => {
+      game.gameEvents.emit(
+        events.EventType.CharacterSpawn,
+        spawnEvent.spriteName
+      );
+    });
   }
 }

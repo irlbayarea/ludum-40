@@ -1,6 +1,6 @@
-import EventType from './event_type';
+import { EventType } from './event_type';
 
-export default class Event {
+export class Event {
   public readonly type: EventType;
   public readonly value: any;
   public readonly time: number;

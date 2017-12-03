@@ -7,21 +7,19 @@ import 'phaser';
 
 import * as phaser from 'phaser-ce';
 import * as common from './common';
+import * as events from './events';
 
 import Boot from './ui/states/boot';
 import { generateMap } from './map/generator';
 import Main from './ui/states/main';
-import PeriodicCrisisGenerator from './crisis/periodic_crisis_generator';
 import ICrisisGenerator from './crisis/crisis_generator';
-import GameEvents from './game_events';
-import { jsonCrises } from './crisis/crises';
-import CrisisSerializer from './crisis/crisis_serializer';
 import HudModel from './ui/hud/hud_model';
-import HudBuilder from './ui/hud/hud_builder';
+import GoblinGenerator from './character/character_generator';
 
-class Game extends phaser.Game {
+export class Game extends phaser.Game {
   public crisisGenerator: ICrisisGenerator;
-  public gameEvents: GameEvents;
+  public goblinGenerator: GoblinGenerator;
+  public gameEvents: events.GameEvents;
   public hud: HudModel;
 
   constructor() {
@@ -32,12 +30,6 @@ class Game extends phaser.Game {
       resolution: 1,
       width: common.globals.dimensions.width,
     });
-
-    this.hud = new HudBuilder().build();
-    this.gameEvents = new GameEvents();
-
-    const crises = CrisisSerializer.unserializeAll(JSON.stringify(jsonCrises));
-    this.crisisGenerator = new PeriodicCrisisGenerator(15000, crises);
 
     this.state.add('Boot', Boot);
     this.state.add('Main', Main);
