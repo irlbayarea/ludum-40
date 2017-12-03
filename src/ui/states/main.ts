@@ -8,7 +8,7 @@ import * as common from '../../common';
 import * as textures from '../../character/textures';
 
 import { game } from '../../index';
-import Character from '../../character/character';
+import Character, { CharacterType } from '../../character/character';
 import { generateMap, convertToTiles } from '../../map/generator';
 import HudRenderer from '../hud/hud_renderer';
 import HutFactory from '../sprites/hut';
@@ -37,30 +37,10 @@ export default class Main extends Phaser.State {
       game,
       this.game.plugins.add(MessagePanel, this.alwaysOnTop, game.controller)
     );
-
     game.hud = game.hud.setMessage('Welcome to Guard Captain');
-    if (common.experiment('demo-ask-users')) {
-      game.hud = game.hud.setQuestion(
-        'Choose a food!',
-        ['Sushi', 'Tacos'],
-        (option: number) => {
-          common.debug.log(
-            `Selected: ${option === 1 ? 'Great Choice' : 'Eh, not bad'}`
-          );
-          game.hud = game.hud.clearQuestion();
-        }
-      );
-    }
 
     this.createDemos();
     this.createPlayerCharacter();
-
-    if (common.experiment('pathfinding')) {
-      game.worldState.directCharacterToPoint(
-        game.worldState.playerCharacter,
-        new Phaser.Point(15, 15)
-      );
-    }
   }
 
   public preload(): void {
@@ -78,7 +58,7 @@ export default class Main extends Phaser.State {
       game.generators.forEach((generator: ITicker) => generator.tick(elapsed));
     }
 
-    if (game.hud.question !== null && game.hud.question !== undefined) {
+    if (game.hud.question) {
       if (game.controller.is1JustDown) {
         game.hud.question.callback(1);
         game.hud.clearQuestion();
@@ -103,7 +83,10 @@ export default class Main extends Phaser.State {
   }
 
   private createPlayerCharacter(): void {
-    const playerCharacterTemplate: Character = new Character('Porgby', 400);
+    const playerCharacterTemplate: Character = new Character(
+      'Porgby',
+      CharacterType.Player
+    );
     const sc: SpawnConfig = new SpawnConfig(
       playerCharacterTemplate,
       textures.guard(game.armory),

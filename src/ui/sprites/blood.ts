@@ -8,7 +8,11 @@ export default class BloodFactory {
   }
 
   public sprite(on: Phaser.Sprite): Phaser.Sprite {
-    const sprite = this.game.add.sprite(on.body.x, on.body.y, 'blood');
+    const sprite = this.game.add.sprite(
+      on.body.x - 48,
+      on.body.y - 32,
+      'blood'
+    );
     sprite.scale = new Phaser.Point(0.25, 0.25);
     sprite.animations.add('animate');
     sprite.animations.play('animate', 30, false, true);

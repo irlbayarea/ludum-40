@@ -22,6 +22,7 @@ import { Armory } from './ui/sprites/armory';
 import BloodFactory from './ui/sprites/blood';
 import Character from './character/character';
 import HudBuilder from './ui/hud/hud_builder';
+import GameOver from './ui/states/over';
 
 export class Game extends phaser.Game {
   public generators: ITicker[];
@@ -44,6 +45,7 @@ export class Game extends phaser.Game {
 
     this.state.add('Boot', Boot);
     this.state.add('Main', Main);
+    this.state.add('Over', GameOver);
     this.state.start('Boot');
 
     this.isOfferingContract = false;
@@ -109,8 +111,7 @@ if (common.globals.debug) {
   const $DEBUG = {
     generateMap: () => generateMap(21, 21),
   };
-  common.debug.log('Debugging enabled', common.globals.dimensions);
-  common.debug.log('Experiments enabled', common.globals.experiments);
+  common.debug.log('Debugging enabled', common.globals);
   common.debug.log(
     'See the "$D" object for helper functions',
     Object.keys($DEBUG)

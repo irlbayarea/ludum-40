@@ -8,6 +8,7 @@ import CrisisOption from '../crisis/option';
 import { randomName } from './names';
 import Path from '../world_state/path';
 import { Weapon } from '../ui/sprites/weapon';
+import { assign } from 'lodash';
 
 export default class Character {
   public static readonly minSpeed: number = 10;
@@ -23,6 +24,11 @@ export default class Character {
   public static readonly minGoodness: number = -5;
   public static readonly maxGoodness: number = 10;
 
+  /**
+   * Could be handled better, but whether it is a Goblin.
+   */
+  public readonly isGoblin: boolean;
+
   public readonly speed: number;
   public readonly strength: number;
   public readonly intelligence: number;
@@ -34,7 +40,7 @@ export default class Character {
   public path: Path | null;
 
   private wandering: boolean;
-  private sprite: Phaser.Sprite;
+  private sprite?: Phaser.Sprite;
   private isGuard: boolean;
   private salary: number;
 
@@ -42,24 +48,36 @@ export default class Character {
 
   constructor(
     name: string = randomName(),
-    speed: number = average(Character.minSpeed, Character.maxSpeed),
-    strength: number = average(Character.minStrength, Character.maxStrength),
-    intelligence: number = average(
-      Character.minIntelligence,
-      Character.maxIntelligence
-    ),
-    charisma: number = average(Character.minCharisma, Character.maxCharisma),
-    randomness: number = average(
-      Character.minRandomness,
-      Character.maxRandomness
-    ),
-    goodness: number = average(Character.minGoodness, Character.maxGoodness),
-    isGuard: boolean = false
+    type: CharacterType,
+    stats?: {
+      speed: number;
+      strength: number;
+      intelligence: number;
+      charisma: number;
+      randomness: number;
+      goodness: number;
+    }
   ) {
+    const defaultStats = {
+      speed: average(Character.minSpeed, Character.maxSpeed),
+      strength: average(Character.minStrength, Character.maxStrength),
+      intelligence: average(
+        Character.minIntelligence,
+        Character.maxIntelligence
+      ),
+      charisma: average(Character.minCharisma, Character.maxCharisma),
+      randomness: average(Character.minRandomness, Character.maxRandomness),
+      goodness: average(Character.minGoodness, Character.maxGoodness),
+    };
+    stats = assign(defaultStats, stats);
+
     this.name = name;
 
-    if (Character.maxSpeed >= speed && speed >= Character.minSpeed) {
-      this.speed = speed;
+    if (
+      Character.maxSpeed >= stats.speed &&
+      stats.speed >= Character.minSpeed
+    ) {
+      this.speed = stats.speed;
     } else {
       throw new RangeError(
         'speed value must be within [' +
@@ -70,10 +88,10 @@ export default class Character {
       );
     }
     if (
-      Character.maxStrength >= strength &&
-      strength >= Character.minStrength
+      Character.maxStrength >= stats.strength &&
+      stats.strength >= Character.minStrength
     ) {
-      this.strength = strength;
+      this.strength = stats.strength;
     } else {
       throw new RangeError(
         'strength value must be within [' +
@@ -84,10 +102,10 @@ export default class Character {
       );
     }
     if (
-      Character.maxIntelligence >= intelligence &&
-      intelligence >= Character.minIntelligence
+      Character.maxIntelligence >= stats.intelligence &&
+      stats.intelligence >= Character.minIntelligence
     ) {
-      this.intelligence = intelligence;
+      this.intelligence = stats.intelligence;
     } else {
       throw new RangeError(
         'intelligence value must be within [' +
@@ -98,10 +116,10 @@ export default class Character {
       );
     }
     if (
-      Character.maxCharisma >= charisma &&
-      charisma >= Character.minCharisma
+      Character.maxCharisma >= stats.charisma &&
+      stats.charisma >= Character.minCharisma
     ) {
-      this.charisma = charisma;
+      this.charisma = stats.charisma;
     } else {
       throw new RangeError(
         'charisma value must be within [' +
@@ -112,10 +130,10 @@ export default class Character {
       );
     }
     if (
-      Character.maxGoodness >= goodness &&
-      goodness >= Character.minGoodness
+      Character.maxGoodness >= stats.goodness &&
+      stats.goodness >= Character.minGoodness
     ) {
-      this.goodness = goodness;
+      this.goodness = stats.goodness;
     } else {
       throw new RangeError(
         'goodness value must be within [' +
@@ -126,10 +144,10 @@ export default class Character {
       );
     }
     if (
-      Character.maxRandomness >= randomness &&
-      randomness >= Character.minRandomness
+      Character.maxRandomness >= stats.randomness &&
+      stats.randomness >= Character.minRandomness
     ) {
-      this.randomness = randomness;
+      this.randomness = stats.randomness;
     } else {
       throw new RangeError(
         'randomness value must be within [' +
@@ -140,14 +158,17 @@ export default class Character {
       );
     }
 
-    this.isGuard = isGuard;
+    this.isGuard = type === CharacterType.Guard;
+    this.isGoblin = type === CharacterType.Goblin;
     this.setSalary();
     this.path = null;
   }
 
   public arm(weapon: Weapon): void {
     this.mWeapon = weapon;
-    weapon.attach(this.sprite);
+    if (this.sprite) {
+      weapon.attach(this.sprite);
+    }
   }
 
   public swing(): void {
@@ -183,7 +204,7 @@ export default class Character {
   }
 
   public getSprite(): Phaser.Sprite {
-    return this.sprite;
+    return this.sprite as Phaser.Sprite;
   }
 
   public getIsGuard(): boolean {
@@ -195,8 +216,11 @@ export default class Character {
   }
 
   public setSprite(sprite: Phaser.Sprite) {
-    if (this.sprite === undefined || this.sprite === null) {
+    if (!this.sprite) {
       this.sprite = sprite;
+      if (this.mWeapon) {
+        this.mWeapon.attach(sprite);
+      }
     } else {
       throw new Error('Sprite already defined.');
     }
@@ -205,7 +229,7 @@ export default class Character {
    * Returns the position of the character in world coordinates (1 tile = 1.00 distance).
    */
   public getWorldPosition(): Phaser.Point {
-    return new Phaser.Point(this.sprite.x / 64, this.sprite.y / 64);
+    return new Phaser.Point(this.sprite!.x / 64, this.sprite!.y / 64);
   }
 
   /**
@@ -286,24 +310,35 @@ function scoreOption(c: Character, o: CrisisOption): number {
   );
 }
 
+export enum CharacterType {
+  Player = 1,
+  Goblin = 2,
+  Guard = 3,
+  Peasant = 4,
+}
+
 /**
  * randomGuard()
  */
-export function randomCharacter(): Character {
-  return new Character(
-    randomName(),
-    Math.random() * (Character.maxSpeed - Character.minSpeed) +
+export function randomCharacter(type: CharacterType): Character {
+  return new Character(randomName(), type, {
+    speed:
+      Math.random() * (Character.maxSpeed - Character.minSpeed) +
       Character.minSpeed,
-    Math.random() * (Character.maxStrength - Character.minStrength) +
+    strength:
+      Math.random() * (Character.maxStrength - Character.minStrength) +
       Character.minStrength,
-    Math.random() * (Character.maxIntelligence - Character.minIntelligence) +
+    intelligence:
+      Math.random() * (Character.maxIntelligence - Character.minIntelligence) +
       Character.minIntelligence,
-    Math.random() * (Character.maxCharisma - Character.minCharisma) +
+    charisma:
+      Math.random() * (Character.maxCharisma - Character.minCharisma) +
       Character.minCharisma,
-    Math.random() * (Character.maxRandomness - Character.minRandomness) +
+    randomness:
+      Math.random() * (Character.maxRandomness - Character.minRandomness) +
       Character.minRandomness,
-    Math.random() * (Character.maxGoodness - Character.minGoodness) +
+    goodness:
+      Math.random() * (Character.maxGoodness - Character.minGoodness) +
       Character.minGoodness,
-    true
-  );
+  });
 }

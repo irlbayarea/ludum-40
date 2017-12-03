@@ -1,14 +1,39 @@
 import * as Phaser from 'phaser-ce';
+import * as common from '../../common';
+import { game } from '../../index';
 
 export class Weapon {
-  private readonly sprite: Phaser.Sprite;
+  public static sword(): Weapon {
+    return new Weapon(368);
+  }
 
+  public static dagger(): Weapon {
+    return new Weapon(422);
+  }
+
+  public static scimitar(): Weapon {
+    return new Weapon(476);
+  }
+
+  public static axe(): Weapon {
+    return new Weapon(101);
+  }
+
+  public static spear(): Weapon {
+    return new Weapon(49);
+  }
+
+  public readonly range: number;
+
+  private readonly sprite: Phaser.Sprite;
   private mIsSwinging: boolean;
   private mIsHitting: boolean;
   private swingTimer?: Phaser.TimerEvent;
 
-  constructor(private readonly game: Phaser.Game) {
-    this.sprite = game.make.sprite(-6, 4, 'characters', 368);
+  private constructor(style: number = 368, options?: { range: number }) {
+    this.sprite = game.make.sprite(-6, 4, 'characters', style);
+    this.range =
+      (options && options.range) || common.globals.gameplay.defaultWeaponRange;
   }
 
   public attach(sprite: Phaser.Sprite): void {
@@ -25,7 +50,7 @@ export class Weapon {
   public markInUse(): void {
     this.mIsSwinging = true;
     if (!this.swingTimer) {
-      this.swingTimer = this.game.time.events.add(150, () => {
+      this.swingTimer = game.time.events.add(150, () => {
         this.reset();
         this.swingTimer = undefined;
         this.mIsHitting = true;
