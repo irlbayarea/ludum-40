@@ -30,9 +30,12 @@ export const globals: IGlobals = {
   },
   experiments: userExperiments,
   gameplay: {
-    goblinSpawnRateMs: 15 * 100,
     contractRateMs: 20 * 1000,
     crisisRateMs: 10 * 1000,
+    goblinSpawnRateMs: 15 * 100,
+    defaultWeaponRange: 1.25,
+    playerRangeModifier: 0.75,
+    playerStartingHP: 100,
   },
 };
 
@@ -76,5 +79,8 @@ interface IGlobals {
     goblinSpawnRateMs: number;
     contractRateMs: number;
     crisisRateMs: number;
+    defaultWeaponRange: number;
+    playerRangeModifier: number;
+    playerStartingHP: number;
   };
 }

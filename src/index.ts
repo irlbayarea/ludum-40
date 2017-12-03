@@ -111,8 +111,7 @@ if (common.globals.debug) {
   const $DEBUG = {
     generateMap: () => generateMap(21, 21),
   };
-  common.debug.log('Debugging enabled', common.globals.dimensions);
-  common.debug.log('Experiments enabled', common.globals.experiments);
+  common.debug.log('Debugging enabled', common.globals);
   common.debug.log(
     'See the "$D" object for helper functions',
     Object.keys($DEBUG)

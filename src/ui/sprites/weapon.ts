@@ -1,4 +1,5 @@
 import * as Phaser from 'phaser-ce';
+import * as common from '../../common';
 import { game } from '../../index';
 
 export class Weapon {
@@ -31,7 +32,7 @@ export class Weapon {
 
   private constructor(style: number = 368, options?: { range: number }) {
     this.sprite = game.make.sprite(-6, 4, 'characters', style);
-    this.range = (options && options.range) || 1;
+    this.range = (options && options.range) || common.globals.gameplay.defaultWeaponRange;
   }
 
   public attach(sprite: Phaser.Sprite): void {

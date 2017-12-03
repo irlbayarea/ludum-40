@@ -1,5 +1,6 @@
 import * as Phaser from 'phaser-ce';
 import * as EasyStar from 'easystarjs';
+import * as common from '../common';
 
 import Grid from './grid';
 import Path from './path';
@@ -165,7 +166,7 @@ export default class WorldState {
       if (char.isAttacking) {
         let range = char.weapon.range;
         if (char === this.playerCharacter) {
-          range += 1;
+          range += common.globals.gameplay.playerRangeModifier;
         }
         this.hitWithWeapon(char, range);
       }
