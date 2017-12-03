@@ -9,8 +9,8 @@ import { randomName } from './names';
 import Path from '../world_state/path';
 
 export default class Character {
-  public static readonly minSpeed: number = 1;
-  public static readonly maxSpeed: number = 10;
+  public static readonly minSpeed: number = 10;
+  public static readonly maxSpeed: number = 500;
   public static readonly minStrength: number = 0;
   public static readonly maxStrength: number = 10;
   public static readonly minIntelligence: number = 0;

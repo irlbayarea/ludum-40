@@ -26,10 +26,8 @@ import CharacterGenerator from '../../character/character_generator';
 export default class Main extends Phaser.State {
   private controller: Controller;
   private playerSprite: Phaser.Sprite;
-  private messages: MessagePanel;
   private alwaysOnTop: Phaser.Group;
   private playerCharacter: Character;
-  private character: Phaser.Sprite;
   private hudRenderer: HudRenderer;
 
   public create(): void {
@@ -67,24 +65,6 @@ export default class Main extends Phaser.State {
     // Enable HUD.
     game.hud = new HudBuilder().build();
     this.alwaysOnTop = this.game.add.group();
-    this.messages = this.game.plugins.add(MessagePanel, this.alwaysOnTop);
-    this.messages.setText('🔥🔥 CRISIS! 🔥🔥');
-
-    this.playerCharacter = new Character(this.playerSprite);
-    game.worldState.characters[0] = this.playerCharacter;
-    game.worldState.directCharacterToPoint(
-      this.playerCharacter,
-      new Phaser.Point(15, 15)
-    );
-  }
-  
-  public preload(): void {
-    this._createMap();
-  }
-
-  public update(): void {
-    game.world.bringToTop(this.alwaysOnTop);
-    game.worldState.update();
     this.hudRenderer = new HudRenderer(
       this.game.plugins.add(MessagePanel, this.alwaysOnTop, this.controller)
     );
@@ -101,7 +81,27 @@ export default class Main extends Phaser.State {
       );
     }
 
-    this.character.body.setZeroVelocity();
+    if (common.experiment('demo-huts')) {
+      const huts = new HutFactory(this.game);
+      huts.sprite(5, 5);
+    }
+
+    this.playerCharacter = new Character(this.playerSprite);
+    game.worldState.characters[0] = this.playerCharacter;
+    game.worldState.directCharacterToPoint(
+      this.playerCharacter,
+      new Phaser.Point(15, 15)
+    );
+  }
+
+  public preload(): void {
+    this.createMap();
+  }
+
+  public update(): void {
+    game.world.bringToTop(this.alwaysOnTop);
+    game.worldState.update();
+
     const elapsed: number = game.time.elapsed;
 
     if (common.experiment('demo-huts')) {
@@ -132,7 +132,7 @@ export default class Main extends Phaser.State {
     }
   }
 
-  private _createMap(): Phaser.Tilemap {
+  private createMap(): Phaser.Tilemap {
     // Initialize the physics system (P2).
     game.physics.startSystem(Phaser.Physics.P2JS);
 
