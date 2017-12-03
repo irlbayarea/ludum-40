@@ -1,8 +1,6 @@
-export interface IGenerator<T> {
-  tick(elapsed: number): T[];
-}
+import { ITicker } from './ticker';
 
-export default class PeriodicGenerator<T> implements IGenerator<T> {
+export default class PeriodicGenerator<T> implements ITicker {
   private period: number;
   private sinceLastCrisis: number;
   private generate: (time: number) => T;
