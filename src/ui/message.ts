@@ -1,6 +1,6 @@
 import * as Phaser from 'phaser-ce';
 import Controller from '../input/controller';
-import {debug} from '../common';
+import { debug } from '../common';
 
 export default class MessagePanel extends Phaser.Plugin {
   private controller: Controller;
@@ -33,7 +33,7 @@ export default class MessagePanel extends Phaser.Plugin {
     );
 
     bitmap.ctx.beginPath();
-    bitmap.ctx.globalAlpha = 1/gr;
+    bitmap.ctx.globalAlpha = 1 / gr;
     bitmap.ctx.rect(
       mainPanel.x,
       mainPanel.y,
@@ -170,8 +170,8 @@ export default class MessagePanel extends Phaser.Plugin {
     this.oSprite.fixedToCamera = cameraFixed;
     this.panelSprite.fixedToCamera = cameraFixed;
     this.text.fixedToCamera = cameraFixed;
-    for (let i = 0; i < this.optionList.length; i++) {
-      this.optionList[i].fixedToCamera = cameraFixed;
+    for (const opt of this.optionList) {
+      opt.fixedToCamera = cameraFixed;
     }
   }
 
@@ -180,18 +180,17 @@ export default class MessagePanel extends Phaser.Plugin {
     this.panelSprite.visible = visibility;
     this.text.visible = visibility;
 
-    for (let i = 0; i < this.optionList.length; i++) {
-      this.optionList[i].visible = visibility;
+    for (const opt of this.optionList) {
+      opt.visible = visibility;
     }
   }
 
   public toggle(): void {
-
     this.oSprite.visible ? this.setVisibility(false) : this.setVisibility(true);
 
-    // if ((this.panelSprite.y <= this.game.height - this.panelSprite.height) || 
+    // if ((this.panelSprite.y <= this.game.height - this.panelSprite.height) ||
     //     (this.panelSprite.y >= this.game.height)) {
-    // 
+    //
     //   this.setCameraFixed(false);
     //
     //   if (this.panelSprite.y >= this.game.height) {
@@ -200,12 +199,9 @@ export default class MessagePanel extends Phaser.Plugin {
     //     this.hudYSpeed = 1;
     //   }
     // }
-
-    return 
   }
 
   public update(): void {
-    
     if (this.controller.isSpaceJustDown) {
       this.toggle();
     }
@@ -216,7 +212,7 @@ export default class MessagePanel extends Phaser.Plugin {
 
     // if ((this.panelSprite.y > this.game.height) ||
     //     (this.panelSprite.y < this.game.height - this.panelSprite.height)){
-      
+
     //   this.setCameraFixed(true);
 
     //   this.hudYSpeed = 0;
@@ -232,7 +228,6 @@ export default class MessagePanel extends Phaser.Plugin {
     // }
 
     if (this.oSprite.visible) {
-
       if (this.controller.is1) {
         this.callback(1);
       } else if (this.controller.is2) {
@@ -241,7 +236,7 @@ export default class MessagePanel extends Phaser.Plugin {
         this.callback(3);
       } else if (this.controller.is4) {
         this.callback(4);
-      } 
+      }
     }
   }
 }
