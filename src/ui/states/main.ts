@@ -10,6 +10,8 @@ import CrisisEvent from '../../crisis/crisis_event';
 import EventType from '../../event_type';
 import Event from '../../event';
 import Crisis from '../../crisis/crisis';
+import HudRenderer from '../hud/hud_renderer';
+import UserQuestion from '../../user_question';
 
 /**
  * Main state (i.e. in the game).
@@ -17,23 +19,23 @@ import Crisis from '../../crisis/crisis';
 export default class Main extends Phaser.State {
   private controller: Controller;
   private character: Phaser.Sprite;
-  private messages: MessagePanel;
   private alwaysOnTop: Phaser.Group;
+  private hudRenderer: HudRenderer;
 
   public create(): void {
     this.createMap();
 
-    if (common.experiment('demo-criss')) {
+    if (common.experiment('demo-crisis')) {
       game.gameEvents.addListener(EventType.CrisisStart, (e: Event) => {
         const crisis: Crisis = e.value;
-        this.messages.setText(
+        game.hud = game.hud.setMessage(
           '🔥🔥 CRISIS! "' + crisis.description + '" Started'
         );
       });
 
       game.gameEvents.addListener(EventType.CrisisEnd, (e: Event) => {
         const crisis: Crisis = e.value;
-        this.messages.setText('"' + crisis.description + '" Ended.');
+        game.hud = game.hud.setMessage('"' + crisis.description + '" Ended.');
       });
     }
 
@@ -50,32 +52,33 @@ export default class Main extends Phaser.State {
     this.character.body.fixedRotation = true;
     this.game.camera.follow(this.character);
 
-    // Messages.
+    // Setup HUD.
     this.alwaysOnTop = this.game.add.group();
-    this.messages = this.game.plugins.add(
-      MessagePanel,
-      this.alwaysOnTop,
-      this.controller
+    this.hudRenderer = new HudRenderer(
+      this.game.plugins.add(MessagePanel, this.alwaysOnTop, this.controller)
     );
-    this.messages.setText('Welcome to Guard Captain');
-
-    if (common.experiment('demo-ask-user')) {
-      this.messages.askUser('Sushi', 'Tacos', option =>
+    game.hud = game.hud.setMessage('Welcome to Guard Captain');
+    game.hud = game.hud.setQuestion(
+      new UserQuestion(['Sushi', 'Tacos'], (option: number) => {
         common.debug.log(
           `Selected: ${option === 1 ? 'Great Choice' : 'Eh, not bad'}`
-        )
-      );
-    }
+        );
+        game.hud = game.hud.setQuestion(null);
+      })
+    );
   }
 
   public update(): void {
     this.character.body.setZeroVelocity();
 
-    if (common.experiment('demo-criss')) {
+    if (common.experiment('demo-crisis')) {
       const elapsed: number = game.time.elapsed;
       this.tickEvents(elapsed);
       this.tickCrises(elapsed);
     }
+
+    // Render
+    this.hudRenderer.render(game.hud);
 
     this.game.camera.follow(this.character);
     if (this.controller.isLeft && !this.controller.isRight) {
