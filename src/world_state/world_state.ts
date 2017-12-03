@@ -46,8 +46,9 @@ export default class WorldState {
     char.getSprite().body.moveRight(dir.x);
   }
 
+  public readonly characters: Character[];
+
   public readonly grid: Grid;
-  private readonly characters: Character[];
   private readonly astar: EasyStar.js;
 
   /**
@@ -177,6 +178,7 @@ export default class WorldState {
 
   public update(): void {
     this.updateCharacters();
+    this.mechanics.mainLoop();
   }
 
   /**
@@ -192,17 +194,6 @@ export default class WorldState {
   private updateCharacters(): void {
     this.characters.forEach(char => {
       char.getSprite().body.setZeroVelocity();
-      if (char.isArmed) {
-        char.weapon.update();
-      }
-      if (char.isAttacking) {
-        let range = char.weapon.range;
-        if (char === this.playerCharacter) {
-          range += common.globals.gameplay.playerRangeModifier;
-        }
-        this.hitWithWeapon(char, range);
-      }
-      this.runAggroBehavior(char);
     });
     this.characters.forEach(char => {
       if (char.path !== null) {
@@ -254,59 +245,6 @@ export default class WorldState {
 
   private clamp(n: number) {
     return Math.max(0, Math.min(this.grid.h - 0.001, n));
-  }
-
-  private runAggroBehavior(character: Character): void {
-    if (character === this.mPlayerCharacter) {
-      return;
-    }
-    const position = character.getWorldPosition();
-    let closestEnemy: Character | undefined;
-    let closestDistance: number = common.globals.gameplay.aggroRange;
-    this.characters.forEach(target => {
-      if (target === character || !this.isOpposed(target, character)) {
-        return;
-      }
-      const distance = position.distance(target.getWorldPosition());
-      if (distance < closestDistance) {
-        closestEnemy = target;
-        closestDistance = distance;
-      }
-      if (distance <= 2 && character.isArmed) {
-        character.swing();
-      }
-    });
-    if (closestEnemy && !character.path) {
-      this.directCharacterToPoint(character, closestEnemy.getWorldPosition());
-    }
-  }
-
-  private hitWithWeapon(attacking: Character, range: number): void {
-    const attacker = attacking.getWorldPosition();
-    remove(this.characters, c => {
-      if (c === attacking) {
-        return false;
-      }
-      const defender = c.getWorldPosition();
-      const distance = attacker.distance(defender);
-      if (distance <= range) {
-        return this.dealDamage(c, attacking);
-      }
-      return false;
-    });
-  }
-
-  private dealDamage(injure: Character, source: Character): boolean {
-    if (!this.isOpposed(injure, source)) {
-      return false;
-    }
-    const sprite = injure.getSprite();
-    sprite.damage(1);
-    game.blood.sprite(sprite);
-    if (sprite.health === 0) {
-      return true;
-    }
-    return false;
   }
 
   private updatePlayerCharacter(): void {

@@ -1,10 +1,11 @@
 import * as Phaser from 'phaser-ce';
-import { filter, sample } from 'lodash';
+import { filter, sample, remove } from 'lodash';
 import { ITicker } from '../ticker';
 import PeriodicGenerator from '../periodic_generator';
 import * as common from '../common';
 import HutFactory from '../ui/sprites/hut';
 import { game } from '../index';
+import Character from '../character/character';
 
 /**
  * Effectively "runs" the game, i.e. instead of just randomly spawning units.
@@ -16,6 +17,7 @@ export class GameMechanics {
     Hut | undefined
   > = new Map();
   private readonly denSpawnLocations: Phaser.Tile[];
+  private readonly denActive: Den[] = [];
 
   private readonly hutGenerator: HutGenerator;
   private readonly hutSpawnActive: Map<
@@ -23,6 +25,7 @@ export class GameMechanics {
     Hut | undefined
   > = new Map();
   private readonly hutSpawnLocations: Phaser.Tile[];
+  private readonly hutActive: Hut[] = [];
 
   /**
    * Reads significant information based on the provided map.
@@ -36,7 +39,11 @@ export class GameMechanics {
       for (const result of this.hutSpawnLocations) {
         this.hutSpawnActive.set(result, undefined);
       }
-      this.hutGenerator = new HutGenerator(this, 1000, new HutFactory(game));
+      this.hutGenerator = new HutGenerator(
+        this.spawnHutIntoWorld.bind(this),
+        common.globals.gameplay.hutSpawnRateMs,
+        new HutFactory(game)
+      );
       game.generators.push(this.hutGenerator);
       common.debug.log('Hut spawn locations: ', this.hutSpawnActive.size);
     }
@@ -47,10 +54,28 @@ export class GameMechanics {
       for (const result of this.denSpawnLocations) {
         this.denSpawnActive.set(result, undefined);
       }
-      this.denGenerator = new DenGenerator(this, 1000, new HutFactory(game));
+      this.denGenerator = new DenGenerator(
+        this.spawnDenIntoWorld.bind(this),
+        common.globals.gameplay.denSpawnRateMs,
+        new HutFactory(game)
+      );
       game.generators.push(this.denGenerator);
       common.debug.log('Den spawn locations: ', this.denSpawnActive.size);
     }
+
+    // Setup game looping mechanics:
+    // Have the goblin AI "think" every 1s.
+    game.time.events.loop(common.globals.gameplay.goblinThinkRateMs, this.giveGoblinOrders, this);
+
+    // Have the NPCs "attack" when in range of enemies.
+    game.time.events.loop(common.globals.gameplay.npcAttackRateMs, this.attackNearbyEnemies, this);
+  }
+
+  /**
+   * Forward events from the main game "update" loop.
+   */
+  public mainLoop(): void {
+    this.dealDamageIfNeeded();
   }
 
   /**
@@ -58,15 +83,14 @@ export class GameMechanics {
    *
    * @param den
    */
-  public spawnDenIntoWorld(den: Den): void {
+  private spawnDenIntoWorld(den: Den): void {
     const location = this.getDenSpawnLocation();
     if (location === undefined) {
       den.sprite.kill();
-      common.debug.log('Tried to spawn a den, but no locations idle.');
       return;
     }
-    common.debug.log('Spawning a den at', location);
-    this.hutSpawnActive.set(location, den);
+    this.denSpawnActive.set(location, den);
+    this.denActive.push(den);
     den.sprite.x = location.x * 64;
     den.sprite.y = location.y * 64;
   }
@@ -76,15 +100,15 @@ export class GameMechanics {
    *
    * @param hut
    */
-  public spawnHutIntoWorld(hut: Hut): void {
+  private spawnHutIntoWorld(hut: Hut): void {
     const location = this.getHutSpawnLocation();
     if (location === undefined) {
       hut.sprite.kill();
       common.debug.log('Tried to spawn a hut, but no locations idle.');
       return;
     }
-    common.debug.log('Spawning a hut at', location);
     this.hutSpawnActive.set(location, hut);
+    this.hutActive.push(hut);
     hut.sprite.x = location.x * 64;
     hut.sprite.y = location.y * 64;
   }
@@ -107,6 +131,11 @@ export class GameMechanics {
     );
   }
 
+  /**
+   * Finds all valid spawn locations on the given layer.
+   * 
+   * @param layer
+   */
   private findSpawnLocations(layer: Phaser.TilemapLayer): Phaser.Tile[] {
     const rows: Phaser.Tile[][] = layer.data;
     const results: Phaser.Tile[] = [];
@@ -128,6 +157,230 @@ export class GameMechanics {
   private hashCell(cell: Phaser.Tile, modX = 0, modY = 0): string {
     return `{${cell.x + modX}, ${cell.y + modY}}`;
   }
+
+  /**
+   * Attempts to give goblins orders.
+   *
+   * This method should *not* be called every game loop, but rather a bit less
+   * often. "Smarter" goblins could have this loop called more often, for
+   * example.
+   *
+   * Intended priority (not implemented):
+   *   1. Attack in-range enemy
+   *   2. Move to attack NPCs
+   *   3. Move to attack PCs
+   *   4. Move to attack Huts
+   *   5. Wander
+   *
+   * Future:
+   *   - "Horde Mode": Follow other goblins as they do their tasks.
+   */
+  private giveGoblinOrders(): void {
+    for (const goblin of filter(game.worldState.characters, c => c.isGoblin)) {
+      // Do nothing, just attack.
+      if (this.hasEnemyWithinAttackRange(goblin)) {
+        return;
+      }
+      const enemy = this.findClosestEnemy(goblin);
+      if (enemy) {
+        common.debug.log('Ordered goblin to attack!');
+        this.orderMove(goblin, enemy.target.getWorldPosition());
+        return;
+      }
+    }
+  }
+
+  /**
+   * If near an enemy, swing weapon.
+   */
+  private attackNearbyEnemies(): void {
+    for (const source of game.worldState.characters) {
+      if (source === game.worldState.playerCharacter) {
+        continue;
+      }
+      if (this.hasEnemyWithinAttackRange(source)) {
+        source.swing();
+      }
+    }
+  }
+
+  /**
+   * If mid-swing and near an enemy, deal damage.
+   */
+  private dealDamageIfNeeded(): void {
+    for (const char of game.worldState.characters) {
+      if (char.isArmed) {
+        char.weapon.update();
+      }
+      if (char.isAttacking) {
+        if (this.hasEnemyWithinAttackRange(char)) {
+          this.hitWithWeapon(char);
+        }
+      }
+    }
+  }
+
+  /**
+   * Whether the provided characters are on opposing sides.
+   *
+   * @param who
+   * @param to
+   */
+  private isOpposed(who: Character, to: Character): boolean {
+    return who.isGoblin !== to.isGoblin;
+  }
+
+  /**
+   * Hit all characters and entities within range of the provided attacker.
+   * 
+   * This is expected to called internally.
+   * 
+   * @param attacker
+   */
+  private hitWithWeapon(attacker: Character): void {
+    const range = this.getWeaponRange(attacker);
+    remove(game.worldState.characters, defender => {
+      if (defender === attacker) {
+        return false;
+      }
+      if (this.withinRange(range, attacker.getSprite(), defender.getSprite())) {
+        return this.dealDamage(defender, attacker);
+      }
+      return false;
+    });
+  }
+
+  /**
+   * Deal damage to a N/PC.
+   * 
+   * @param injure 
+   * @param source 
+   */
+  private dealDamage(injure: Character, source: Character): boolean {
+    if (!this.isOpposed(injure, source)) {
+      return false;
+    }
+    const sprite = injure.getSprite();
+    sprite.damage(1);
+    game.blood.sprite(sprite);
+    if (sprite.health === 0) {
+      return true;
+    }
+    return false;
+  }
+
+  /**
+   * Returns the computed weapon + reach range of the provided character.
+   *
+   * @param source
+   */
+  private getWeaponRange(source: Character): number {
+    const rangeModifier =
+      source === game.worldState.playerCharacter
+        ? common.globals.gameplay.playerRangeModifier
+        : 0;
+    return source.weapon.range + rangeModifier;
+  }
+
+  /**
+   * Orders the character to move.
+   *
+   * @param source
+   * @param target
+   */
+  private orderMove(source: Character, target: { x: number; y: number }): void {
+    game.worldState.directCharacterToPoint(
+      source,
+      new Phaser.Point(target.x, target.y)
+    );
+  }
+
+  /**
+   * Returns whethe the provided character has an enemy within attack range.
+   *
+   * @param source
+   */
+  private hasEnemyWithinAttackRange(source: Character): boolean {
+    if (!source.isArmed) {
+      return false;
+    }
+    const sourcePos = source.getWorldPosition();
+    const range = this.getWeaponRange(source);
+    for (const potential of game.worldState.characters) {
+      if (potential === source) {
+        continue;
+      }
+      if (!this.isOpposed(source, potential)) {
+        continue;
+      }
+      if (sourcePos.distance(potential.getWorldPosition()) <= range) {
+        return true;
+      }
+    }
+    if (source.isGoblin) {
+      for (const hut of this.hutActive) {
+        if (this.withinRange(range, source.getSprite(), hut)) {
+          return true;
+        }
+      }
+    }
+    if (!source.isGoblin) {
+      for (const den of this.denActive) {
+        if (this.withinRange(range, source.getSprite(), den)) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  /**
+   * Returns whether [source] and [target] are within range.
+   */
+  private withinRange(
+    range: number,
+    source: Phaser.Sprite,
+    target: Phaser.Sprite | { sprite: Phaser.Sprite }
+  ): boolean {
+    if (!(target instanceof Phaser.Sprite)) {
+      return this.withinRange(range, source, target.sprite);
+    }
+    // TODO: Implement this better.
+    return game.physics.arcade.distanceBetween(source, target) <= range * 48;
+  }
+
+  /**
+   * Returns the closet enemy.
+   *
+   * @param source
+   */
+  private findClosestEnemy(
+    source: Character
+  ): { target: Character; distance: number } | undefined {
+    const sourcePos = source.getWorldPosition();
+    let target: Character | null = null;
+    let targetDistance: number = 1000;
+    for (const potential of game.worldState.characters) {
+      if (
+        potential === source ||
+        !game.worldState.isOpposed(source, potential)
+      ) {
+        continue;
+      }
+      const potentialPos = potential.getWorldPosition();
+      const distance = sourcePos.distance(potentialPos);
+      if (distance < targetDistance) {
+        target = potential;
+        targetDistance = distance;
+      }
+    }
+    return target
+      ? {
+          target,
+          distance: targetDistance,
+        }
+      : undefined;
+  }
 }
 
 export class Hut {
@@ -138,7 +391,7 @@ export class HutGenerator implements ITicker {
   private periodicGenerator: PeriodicGenerator<Hut>;
 
   public constructor(
-    private readonly mechanics: GameMechanics,
+    private readonly spawn: (den: Den) => any,
     period: number,
     factory: HutFactory
   ) {
@@ -149,9 +402,7 @@ export class HutGenerator implements ITicker {
   }
 
   public tick(elapsed: number) {
-    this.periodicGenerator.tick(elapsed).forEach(hut => {
-      this.mechanics.spawnHutIntoWorld(hut);
-    });
+    this.periodicGenerator.tick(elapsed).forEach(this.spawn);
   }
 }
 
@@ -163,7 +414,7 @@ export class DenGenerator implements ITicker {
   private periodicGenerator: PeriodicGenerator<Den>;
 
   public constructor(
-    private readonly mechanics: GameMechanics,
+    private readonly spawn: (den: Den) => any,
     period: number,
     factory: HutFactory
   ) {
@@ -174,8 +425,6 @@ export class DenGenerator implements ITicker {
   }
 
   public tick(elapsed: number) {
-    this.periodicGenerator.tick(elapsed).forEach(hut => {
-      this.mechanics.spawnDenIntoWorld(hut);
-    });
+    this.periodicGenerator.tick(elapsed).forEach(this.spawn);
   }
 }
