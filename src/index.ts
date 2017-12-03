@@ -17,6 +17,7 @@ import WorldState from './world_state/world_state';
 import HudModel from './ui/hud/hud_model';
 import { ITicker } from './ticker';
 import Controller from './input/controller';
+import { SpawnConfig } from './character/spawn_config';
 
 export class Game extends phaser.Game {
   public generators: ITicker[];
@@ -42,11 +43,24 @@ export class Game extends phaser.Game {
 
     // Enable events.
     const globalHandlers = new events.EventHandlers();
-    events.registerGlobalHandlers(globalHandlers, this);
     this.gameEvents = new events.GameEvents(globalHandlers);
+    events.registerGlobalHandlers(this, globalHandlers);
 
     // Enable event generators.
     generators.initGenerators(this);
+  }
+
+  public spawn(config: SpawnConfig) {
+    const sprite = game.add.sprite(
+      config.x * 64,
+      config.y * 64,
+      config.texture
+    );
+    sprite.scale = new Phaser.Point(4.0, 4.0);
+    game.physics.p2.enable(sprite);
+
+    config.character.setSprite(sprite);
+    game.worldState.characters.push(config.character);
   }
 }
 

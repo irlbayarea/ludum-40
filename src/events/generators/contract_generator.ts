@@ -3,22 +3,23 @@ import * as events from '../../events';
 import { Game } from '../../index';
 import PeriodicGenerator from '../../periodic_generator';
 import { ITicker } from '../../ticker';
+import Character, { randomCharacter } from '../../character/character';
 
 export default class ContractGenerator implements ITicker {
-  private periodicGenerator: PeriodicGenerator<string>;
+  private periodicGenerator: PeriodicGenerator<Character>;
   private game: Game;
 
-  public constructor(game: Game, period: number, name: () => string) {
+  public constructor(game: Game, period: number) {
     this.game = game;
-    this.periodicGenerator = new PeriodicGenerator<string>(
+    this.periodicGenerator = new PeriodicGenerator<Character>(
       period,
-      (_: number) => name()
+      (_: number) => randomCharacter()
     );
   }
 
   public tick(elapsed: number) {
-    this.periodicGenerator.tick(elapsed).forEach(name => {
-      this.game.gameEvents.schedule(events.EventType.Contract, name, 1000);
+    this.periodicGenerator.tick(elapsed).forEach(character => {
+      this.game.gameEvents.emit(events.EventType.Contract, character);
     });
   }
 }

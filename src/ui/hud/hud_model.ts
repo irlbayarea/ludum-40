@@ -30,8 +30,17 @@ export default class HudModel {
     return this.builder.build();
   }
 
-  public setQuestion(q: UserQuestion | null): HudModel {
-    this.builder.question = q;
+  public setQuestion(
+    message: string,
+    options: string[],
+    callback: (option: number) => void
+  ): HudModel {
+    this.builder.question = new UserQuestion(message, options, callback);
+    return this.builder.build();
+  }
+
+  public clearQuestion() {
+    this.builder.question = null;
     return this.builder.build();
   }
 }

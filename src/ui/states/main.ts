@@ -1,5 +1,5 @@
 import * as Phaser from 'phaser-ce';
-import { forIn, last } from 'lodash';
+import { forIn } from 'lodash';
 
 import Controller from '../../input/controller';
 import MessagePanel from '../message';
@@ -10,7 +10,6 @@ import { game } from '../../index';
 import Character from '../../character/character';
 import { generateMap, convertToTiles } from '../../map/generator';
 import HudRenderer from '../hud/hud_renderer';
-import UserQuestion from '../../user_question';
 import HutFactory from '../sprites/hut';
 import HudBuilder from '../hud/hud_builder';
 import { ITicker } from '../../ticker';
@@ -42,16 +41,14 @@ export default class Main extends Phaser.State {
     game.hud = game.hud.setMessage('Welcome to Guard Captain');
     if (common.experiment('demo-ask-users')) {
       game.hud = game.hud.setQuestion(
-        new UserQuestion(
-          'Choose a food!',
-          ['Sushi', 'Tacos'],
-          (option: number) => {
-            common.debug.log(
-              `Selected: ${option === 1 ? 'Great Choice' : 'Eh, not bad'}`
-            );
-            game.hud = game.hud.setQuestion(null);
-          }
-        )
+        'Choose a food!',
+        ['Sushi', 'Tacos'],
+        (option: number) => {
+          common.debug.log(
+            `Selected: ${option === 1 ? 'Great Choice' : 'Eh, not bad'}`
+          );
+          game.hud = game.hud.clearQuestion();
+        }
       );
     }
 
@@ -133,7 +130,7 @@ export default class Main extends Phaser.State {
     );
 
     // Initialize Layers.
-    const layers = ['terrain', 'foreground', 'structures', 'collision'].map(
+    const layers = ['terrain', 'foreground', 'collision', 'huts', 'spawns'].map(
       name => map.createLayer(name)
     );
 
@@ -142,12 +139,15 @@ export default class Main extends Phaser.State {
       layer.wrap = true;
     });
 
-    const collision: Phaser.TilemapLayer = last(layers)!;
+    const collision = layers[2];
+    const huts = layers[3];
+    const spawns = layers[4];
     collision.visible = false;
+    huts.visible = false;
+    spawns.visible = false;
 
     const p2 = this.game.physics.p2;
-    const collisionIndex = collision.getTiles(0, 0, 1, 1)[0].index;
-    map.setCollision(collisionIndex, true, collision);
+    map.setCollision(261, true, collision);
     p2.convertTilemap(map, collision, true, true);
     p2.setBoundsToWorld(true, true, true, true, false);
     p2.restitution = 0.2; // Bounciness. '1' is very bouncy.
