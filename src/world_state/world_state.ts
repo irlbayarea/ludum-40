@@ -3,16 +3,35 @@ import * as EasyStar from 'easystarjs';
 
 import Grid from './grid';
 import Path from './path';
-import Character from '../character';
+import Character from '../character/character';
 
 /**
  */
 export default class WorldState {
+  /**
+   * Moves a character on a given tick toward the target point. Use functions
+   * like `directCharacterToPoint` to control character movement.
+   */
+  private static moveCharacterTick(
+    char: Character,
+    towards: Phaser.Point
+  ): void {
+    const body = char.getSprite().body;
+    const p: Phaser.Point = new Phaser.Point(body.x, body.y);
+    const p2: Phaser.Point = new Phaser.Point(towards.x, towards.y);
+    const dir: Phaser.Point = p2
+      .subtract(p.x, p.y)
+      .normalize()
+      .multiply(char.speed, char.speed);
+    char.getSprite().body.moveDown(dir.y);
+    char.getSprite().body.moveRight(dir.x);
+  }
+
+
   public readonly grid: Grid;
+  public readonly characters: Character[];
 
   private readonly astar: EasyStar.js;
-
-  public readonly characters: Character[];
 
   public constructor(gridw: number, gridh: number) {
     this.grid = new Grid(gridw, gridh);
@@ -31,7 +50,7 @@ export default class WorldState {
   ): void {
     for (let y = 0; y < map.height; y++) {
       for (let x = 0; x < map.width; x++) {
-        let tile = map.getTile(x, y, layer);
+        const tile = map.getTile(x, y, layer);
         this.grid.collisions[x][y] = tile !== null ? 1 : 0;
       }
     }
@@ -43,7 +62,7 @@ export default class WorldState {
    * of 1.00 every tile. Returns a Path or null if no path could be found.
    */
   public pathfind(from: Phaser.Point, to: Phaser.Point): Path | null {
-    let points: { x: number; y: number }[] = [];
+    const points: Array<{ x: number; y: number }> = [];
     this.astar.setIterationsPerCalculation(10000000000);
     this.astar.findPath(
       Math.floor(from.x),
@@ -69,31 +88,16 @@ export default class WorldState {
   }
 
   /**
-   * Moves a character on a given tick toward the target point. Use functions
-   * like `directCharacterToPoint` to control character movement.
-   */
-  private static moveCharacterTick(
-    char: Character,
-    towards: Phaser.Point
-  ): void {
-    const body = char.getSprite().body;
-    const p: Phaser.Point = new Phaser.Point(body.x, body.y);
-    const p2: Phaser.Point = new Phaser.Point(towards.x, towards.y);
-    const dir: Phaser.Point = p2
-      .subtract(p.x, p.y)
-      .normalize()
-      .multiply(char.getSpeed(), char.getSpeed());
-    char.getSprite().body.moveDown(dir.y);
-    char.getSprite().body.moveRight(dir.x);
-  }
-
-  /**
    * Tells the character to get to the given point in world coordinates (1
    * tile = 1.00 distance). Returns true if able to do that.
    */
   public directCharacterToPoint(char: Character, point: Phaser.Point): boolean {
     char.path = this.pathfind(char.getWorldPosition(), point);
     return char.path !== null;
+  }
+
+  public update(): void {
+    this.updateCharacters();
   }
 
   private updateCharacters(): void {
@@ -122,9 +126,5 @@ export default class WorldState {
         new Phaser.Point(goalPoint.x * 64, goalPoint.y * 64)
       );
     });
-  }
-
-  public update(): void {
-    this.updateCharacters();
   }
 }

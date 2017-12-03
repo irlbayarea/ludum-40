@@ -8,10 +8,7 @@ import * as common from '../../common';
 import * as events from '../../events';
 
 import { game } from '../../index';
-<<<<<<< HEAD
-import Character from '../../character';
-import { debug } from '../../common';
-=======
+import Character from '../../character/character';
 import CrisisEvent from '../../crisis/crisis_event';
 import { generateMap, convertToTiles } from '../../map/generator';
 import HudRenderer from '../hud/hud_renderer';
@@ -22,30 +19,20 @@ import CrisisSerializer from '../../crisis/crisis_serializer';
 import { jsonCrises } from '../../crisis/crises';
 import PeriodicCrisisGenerator from '../../crisis/periodic_crisis_generator';
 import CharacterGenerator from '../../character/character_generator';
->>>>>>> c118f5c11cdbafccf029468096c974a321cb7193
 
 /**
  * Main state (i.e. in the game).
  */
 export default class Main extends Phaser.State {
   private controller: Controller;
-<<<<<<< HEAD
   private playerSprite: Phaser.Sprite;
   private messages: MessagePanel;
   private alwaysOnTop: Phaser.Group;
   private playerCharacter: Character;
-
-  public create(): void {
-    debug;
-    this.createMap();
-
-=======
   private character: Phaser.Sprite;
-  private alwaysOnTop: Phaser.Group;
   private hudRenderer: HudRenderer;
 
   public create(): void {
->>>>>>> c118f5c11cdbafccf029468096c974a321cb7193
     // Enable keyboard.
     this.controller = new Controller(this.game);
 
@@ -80,7 +67,6 @@ export default class Main extends Phaser.State {
     // Enable HUD.
     game.hud = new HudBuilder().build();
     this.alwaysOnTop = this.game.add.group();
-<<<<<<< HEAD
     this.messages = this.game.plugins.add(MessagePanel, this.alwaysOnTop);
     this.messages.setText('🔥🔥 CRISIS! 🔥🔥');
 
@@ -91,11 +77,14 @@ export default class Main extends Phaser.State {
       new Phaser.Point(15, 15)
     );
   }
+  
+  public preload(): void {
+    this._createMap();
+  }
 
   public update(): void {
     game.world.bringToTop(this.alwaysOnTop);
     game.worldState.update();
-=======
     this.hudRenderer = new HudRenderer(
       this.game.plugins.add(MessagePanel, this.alwaysOnTop, this.controller)
     );
@@ -112,19 +101,13 @@ export default class Main extends Phaser.State {
       );
     }
 
+    this.character.body.setZeroVelocity();
+    const elapsed: number = game.time.elapsed;
+
     if (common.experiment('demo-huts')) {
       const huts = new HutFactory(this.game);
       huts.sprite(5, 5);
     }
-  }
-
-  public preload(): void {
-    this._createMap();
-  }
-
-  public update(): void {
-    this.character.body.setZeroVelocity();
-    const elapsed: number = game.time.elapsed;
 
     if (common.experiment('demo-crisis')) {
       this.tickEvents(elapsed);
@@ -136,7 +119,6 @@ export default class Main extends Phaser.State {
 
     // Render
     this.hudRenderer.render(game.hud);
->>>>>>> c118f5c11cdbafccf029468096c974a321cb7193
 
     if (this.controller.isLeft && !this.controller.isRight) {
       this.playerCharacter.getSprite().body.moveLeft(400);
