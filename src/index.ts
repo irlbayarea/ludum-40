@@ -26,6 +26,7 @@ export class Game extends phaser.Game {
   public hud: HudModel;
   public worldState: WorldState;
   public controller: Controller;
+  public readonly armory: Armory;
 
   constructor() {
     super({
