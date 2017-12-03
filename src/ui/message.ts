@@ -206,6 +206,8 @@ export default class MessagePanel extends Phaser.Plugin {
       this.toggle();
     }
 
+    console.log("update() called");
+
     // if (this.hudYSpeed !== 0) {
     //   this.moveUpDown();
     // }
@@ -228,13 +230,13 @@ export default class MessagePanel extends Phaser.Plugin {
     // }
 
     if (this.oSprite.visible) {
-      if (this.controller.is1) {
+      if (this.controller.is1JustDown) {
         this.callback(1);
-      } else if (this.controller.is2) {
+      } else if (this.controller.is2JustDown) {
         this.callback(2);
-      } else if (this.controller.is3) {
+      } else if (this.controller.is3JustDown) {
         this.callback(3);
-      } else if (this.controller.is4) {
+      } else if (this.controller.is4JustDown) {
         this.callback(4);
       }
     }
