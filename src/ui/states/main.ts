@@ -101,6 +101,22 @@ export default class Main extends Phaser.State {
       game.generators.forEach((generator: ITicker) => generator.tick(elapsed));
     }
 
+    if (game.hud.question !== null && game.hud.question !== undefined) {
+      if (this.controller.is1JustDown) {
+        game.hud.question.callback(1);
+        game.hud.clearQuestion();
+      } else if (this.controller.is2JustDown) {
+        game.hud.question.callback(2);
+        game.hud.clearQuestion();
+      } else if (this.controller.is3JustDown) {
+        game.hud.question.callback(3);
+        game.hud.clearQuestion();
+      } else if (this.controller.is4JustDown) {
+        game.hud.question.callback(4);
+        game.hud.clearQuestion();
+      }
+    }
+
     // Render
     this.hudRenderer.render(game.hud);
 
