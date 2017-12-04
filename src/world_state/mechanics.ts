@@ -1,5 +1,5 @@
 import { Point } from 'phaser-ce';
-import { filter, sample, remove, random } from 'lodash';
+import { filter, sample, remove, random, shuffle } from 'lodash';
 import * as common from '../common';
 import HutFactory from '../ui/sprites/hut';
 import { game } from '../index';
@@ -436,7 +436,7 @@ export class GameMechanics {
    * If mid-swing and near an enemy, deal damage.
    */
   private dealDamageIfNeeded(): void {
-    for (const char of game.worldState.characters) {
+    for (const char of shuffle(game.worldState.characters)) {
       if (char.isArmed) {
         if (char.weapon.isHitting) {
           if (this.hasEnemyWithinAttackRange(char)) {

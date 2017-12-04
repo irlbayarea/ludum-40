@@ -67,7 +67,7 @@ export class Game extends phaser.Game {
     game.physics.p2.enable(sprite);
     sprite.body.fixedRotation = true;
     sprite.body.clearShapes();
-    sprite.body.addCircle(17, 0, 0, 0);
+    (sprite.body as Phaser.Physics.P2.Body).addCircle(10, 0, 0, 0);
     sprite.maxHealth = sprite.health;
     config.character.setSprite(sprite);
     game.worldState.addCharacter(config.character);
