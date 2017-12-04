@@ -1,4 +1,5 @@
 import * as Phaser from 'phaser-ce';
+import { game } from '../../index';
 
 /**
  * Death State.
@@ -13,6 +14,7 @@ export default class GameOver extends Phaser.State {
 
   public update(): void {
     if (this.rKey.isDown) {
+      game.worldState.resetKillCounts();
       this.state.start('Main');
     }
   }

@@ -9,24 +9,30 @@ export default class HudRenderer {
   private messages: MessagePanel;
   private deadGoblinWidget: TextWidget;
   private deadGuardWidget: TextWidget;
+  private deadDenWidget: TextWidget;
+  private deadHutWidget: TextWidget;
   private model: HudModel;
 
   constructor(private game: Game, messages: MessagePanel) {
     this.messages = messages;
     this.deadGoblinWidget = new TextWidget(this.game, 10, 10);
     this.deadGuardWidget = new TextWidget(this.game, 10, 30);
+    this.deadDenWidget = new TextWidget(this.game, 10, 50);
+    this.deadHutWidget = new TextWidget(this.game, 10, 70);
   }
 
   public render(hud: HudModel) {
     if (this.messages.countdown()) {
       this.messages.clearText();
     }
+    this.renderDeadGoblins();
+    this.renderDeadGuards();
+    this.renderDeadDens();
+    this.renderDeadHuts();
     if (this.model === hud) {
       return;
     }
     this.model = hud;
-    this.renderDeadGoblins();
-    this.renderDeadGuards();
     this.renderMessage(this.model.message);
     this.renderQuestion(this.model.question);
   }
@@ -52,15 +58,29 @@ export default class HudRenderer {
 
   private renderDeadGuards() {
     this.deadGuardWidget.write(
-      'Dead Goblins: ' + this.game.worldState.getDeadGuards()
+      'Dead Guards : ' + this.game.worldState.getDeadGuards()
     );
     this.deadGuardWidget.bringToTop();
   }
 
   private renderDeadGoblins() {
     this.deadGoblinWidget.write(
-      'Dead Guards : ' + this.game.worldState.getDeadGoblins()
+      'Dead Goblins: ' + this.game.worldState.getDeadGoblins()
     );
     this.deadGoblinWidget.bringToTop();
+  }
+
+  private renderDeadHuts() {
+    this.deadHutWidget.write(
+      'Dead Huts   : ' + this.game.worldState.getHutDestroyed()
+    );
+    this.deadHutWidget.bringToTop();
+  }
+
+  private renderDeadDens() {
+    this.deadDenWidget.write(
+      'Dead Dens   : ' + this.game.worldState.getDenDesdtroyed()
+    );
+    this.deadDenWidget.bringToTop();
   }
 }
