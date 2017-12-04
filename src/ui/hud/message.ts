@@ -85,7 +85,7 @@ export default class MessagePanel extends Phaser.Plugin {
       wordWrapWidth: MessagePanel.mainTextPanel.width,
       font:
         'bold ' +
-        MessagePanel.mainTextPanel.height / MessagePanel.numOptions +
+        (MessagePanel.mainTextPanel.height / MessagePanel.numOptions) / 1.5 +
         'px Consolas',
     });
     text.setShadow(3, 3, 'rgba(0, 0, 0, 0.5)', 2);
