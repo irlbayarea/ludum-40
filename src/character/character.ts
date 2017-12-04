@@ -226,7 +226,7 @@ export default class Character {
         this.sprite.scale.x *= -1;
       }
       this.hud = new SpriteHUD(this.sprite, this.name, this.lefthanded);
-      
+
       this.hud.addHealthBar();
       this.hud.addNameTag();
 

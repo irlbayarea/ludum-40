@@ -214,7 +214,7 @@ export class GameMechanics {
       pants: PantsColor.Green,
     });
     character.arm(Weapon.axe());
-    common.debug.log("LOOKING FOR GOBLIN SPRITE");
+    common.debug.log('LOOKING FOR GOBLIN SPRITE');
     common.debug.log(character.getSprite());
     game.spawn(new SpawnConfig(character, texture, x, y));
   }

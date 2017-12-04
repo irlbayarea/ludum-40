@@ -16,7 +16,7 @@ export class Weapon {
   }
 
   public static axe(): Weapon {
-    const w:Weapon = new Weapon(101);
+    const w: Weapon = new Weapon(101);
     w.sprite.scale.x *= -1;
     w.sprite.x -= w.sprite.width / 4;
     w.setAnchorPoint(new Phaser.Point(0.0, 0.0));
@@ -29,7 +29,7 @@ export class Weapon {
 
   public readonly range: number;
 
-  public anchorPoint: Phaser.Point = new Phaser.Point(0,0);
+  public anchorPoint: Phaser.Point = new Phaser.Point(0, 0);
 
   private readonly sprite: Phaser.Sprite;
   private mIsSwinging: boolean;
@@ -64,6 +64,10 @@ export class Weapon {
     }
   }
 
+  public setAnchorPoint(aP: Phaser.Point) {
+    this.anchorPoint = aP;
+  }
+
   public update(): void {
     if (this.isSwinging) {
       this.sprite.rotation -= 0.25;
@@ -82,9 +86,5 @@ export class Weapon {
 
   get isSwinging(): boolean {
     return this.mIsSwinging;
-  }
-
-  public setAnchorPoint(aP: Phaser.Point) {
-    this.anchorPoint = aP;
   }
 }

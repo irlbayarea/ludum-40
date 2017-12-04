@@ -5,10 +5,9 @@ import * as Time from '../../logic/_time/common';
 
 export class SpriteHUD {
   private static readonly charScale: number = 4;
-  private static readonly bloodSprayThreshold:number = 0.25;
+  private static readonly bloodSprayThreshold: number = 0.25;
   private static readonly bloodSprayPeriodBase: number = 2.0;
-  private static readonly bloodSprayPulseWidth:number = 0.1;
-
+  private static readonly bloodSprayPulseWidth: number = 0.1;
 
   private nameTag: Phaser.Text;
   private healthBar: Phaser.Sprite;
@@ -21,8 +20,12 @@ export class SpriteHUD {
 
   public sprayBlood(): void {
     if (this.healthPercent() < SpriteHUD.bloodSprayThreshold) {
-      if (Math.abs((Time.default.wallTime() % SpriteHUD.bloodSprayPeriodBase) * 
-                   (this.healthPercent() / SpriteHUD.bloodSprayThreshold)) < SpriteHUD.bloodSprayPulseWidth) {
+      if (
+        Math.abs(
+          (Time.default.wallTime() % SpriteHUD.bloodSprayPeriodBase) *
+            (this.healthPercent() / SpriteHUD.bloodSprayThreshold)
+        ) < SpriteHUD.bloodSprayPulseWidth
+      ) {
         game.blood.sprite(this.sprite);
       }
     }
@@ -30,7 +33,7 @@ export class SpriteHUD {
 
   public updateHealthBar(): void {
     this.healthBar.tint = this.healthColorRange(this.healthPercent());
-    this.healthBar.scale.set(this.healthPercent() , 1);
+    this.healthBar.scale.set(this.healthPercent(), 1);
     // this.healthBar.scale.x *= (this.lefthanded ? -1 : 1);
     common.debug.log(this.name + ' : ' + 100 * this.healthPercent() + ' % ');
   }
@@ -53,7 +56,6 @@ export class SpriteHUD {
       this.healthBar.scale.set(this.healthPercent(), 1);
       // this.healthBar.scale.x *= (this.lefthanded ? -1 : 1);
       this.sprite.addChild(this.healthBar);
-
     } else {
       throw new Error('Sprite already has a health bar!');
     }
@@ -74,7 +76,7 @@ export class SpriteHUD {
       this.nameTag.setTextBounds(0, 0, this.sprite.width, this.sprite.height);
       this.nameTag.anchor.set(0.5, 0);
       this.nameTag.scale.set(0.25);
-      this.nameTag.scale.x *= (this.lefthanded ? -1 : 1);
+      this.nameTag.scale.x *= this.lefthanded ? -1 : 1;
       this.sprite.addChild(this.nameTag);
     } else {
       throw new Error('Sprite already has name tag!');
@@ -94,7 +96,14 @@ export class SpriteHUD {
   }
 
   private healthPercent(): number {
-    common.debug.log("Health % : " + this.name + " : " + this.sprite.health + "/" + this.sprite.maxHealth);
+    common.debug.log(
+      'Health % : ' +
+        this.name +
+        ' : ' +
+        this.sprite.health +
+        '/' +
+        this.sprite.maxHealth
+    );
     return this.sprite.health / this.sprite.maxHealth;
   }
 }
