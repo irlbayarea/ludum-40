@@ -378,7 +378,10 @@ export default class WorldState {
   private updatePlayerCharacter(): void {
     if (game.worldState.playerCharacter.getSprite().health === 0) {
       remove(this.characters, _ => true);
-      game.state.start('Over');
+      game.state.start('Over', true, false, `You died after killing ${game.worldState.getDeadGoblins()} goblins!`);
+    } else if (game.worldState.getHutCount() === 0) {
+      remove(this.characters, _ => true);
+      game.state.start('Over', true, false, `You lots all your huts after killing ${game.worldState.getDeadGoblins()} goblins!`);
     }
 
     // Player Controls.
