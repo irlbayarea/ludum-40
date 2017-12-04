@@ -37,7 +37,6 @@ export class GameMechanics {
 
   private readonly armory: Armory;
   private readonly sword: Phaser.Sound[];
-  private readonly death: Phaser.Sound;
 
   /**
    * Reads significant information based on the provided map.
@@ -59,7 +58,6 @@ export class GameMechanics {
       this.spawnHutIntoWorld(new Hut(new HutFactory(game).hut()));
       this.spawnHutIntoWorld(new Hut(new HutFactory(game).hut()));
       this.sword = [1, 2, 3, 4, 5].map(n => game.add.sound(`sword${n}`));
-      this.death = game.add.sound('death');
     }
 
     const denLayer: Phaser.TilemapLayer = map.layers[map.getLayer('spawns')];
@@ -611,9 +609,6 @@ export class GameMechanics {
       this.attenuate(sample(this.sword) as Phaser.Sound);
     }
     if (sprite.health === 0) {
-      if (injure instanceof Character) {
-        this.attenuate(this.death);
-      }
       return true;
     }
     return false;
