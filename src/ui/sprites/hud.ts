@@ -1,4 +1,3 @@
-import * as common from '../../common';
 import * as Phaser from 'phaser-ce';
 import { game } from '../../index';
 import * as Time from '../../logic/_time/common';
