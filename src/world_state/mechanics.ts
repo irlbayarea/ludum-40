@@ -273,7 +273,7 @@ export class GameMechanics {
         Math.floor(y / 64)
       )
     );
-    sprite.maxHealth = sprite.health = 5;
+    sprite.maxHealth = sprite.health = 10;
   }
 
   private createRandomGuard(): Character {
