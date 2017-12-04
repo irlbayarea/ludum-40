@@ -21,8 +21,12 @@ import { SpawnConfig } from '../../character/spawn_config';
 export default class Main extends Phaser.State {
   private alwaysOnTop: Phaser.Group;
   private hudRenderer: HudRenderer;
+  private music: Phaser.Sound;
 
   public create(): void {
+    this.music = game.add.audio('music');
+    this.music.play(undefined, undefined, undefined, true);
+
     // Enable keyboard.
     game.controller = new Controller(this.game);
 
@@ -39,6 +43,10 @@ export default class Main extends Phaser.State {
 
     this.createDemos();
     this.createPlayerCharacter();
+  }
+
+  public shutdown(): void {
+    this.music.stop();
   }
 
   public preload(): void {

@@ -1,4 +1,4 @@
-// import * as common from '../../common';
+import * as common from '../../common';
 import * as Phaser from 'phaser-ce';
 import { game } from '../../index';
 
@@ -84,20 +84,20 @@ export class SpriteHUD {
     return Phaser.Color.interpolateColor(
       0x52be80,
       0xff0000,
-      100 - percent * 100,
-      100
+      100,
+      100 - percent * 100
     );
   }
 
   private healthPercent(): number {
-    // common.debug.log(
-    //   'Health % : ' +
-    //     this.name +
-    //     ' : ' +
-    //     this.sprite.health +
-    //     '/' +
-    //     this.sprite.maxHealth
-    // );
+    common.debug.log(
+      'Health % : ' +
+        this.name +
+        ' : ' +
+        this.sprite.health +
+        '/' +
+        this.sprite.maxHealth
+    );
     return this.sprite.health / this.sprite.maxHealth;
   }
 }

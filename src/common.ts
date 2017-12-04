@@ -47,6 +47,8 @@ export const globals: IGlobals = {
     playerStartingHP: 50,
     hutSpawnRateMs: 15 * 1000,
     denSpawnRateMs: 20 * 1000,
+
+    playerHPHealRateMs: 1 * 1000,
   },
 };
 
@@ -130,6 +132,11 @@ interface IGlobals {
      * How often to check for promotions.
      */
     promotionsRateMs: number;
+
+    /**
+     * HP Heal rate of PC. Number of seconds before player heals 1 HP.
+     */
+    playerHPHealRateMs: number;
 
     contractRateMs: number;
     crisisRateMs: number;

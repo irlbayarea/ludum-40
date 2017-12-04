@@ -92,6 +92,12 @@ export class GameMechanics {
       this
     );
 
+    game.time.events.loop(
+      common.globals.gameplay.playerHPHealRateMs,
+      this.healPlayer,
+      this
+    );
+
     // Offer NPC contracts.
     game.time.events.loop(
       common.globals.gameplay.contractRateMs,
@@ -109,11 +115,19 @@ export class GameMechanics {
     }
   }
 
+  public getHutCount(): number {
+    return this.hutActive.length;
+  }
+
   /**
    * Forward events from the main game "update" loop.
    */
   public mainLoop(): void {
     this.dealDamageIfNeeded();
+  }
+
+  private healPlayer(): void {
+    game.worldState.playerCharacter.getSprite().heal(1);
   }
 
   /**
@@ -320,9 +334,15 @@ export class GameMechanics {
   }
 
   private spawnGoblinPeon(x: number, y: number): void {
-    const character = new Character('Goblin', CharacterType.Goblin);
-    const texture = this.createGoblinTexture();
-    character.arm(Weapon.axe());
+    const character = new Character('Goblin', CharacterType.Goblin, {
+      strength: random(1, 3),
+    });
+    const texture = this.createGoblinTexture(character.strength);
+    if (character.strength === 3) {
+      character.arm(Weapon.spear());
+    } else {
+      character.arm(Weapon.axe());
+    }
     game.spawn(new SpawnConfig(character, texture, x, y));
   }
 
@@ -362,6 +382,20 @@ export class GameMechanics {
         },
       });
     }
+    if (health === 3) {
+      return this.armory.peonTexture({
+        skin: SkinColor.Green,
+        shirt: {
+          color: ShirtColor.Green,
+          style: 4,
+        },
+        pants: PantsColor.Brown,
+        beard: {
+          color: HairColor.Brown,
+          style: random(0, 7),
+        },
+      });
+    }
     return this.armory.peonTexture({
       skin: SkinColor.Green,
       shirt: {
@@ -393,11 +427,26 @@ export class GameMechanics {
       if (npc === game.worldState.playerCharacter) {
         continue;
       }
+
+      // Whether or not to do a random thing instead.
+      const shouldBeRandom = random(0, 10 - npc.randomness) === 0;
+      if (shouldBeRandom) {
+        npc.goal = Goal.wander();
+        continue;
+      }
+
       // Do nothing, just attack.
       if (this.hasEnemyWithinAttackRange(npc)) {
         npc.goal = Goal.attack(this.findClosestEnemy(npc)!.target);
         continue;
       }
+
+      // Concentrate on buildings.
+      if (this.attackBuildingIfHighIntelligence(npc)) {
+        continue;
+      }
+
+      // Attack closest enemies.
       const enemy = this.findClosestEnemy(npc);
       if (
         enemy &&
@@ -406,6 +455,8 @@ export class GameMechanics {
         this.orderMove(npc, enemy.target.getWorldPosition());
         continue;
       }
+
+      // Attack closest buildings.
       const enemyHut = this.findClosestBuilding(npc);
       if (
         enemyHut &&
@@ -414,8 +465,26 @@ export class GameMechanics {
         this.orderMove(npc, this.worldPositionOfSprite(enemyHut.target.sprite));
         continue;
       }
-      npc.goal = Goal.wander();
+
+      // Wander.
+      if (npc.goal.type === Goal.TYPE_IDLE) {
+        npc.goal = Goal.wander();
+      }
     }
+  }
+
+  private attackBuildingIfHighIntelligence(npc: Character): boolean {
+    if (npc.intelligence > 5) {
+      const enemyHut = this.findClosestBuilding(npc);
+      if (
+        enemyHut &&
+        enemyHut.distance <= common.globals.gameplay.goblinVisionDistance
+      ) {
+        this.orderMove(npc, this.worldPositionOfSprite(enemyHut.target.sprite));
+        return true;
+      }
+    }
+    return false;
   }
 
   /**

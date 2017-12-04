@@ -7,22 +7,18 @@ import * as Phaser from 'phaser-ce';
 import { randomName } from './names';
 import Path from '../world_state/path';
 import { Weapon } from '../ui/sprites/weapon';
-import { assign } from 'lodash';
+import { assign, random } from 'lodash';
 import Goal from './goal';
 
 export default class Character {
-  public static readonly minSpeed: number = 10;
+  public static readonly minSpeed: number = 200;
   public static readonly maxSpeed: number = 500;
   public static readonly minStrength: number = 0;
   public static readonly maxStrength: number = 10;
   public static readonly minIntelligence: number = 0;
   public static readonly maxIntelligence: number = 10;
-  public static readonly minCharisma: number = 0;
-  public static readonly maxCharisma: number = 10;
-  public static readonly minRandomness: number = -5;
+  public static readonly minRandomness: number = 0;
   public static readonly maxRandomness: number = 10;
-  public static readonly minGoodness: number = -5;
-  public static readonly maxGoodness: number = 10;
 
   /**
    * Could be handled better, but whether it is a Goblin.
@@ -54,114 +50,28 @@ export default class Character {
     name: string = randomName(),
     type: CharacterType,
     stats?: {
-      speed: number;
-      strength: number;
-      intelligence: number;
-      charisma: number;
-      randomness: number;
-      goodness: number;
+      speed?: number;
+      strength?: number;
+      intelligence?: number;
+      randomness?: number;
     }
   ) {
     const defaultStats = {
-      speed: average(Character.minSpeed, Character.maxSpeed),
-      strength: average(Character.minStrength, Character.maxStrength),
-      intelligence: average(
+      speed: random(Character.minSpeed, Character.maxSpeed),
+      strength: random(Character.minStrength, Character.maxStrength),
+      intelligence: random(
         Character.minIntelligence,
         Character.maxIntelligence
       ),
-      charisma: average(Character.minCharisma, Character.maxCharisma),
-      randomness: average(Character.minRandomness, Character.maxRandomness),
-      goodness: average(Character.minGoodness, Character.maxGoodness),
+      randomness: random(Character.minRandomness, Character.maxRandomness),
     };
     stats = assign(defaultStats, stats);
 
     this.name = name;
-
-    if (
-      Character.maxSpeed >= stats.speed &&
-      stats.speed >= Character.minSpeed
-    ) {
-      this.speed = stats.speed;
-    } else {
-      throw new RangeError(
-        'speed value must be within [' +
-          Character.minSpeed +
-          ',' +
-          Character.maxSpeed +
-          ']'
-      );
-    }
-    if (
-      Character.maxStrength >= stats.strength &&
-      stats.strength >= Character.minStrength
-    ) {
-      this.strength = stats.strength;
-    } else {
-      throw new RangeError(
-        'strength value must be within [' +
-          Character.minStrength +
-          ',' +
-          Character.maxStrength +
-          ']'
-      );
-    }
-    if (
-      Character.maxIntelligence >= stats.intelligence &&
-      stats.intelligence >= Character.minIntelligence
-    ) {
-      this.intelligence = stats.intelligence;
-    } else {
-      throw new RangeError(
-        'intelligence value must be within [' +
-          Character.minIntelligence +
-          ',' +
-          Character.maxIntelligence +
-          ']'
-      );
-    }
-    if (
-      Character.maxCharisma >= stats.charisma &&
-      stats.charisma >= Character.minCharisma
-    ) {
-      this.charisma = stats.charisma;
-    } else {
-      throw new RangeError(
-        'charisma value must be within [' +
-          Character.minCharisma +
-          ',' +
-          Character.maxCharisma +
-          ']'
-      );
-    }
-    if (
-      Character.maxGoodness >= stats.goodness &&
-      stats.goodness >= Character.minGoodness
-    ) {
-      this.goodness = stats.goodness;
-    } else {
-      throw new RangeError(
-        'goodness value must be within [' +
-          Character.minGoodness +
-          ',' +
-          Character.maxGoodness +
-          ']'
-      );
-    }
-    if (
-      Character.maxRandomness >= stats.randomness &&
-      stats.randomness >= Character.minRandomness
-    ) {
-      this.randomness = stats.randomness;
-    } else {
-      throw new RangeError(
-        'randomness value must be within [' +
-          Character.minRandomness +
-          ',' +
-          Character.maxRandomness +
-          ']'
-      );
-    }
-
+    this.speed = stats.speed as number;
+    this.strength = stats.strength as number;
+    this.intelligence = stats.intelligence as number;
+    this.randomness = stats.randomness as number;
     this.isGuard = type === CharacterType.Guard;
     this.isGoblin = type === CharacterType.Goblin;
     this.setSalary();
@@ -246,40 +156,9 @@ export default class Character {
   }
 }
 
-// Average function of two numbers
-function average(min: number, max: number) {
-  return 0.5 * (max - min) + min;
-}
-
 export enum CharacterType {
   Player = 1,
   Goblin = 2,
   Guard = 3,
   Peasant = 4,
-}
-
-/**
- * randomGuard()
- */
-export function randomCharacter(type: CharacterType): Character {
-  return new Character(randomName(), type, {
-    speed:
-      Math.random() * (Character.maxSpeed - Character.minSpeed) +
-      Character.minSpeed,
-    strength:
-      Math.random() * (Character.maxStrength - Character.minStrength) +
-      Character.minStrength,
-    intelligence:
-      Math.random() * (Character.maxIntelligence - Character.minIntelligence) +
-      Character.minIntelligence,
-    charisma:
-      Math.random() * (Character.maxCharisma - Character.minCharisma) +
-      Character.minCharisma,
-    randomness:
-      Math.random() * (Character.maxRandomness - Character.minRandomness) +
-      Character.minRandomness,
-    goodness:
-      Math.random() * (Character.maxGoodness - Character.minGoodness) +
-      Character.minGoodness,
-  });
 }
