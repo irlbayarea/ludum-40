@@ -478,7 +478,7 @@ export class GameMechanics {
       const enemyHut = this.findClosestBuilding(npc);
       if (
         enemyHut &&
-        enemyHut.distance <= common.globals.gameplay.goblinVisionDistance
+        enemyHut.distance <= common.globals.gameplay.goblinVisionDistance * 1.5
       ) {
         this.orderMove(npc, this.worldPositionOfSprite(enemyHut.target.sprite));
         return true;

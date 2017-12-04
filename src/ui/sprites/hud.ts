@@ -90,6 +90,7 @@ export class SpriteHUD {
   }
 
   private healthPercent(): number {
+    /*
     common.debug.log(
       'Health % : ' +
         this.name +
@@ -98,6 +99,7 @@ export class SpriteHUD {
         '/' +
         this.sprite.maxHealth
     );
+    */
     return this.sprite.health / this.sprite.maxHealth;
   }
 }
