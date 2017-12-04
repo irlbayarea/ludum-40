@@ -541,9 +541,11 @@ export class GameMechanics {
     }
     const sprite = (injure as Hut).sprite || (injure as Character).getSprite();
     sprite.damage(1);
-    if (sprite.body) {
-      game.blood.sprite(sprite);
+    if (injure instanceof Character) {
+      game.blood.blood(sprite);
       (injure as Character).hud.updateHealthBar();
+    } else {
+      game.blood.boom(sprite);
     }
     if (sprite.health === 0) {
       return true;

@@ -34,6 +34,14 @@ export default class Boot extends Phaser.State {
       512
     );
 
+    // Load explosions.
+    this.load.spritesheet(
+      'explode',
+      require('assets/sprites/explosions.png'),
+      80,
+      460 / 5
+    );
+
     // Load the character sheet.
     this.load.spritesheet(
       'characters',
