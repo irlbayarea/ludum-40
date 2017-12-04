@@ -40,13 +40,15 @@ export const globals: IGlobals = {
     maximumCharacters: 100,
     promotionsRateMs: 1500,
 
-    contractRateMs: 20 * 1000,
+    contractRateMs: 10 * 1000,
     crisisRateMs: 10 * 1000,
     defaultWeaponRange: 1.25,
     playerRangeModifier: 0.75,
     playerStartingHP: 50,
     hutSpawnRateMs: 15 * 1000,
     denSpawnRateMs: 20 * 1000,
+
+    guardSalaryMultiplier: 2,
   },
 };
 
@@ -130,6 +132,11 @@ interface IGlobals {
      * How often to check for promotions.
      */
     promotionsRateMs: number;
+
+    /**
+     * Guard salary multiplier
+     */
+    guardSalaryMultiplier: number,
 
     contractRateMs: number;
     crisisRateMs: number;
