@@ -134,3 +134,10 @@ interface IGlobals {
     denSpawnRateMs: number;
   };
 }
+
+/**
+ * Converts an object with x and y fields to a Phaser Point.
+ */
+export function xyObjToPoint(p: { x: number; y: number }): Phaser.Point {
+  return new Phaser.Point(p.x, p.y);
+}
