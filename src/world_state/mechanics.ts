@@ -12,6 +12,7 @@ import {
   ShirtColor,
   PantsColor,
   HairColor,
+  ShieldColor,
 } from '../ui/sprites/armory';
 import { Weapon } from '../ui/sprites/weapon';
 import { SpawnConfig } from '../character/spawn_config';
@@ -109,6 +110,15 @@ export class GameMechanics {
       this.offerContracts,
       this
     );
+
+    // Maybe use new promotion logic.
+    if (common.experiment('promotions')) {
+      game.time.events.loop(
+        common.globals.gameplay.promotionsRateMs,
+        this.offerPromotions,
+        this
+      );
+    }
   }
 
   /**
@@ -260,10 +270,10 @@ export class GameMechanics {
     character: Character,
     texture: Phaser.RenderTexture
   ): void {
-    const location = sample(this.hutActive) as Hut;
-    const { x, y } = location.sprite;
+    // const location = sample(this.hutActive) as Hut;
+    const { x, y } = game.worldState.playerCharacter.getSprite();
     character.arm(Weapon.scimitar());
-    game.spawn(
+    const sprite = game.spawn(
       new SpawnConfig(
         character,
         texture,
@@ -271,6 +281,7 @@ export class GameMechanics {
         Math.floor(y / 64)
       )
     );
+    sprite.maxHealth = sprite.health = 5;
   }
 
   private createRandomGuard(): Character {
@@ -294,9 +305,76 @@ export class GameMechanics {
     }
   }
 
+  private offerPromotions(): void {
+    for (const goblin of filter(game.worldState.characters, c => c.isGoblin)) {
+      const sprite = goblin.getSprite();
+      if (sprite.maxHealth >= 25) {
+        continue;
+      }
+      const buddies = filter(this.findNearbyBudies(goblin), c => {
+        return c.getSprite().maxHealth === sprite.maxHealth;
+      });
+      if (buddies.length >= 5) {
+        sprite.maxHealth *= 5;
+        sprite.health = sprite.maxHealth;
+        sprite.setTexture(this.createGoblinTexture(sprite.maxHealth));
+      }
+    }
+  }
+
+  private findNearbyBudies(character: Character): Character[] {
+    return filter(game.worldState.characters, c => {
+      return (
+        c !== character &&
+        this.withinRange(3.5, character.getSprite(), c.getSprite())
+      );
+    });
+  }
+
   private spawnGoblinPeon(x: number, y: number): void {
     const character = new Character('Goblin', CharacterType.Goblin);
-    const texture = this.armory.peonTexture({
+    const texture = this.createGoblinTexture();
+    character.arm(Weapon.axe());
+    game.spawn(new SpawnConfig(character, texture, x, y));
+  }
+
+  private createGoblinTexture(health: number = 1): Phaser.RenderTexture {
+    if (health >= 25) {
+      return this.armory.peonTexture({
+        skin: SkinColor.Green,
+        lips: true,
+        shirt: {
+          color: ShirtColor.Green,
+          style: 13,
+        },
+        pants: PantsColor.Teal,
+        beard: {
+          color: HairColor.Black,
+          style: 3,
+        },
+        hat: 3,
+        shield: {
+          color: ShieldColor.BronzeTeal,
+          style: 1,
+        },
+      });
+    }
+    if (health >= 5) {
+      return this.armory.peonTexture({
+        skin: SkinColor.Green,
+        lips: true,
+        shirt: {
+          color: ShirtColor.Green,
+          style: 13,
+        },
+        pants: PantsColor.Teal,
+        beard: {
+          color: HairColor.Black,
+          style: 3,
+        },
+      });
+    }
+    return this.armory.peonTexture({
       skin: SkinColor.Green,
       shirt: {
         color: ShirtColor.Green,
@@ -304,10 +382,6 @@ export class GameMechanics {
       },
       pants: PantsColor.Green,
     });
-    character.arm(Weapon.axe());
-    common.debug.log('LOOKING FOR GOBLIN SPRITE');
-    common.debug.log(character.getSprite());
-    game.spawn(new SpawnConfig(character, texture, x, y));
   }
 
   /**
@@ -376,12 +450,12 @@ export class GameMechanics {
   private dealDamageIfNeeded(): void {
     for (const char of game.worldState.characters) {
       if (char.isArmed) {
-        char.weapon.update();
-      }
-      if (char.isAttacking) {
-        if (this.hasEnemyWithinAttackRange(char)) {
-          this.hitWithWeapon(char);
+        if (char.weapon.isHitting) {
+          if (this.hasEnemyWithinAttackRange(char)) {
+            this.hitWithWeapon(char);
+          }
         }
+        char.weapon.update();
       }
     }
   }
