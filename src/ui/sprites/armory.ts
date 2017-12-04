@@ -1,7 +1,7 @@
 import * as Phaser from 'phaser-ce';
 
 import { SpriteFactory } from './factory';
-import { assign, isNumber } from 'lodash';
+import { assign, isNumber, isUndefined } from 'lodash';
 
 /**
  * This class is tightly bound to the current tilesheet.
@@ -50,38 +50,38 @@ export class Armory extends SpriteFactory {
       options
     );
     const parts = [this.body(options.skin as SkinColor, options.lips)];
-    if ('shirt' in options) {
+    if (!isUndefined(options.shirt)) {
       if (isNumber(options.shirt)) {
         parts.push(this.shirt(options.shirt));
       } else {
         parts.push(this.shirt(options.shirt!.color, options.shirt!.style));
       }
     }
-    if ('pants' in options) {
+    if (!isUndefined(options.pants)) {
       parts.push(this.pants(options.pants as PantsColor));
     }
-    if ('shield' in options) {
+    if (!isUndefined(options.shield)) {
       if (isNumber(options.shield)) {
         parts.push(this.shield(options.shield));
       } else {
         parts.push(this.shield(options.shield!.color, options.shield!.style));
       }
     }
-    if ('hair' in options) {
+    if (!isUndefined(options.hair)) {
       if (isNumber(options.hair)) {
         parts.push(this.hair(options.hair));
       } else {
         parts.push(this.hair(options.hair!.color, options.hair!.style));
       }
     }
-    if ('beard' in options) {
+    if (!isUndefined(options.beard)) {
       if (isNumber(options.beard)) {
         parts.push(this.beard(options.beard));
       } else {
         parts.push(this.beard(options.beard!.color, options.beard!.style));
       }
     }
-    if ('hat' in options) {
+    if (!isUndefined(options.hat)) {
       parts.push(this.hat(options.hat));
     }
     return this.flattenedAsTexture(parts, { width: 16, height: 16 });

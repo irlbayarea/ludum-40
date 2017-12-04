@@ -240,7 +240,11 @@ export default class WorldState {
         tries++;
       } while (this.grid.collisionWorldPoint(p) && tries < 10);
       if (!this.grid.collisionWorldPoint(p)) {
-        this.directCharacterToPoint(character, p);
+        try {
+          this.directCharacterToPoint(character, p);
+        } catch (e) {
+          common.debug.log('Error', e);
+        }
       }
     }
   }

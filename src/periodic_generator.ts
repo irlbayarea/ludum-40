@@ -19,4 +19,8 @@ export default class PeriodicGenerator<T> implements ITicker {
     }
     return [];
   }
+
+  public force() : T[] {
+    return [this.generate(this.sinceLastCrisis)];
+  }
 }

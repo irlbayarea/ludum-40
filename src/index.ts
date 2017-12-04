@@ -9,7 +9,6 @@ import * as phaser from 'phaser-ce';
 import * as common from './common';
 import * as events from './events';
 import * as generators from './events/generators';
-import * as textures from './character/textures';
 import Boot from './ui/states/boot';
 import { generateMap } from './map/generator';
 import Main from './ui/states/main';
@@ -17,7 +16,7 @@ import WorldState from './world_state/world_state';
 import HudModel from './ui/hud/hud_model';
 import { ITicker } from './ticker';
 import Controller from './input/controller';
-import { SpawnConfig, randomSpawnLocation } from './character/spawn_config';
+import { SpawnConfig } from './character/spawn_config';
 import { Armory } from './ui/sprites/armory';
 import BloodFactory from './ui/sprites/blood';
 import Character from './character/character';
@@ -85,9 +84,15 @@ export class Game extends phaser.Game {
     game.worldState.addCharacter(config.character);
   }
 
-  public offerContract(character: Character) {
+  public offerContract(
+    character: Character,
+    onPurchase: (character: Character) => void
+  ) {
+    // Bug I don't understand.
+    if (!onPurchase) {
+      return;
+    }
     this.isOfferingContract = true;
-    const { x, y } = randomSpawnLocation(game.worldState.grid);
     this.hud = this.hud.setQuestion(
       'Do you want to hire ' + character.name + '?',
       ['yes', 'no'],
@@ -96,9 +101,7 @@ export class Game extends phaser.Game {
         this.hud = this.hud.clearQuestion();
         if (option === 1) {
           this.hud = this.hud.setMessage('You hired ' + character.name + '!');
-          this.spawn(
-            new SpawnConfig(character, textures.guard(game.armory), x, y)
-          );
+          onPurchase(character);
         } else if (option === 2) {
           this.hud = this.hud.setMessage('Oh. Okay.');
         }
