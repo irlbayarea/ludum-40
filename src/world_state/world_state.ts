@@ -163,8 +163,8 @@ export default class WorldState {
   }
 
   public update(): void {
-    this.updateCharacters();
     this.mechanics.mainLoop();
+    this.updateCharacters();
   }
 
   public render(): void {

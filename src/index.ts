@@ -69,7 +69,7 @@ export class Game extends phaser.Game {
     this.hud = this.hud.setQuestion(message, options, callback);
   }
 
-  public spawn(config: SpawnConfig) {
+  public spawn(config: SpawnConfig): Phaser.Sprite {
     const sprite = game.add.sprite(
       config.x * 64,
       config.y * 64,
@@ -83,6 +83,7 @@ export class Game extends phaser.Game {
     sprite.maxHealth = sprite.health;
     config.character.setSprite(sprite);
     game.worldState.addCharacter(config.character);
+    return sprite;
   }
 
   public offerContract(
