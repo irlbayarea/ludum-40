@@ -323,8 +323,11 @@ export class GameMechanics {
   }
 
   private findNearbyBudies(character: Character): Character[] {
-    return filter(game.worldState.characters, (c) => {
-      return c !== character && this.withinRange(3.5, character.getSprite(), c.getSprite());
+    return filter(game.worldState.characters, c => {
+      return (
+        c !== character &&
+        this.withinRange(3.5, character.getSprite(), c.getSprite())
+      );
     });
   }
 
