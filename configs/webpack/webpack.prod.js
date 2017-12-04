@@ -24,7 +24,7 @@ module.exports = env =>
        */
       plugins: [
         new UglifyJSPlugin(),
-        
+
         // Common global definitions.
         common.define(),
 
