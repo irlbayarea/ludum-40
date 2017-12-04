@@ -261,6 +261,7 @@ export default class WorldState {
       } else {
         this.stopCharacter(char);
       }
+      char.hud.sprayBlood();
     });
     this.updatePlayerCharacter();
   }

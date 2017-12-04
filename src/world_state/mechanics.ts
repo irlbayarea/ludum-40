@@ -305,6 +305,8 @@ export class GameMechanics {
       pants: PantsColor.Green,
     });
     character.arm(Weapon.axe());
+    common.debug.log('LOOKING FOR GOBLIN SPRITE');
+    common.debug.log(character.getSprite());
     game.spawn(new SpawnConfig(character, texture, x, y));
   }
 
@@ -440,6 +442,7 @@ export class GameMechanics {
     sprite.damage(1);
     if (sprite.body) {
       game.blood.sprite(sprite);
+      (injure as Character).hud.updateHealthBar();
     }
     if (sprite.health === 0) {
       return true;
