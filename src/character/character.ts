@@ -2,7 +2,8 @@
  * Character class
  * Encapsulates all information about a character
  */
-import { SpriteHUD } from '../ui/sprites/hud';
+import * as common from '../common'
+ import { SpriteHUD } from '../ui/sprites/hud';
 import * as Phaser from 'phaser-ce';
 import { randomName } from './names';
 import Path from '../world_state/path';
@@ -29,9 +30,7 @@ export default class Character {
   public readonly speed: number;
   public readonly strength: number;
   public readonly intelligence: number;
-  public readonly charisma: number;
   public readonly randomness: number;
-  public readonly goodness: number;
   public readonly name: string;
 
   public readonly lefthanded: boolean = Math.random() > 0.5 ? true : false;
@@ -43,6 +42,7 @@ export default class Character {
 
   private sprite?: Phaser.Sprite;
   private salary: number;
+  private money: number = 0;
 
   private mWeapon: Weapon;
 
@@ -54,6 +54,7 @@ export default class Character {
       strength?: number;
       intelligence?: number;
       randomness?: number;
+      money?: number;
     }
   ) {
     const defaultStats = {
@@ -64,6 +65,7 @@ export default class Character {
         Character.maxIntelligence
       ),
       randomness: random(Character.minRandomness, Character.maxRandomness),
+      money: 0
     };
     stats = assign(defaultStats, stats);
 
@@ -146,12 +148,20 @@ export default class Character {
     );
   }
 
+  public getMoney(): number {
+    return this.money;
+  }
+
+  public changeMoney(money: number) {
+    return this.money += money;
+  }
+
   private setSalary(): void {
-    this.salary = Math.sqrt(
+    this.salary = 
+    common.globals.gameplay.guardSalaryMultiplier * 
+    Math.sqrt(
       this.strength ** 2 +
-        this.intelligence ** 2 +
-        this.charisma ** 2 +
-        this.goodness ** 2
+        this.intelligence ** 2
     );
   }
 }
