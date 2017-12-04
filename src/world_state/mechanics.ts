@@ -51,12 +51,9 @@ export class GameMechanics {
       for (const result of this.hutSpawnLocations) {
         this.hutSpawnActive.set(result, undefined);
       }
-      game.time.events.loop(
-        common.globals.gameplay.hutSpawnRateMs,
-        () => {
-          this.spawnHutIntoWorld(new Hut(new HutFactory(game).hut()));
-        },
-      );
+      game.time.events.loop(common.globals.gameplay.hutSpawnRateMs, () => {
+        this.spawnHutIntoWorld(new Hut(new HutFactory(game).hut()));
+      });
       this.spawnHutIntoWorld(new Hut(new HutFactory(game).hut()));
       this.spawnHutIntoWorld(new Hut(new HutFactory(game).hut()));
     }
@@ -67,12 +64,9 @@ export class GameMechanics {
       for (const result of this.denSpawnLocations) {
         this.denSpawnActive.set(result, undefined);
       }
-      game.time.events.loop(
-        common.globals.gameplay.hutSpawnRateMs,
-        () => {
-          this.spawnDenIntoWorld(new Den(new HutFactory(game).den()));
-        },
-      );
+      game.time.events.loop(common.globals.gameplay.hutSpawnRateMs, () => {
+        this.spawnDenIntoWorld(new Den(new HutFactory(game).den()));
+      });
       this.spawnDenIntoWorld(new Den(new HutFactory(game).den()));
     }
 
