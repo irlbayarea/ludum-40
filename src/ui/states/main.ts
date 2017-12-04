@@ -11,7 +11,6 @@ import { game } from '../../index';
 import Character, { CharacterType } from '../../character/character';
 import { generateMap, convertToTiles } from '../../map/generator';
 import HudRenderer from '../hud/hud_renderer';
-import HutFactory from '../sprites/hut';
 import { ITicker } from '../../ticker';
 
 import * as demo from '../demo';
@@ -44,7 +43,7 @@ export default class Main extends Phaser.State {
   }
 
   public preload(): void {
-    this.createMap();
+    game.worldState.setMap(this.createMap());
   }
 
   public update(): void {
@@ -158,11 +157,6 @@ export default class Main extends Phaser.State {
   private createDemos(): void {
     if (common.experiment('demo-armory')) {
       demo.armoryDemo(this.game);
-    }
-    if (common.experiment('demo-huts')) {
-      const huts = new HutFactory(this.game);
-      huts.hut(64 * 1, 64);
-      huts.den(64 * 3, 64);
     }
   }
 }

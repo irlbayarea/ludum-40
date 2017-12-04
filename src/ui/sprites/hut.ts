@@ -1,6 +1,7 @@
 import * as Phaser from 'phaser-ce';
 
 import { SpriteFactory } from './factory';
+import * as common from '../../common';
 
 /**
  * Efficiently creates `Phaser.Sprite` objects representing a "Hut".
@@ -39,11 +40,15 @@ export default class HutFactory extends SpriteFactory {
     );
   }
 
-  public hut(x?: number, y?: number): Phaser.Sprite {
-    return this.game.add.sprite(x, y, this.hutTexture);
+  public hut(): Phaser.Sprite {
+    const hut = this.game.add.sprite(undefined, undefined, this.hutTexture);
+    hut.health = hut.maxHealth = common.globals.gameplay.denAndHutHP;
+    return hut;
   }
 
-  public den(x?: number, y?: number): Phaser.Sprite {
-    return this.game.add.sprite(x, y, this.denTexture);
+  public den(): Phaser.Sprite {
+    const den = this.game.add.sprite(undefined, undefined, this.denTexture);
+    den.health = den.maxHealth = common.globals.gameplay.denAndHutHP;
+    return den;
   }
 }

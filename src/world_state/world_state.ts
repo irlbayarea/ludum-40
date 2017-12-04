@@ -8,6 +8,7 @@ import Character from '../character/character';
 import { game } from '../index';
 import { Weapon } from '../ui/sprites/weapon';
 import { remove } from 'lodash';
+import { GameMechanics } from './mechanics';
 
 /**
  */
@@ -45,9 +46,9 @@ export default class WorldState {
     char.getSprite().body.moveRight(dir.x);
   }
 
-  public readonly grid: Grid;
-  private readonly characters: Character[];
+  public readonly characters: Character[];
 
+  public readonly grid: Grid;
   private readonly astar: EasyStar.js;
 
   /**
@@ -56,6 +57,8 @@ export default class WorldState {
    * This prevents holding down the attack key for infinite attacks.
    */
   private releasedSwing: boolean = true;
+  private mMap: Phaser.Tilemap;
+  private mechanics: GameMechanics;
 
   public get playerCharacter(): Character {
     return this.mPlayerCharacter;
@@ -83,6 +86,22 @@ export default class WorldState {
   }
 
   /**
+   * Sets the map parameter based on the provided map.
+   *
+   * @param map
+   */
+  public setMap(map: Phaser.Tilemap): void {
+    this.mMap = map;
+  }
+
+  /**
+   * Returns the current map instance.
+   */
+  public getMap(): Phaser.Tilemap {
+    return this.mMap;
+  }
+
+  /**
    * Updates collision based on the given tilemap layer. Any tiles that exist in the layer are blocking.
    */
   public setCollisionFromTilemap(
@@ -91,6 +110,7 @@ export default class WorldState {
   ): void {
     // Must use transposed grid for our A* algorithm.
     const trans: number[][] = [];
+    this.mechanics = new GameMechanics(map);
     for (let y = 0; y < map.height; y++) {
       trans[y] = [];
       for (let x = 0; x < map.width; x++) {
@@ -104,6 +124,8 @@ export default class WorldState {
 
   /**
    * Adds a character to the game state, initializing its physics. Expects a Character object with a sprite.
+   *
+   * DO NOT USE.
    */
   public addCharacter(character: Character): void {
     this.characters.push(character);
@@ -142,6 +164,7 @@ export default class WorldState {
 
   public update(): void {
     this.updateCharacters();
+    this.mechanics.mainLoop();
   }
 
   public render(): void {
@@ -212,17 +235,6 @@ export default class WorldState {
   private updateCharacters(): void {
     this.characters.forEach(char => {
       char.getSprite().body.setZeroVelocity();
-      if (char.isArmed) {
-        char.weapon.update();
-      }
-      if (char.isAttacking) {
-        let range = char.weapon.range;
-        if (char === this.playerCharacter) {
-          range += common.globals.gameplay.playerRangeModifier;
-        }
-        this.hitWithWeapon(char, range);
-      }
-      this.runAggroBehavior(char);
     });
     this.characters.forEach(char => {
       if (char.path !== null) {
@@ -280,60 +292,6 @@ export default class WorldState {
 
   private clamp(n: number) {
     return Math.max(0, Math.min(this.grid.h - 0.001, n));
-  }
-
-  private runAggroBehavior(character: Character): void {
-    if (character === this.mPlayerCharacter) {
-      return;
-    }
-    const position = character.getWorldPosition();
-    let closestEnemy: Character | undefined;
-    let closestDistance: number = common.globals.gameplay.aggroRange;
-    this.characters.forEach(target => {
-      if (target === character || !this.isOpposed(target, character)) {
-        return;
-      }
-      const distance = position.distance(target.getWorldPosition());
-      if (distance < closestDistance) {
-        closestEnemy = target;
-        closestDistance = distance;
-      }
-      if (distance <= 2 && character.isArmed) {
-        character.swing();
-      }
-    });
-    if (closestEnemy && !character.path) {
-      this.directCharacterToPoint(character, closestEnemy.getWorldPosition());
-    }
-  }
-
-  private hitWithWeapon(attacking: Character, range: number): void {
-    const attacker = attacking.getWorldPosition();
-    remove(this.characters, c => {
-      if (c === attacking) {
-        return false;
-      }
-      const defender = c.getWorldPosition();
-      const distance = attacker.distance(defender);
-      if (distance <= range) {
-        return this.dealDamage(c, attacking);
-      }
-      return false;
-    });
-  }
-
-  private dealDamage(injure: Character, source: Character): boolean {
-    if (!this.isOpposed(injure, source)) {
-      return false;
-    }
-    const sprite = injure.getSprite();
-    sprite.damage(1);
-    injure.hud.updateHealthBar();
-    game.blood.sprite(sprite);
-    if (sprite.health === 0) {
-      return true;
-    }
-    return false;
   }
 
   private updatePlayerCharacter(): void {
