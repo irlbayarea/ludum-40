@@ -35,7 +35,7 @@ export class SpriteHUD {
     this.healthBar.tint = this.healthColorRange(this.healthPercent());
     this.healthBar.scale.set(this.healthPercent(), 1);
     // this.healthBar.scale.x *= (this.lefthanded ? -1 : 1);
-    common.debug.log(this.name + ' : ' + 100 * this.healthPercent() + ' % ');
+    // common.debug.log(this.name + ' : ' + 100 * this.healthPercent() + ' % ');
   }
 
   public addHealthBar(): void {
@@ -96,6 +96,7 @@ export class SpriteHUD {
   }
 
   private healthPercent(): number {
+    /*
     common.debug.log(
       'Health % : ' +
         this.name +
@@ -104,6 +105,7 @@ export class SpriteHUD {
         '/' +
         this.sprite.maxHealth
     );
+    */
     return this.sprite.health / this.sprite.maxHealth;
   }
 }

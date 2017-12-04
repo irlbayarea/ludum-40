@@ -12,6 +12,7 @@ import {
   ShirtColor,
   PantsColor,
   HairColor,
+  ShieldColor,
 } from '../ui/sprites/armory';
 import { Weapon } from '../ui/sprites/weapon';
 import { SpawnConfig } from '../character/spawn_config';
@@ -109,6 +110,15 @@ export class GameMechanics {
       this.offerContracts,
       this
     );
+
+    // Maybe use new promotion logic.
+    if (common.experiment('promotions')) {
+      game.time.events.loop(
+        common.globals.gameplay.promotionsRateMs,
+        this.offerPromotions,
+        this
+      );
+    }
   }
 
   /**
@@ -294,9 +304,72 @@ export class GameMechanics {
     }
   }
 
+  private offerPromotions(): void {
+    for (const goblin of filter(game.worldState.characters, c => c.isGoblin)) {
+      const sprite = goblin.getSprite();
+      const buddies = filter(this.findNearbyBudies(goblin), c => {
+        return c.getSprite().maxHealth <= sprite.maxHealth;
+      });
+      console.log('Found a group of buddies:', buddies);
+      if (buddies.length >= 5) {
+        console.log('PROMOTION!');
+        sprite.maxHealth *= 5;
+        sprite.heal(sprite.maxHealth);
+        sprite.setTexture(this.createGoblinTexture(sprite.maxHealth));
+      }
+    }
+  }
+
+  private findNearbyBudies(character: Character): Character[] {
+    return filter(game.worldState.characters, (c) => {
+      return c !== character && this.withinRange(5, character.getSprite(), c.getSprite());
+    });
+  }
+
   private spawnGoblinPeon(x: number, y: number): void {
     const character = new Character('Goblin', CharacterType.Goblin);
-    const texture = this.armory.peonTexture({
+    const texture = this.createGoblinTexture();
+    character.arm(Weapon.axe());
+    game.spawn(new SpawnConfig(character, texture, x, y));
+  }
+
+  private createGoblinTexture(health: number = 1): Phaser.RenderTexture {
+    if (health >= 25) {
+      return this.armory.peonTexture({
+        skin: SkinColor.Green,
+        lips: true,
+        shirt: {
+          color: ShirtColor.Green,
+          style: 13,
+        },
+        pants: PantsColor.Teal,
+        beard: {
+          color: HairColor.Black,
+          style: 3,
+        },
+        hat: 3,
+        shield: {
+          color: ShieldColor.BronzeTeal,
+          style: 1,
+        },
+      });
+    }
+    if (health >= 5) {
+      return this.armory.peonTexture({
+        skin: SkinColor.Green,
+        lips: true,
+        shirt: {
+          color: ShirtColor.Green,
+          style: 13,
+        },
+        pants: PantsColor.Teal,
+        beard: {
+          color: HairColor.Black,
+          style: 3,
+        },
+      });
+    }
+    return this.armory.peonTexture({
       skin: SkinColor.Green,
       shirt: {
         color: ShirtColor.Green,
@@ -305,8 +378,6 @@ export class GameMechanics {
       pants: PantsColor.Green,
     });
     character.arm(Weapon.axe());
-    common.debug.log('LOOKING FOR GOBLIN SPRITE');
-    common.debug.log(character.getSprite());
     game.spawn(new SpawnConfig(character, texture, x, y));
   }
 

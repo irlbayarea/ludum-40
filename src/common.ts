@@ -38,6 +38,7 @@ export const globals: IGlobals = {
 
     npcAttackRateMs: 300,
     maximumCharacters: 100,
+    promotionsRateMs: 1500,
 
     contractRateMs: 20 * 1000,
     crisisRateMs: 10 * 1000,
@@ -124,6 +125,11 @@ interface IGlobals {
      * Maximum number of rendered characters.
      */
     maximumCharacters: number;
+
+    /**
+     * How often to check for promotions.
+     */
+    promotionsRateMs: number;
 
     contractRateMs: number;
     crisisRateMs: number;
