@@ -51,12 +51,16 @@ export default class HudRenderer {
   }
 
   private renderDeadGuards() {
-    this.deadGuardWidget.write('Dead Goblins: ' + this.game.worldState.getDeadGuards());
+    this.deadGuardWidget.write(
+      'Dead Goblins: ' + this.game.worldState.getDeadGuards()
+    );
     this.deadGuardWidget.bringToTop();
   }
 
   private renderDeadGoblins() {
-    this.deadGoblinWidget.write('Dead Guards : ' + this.game.worldState.getDeadGoblins());
+    this.deadGoblinWidget.write(
+      'Dead Guards : ' + this.game.worldState.getDeadGoblins()
+    );
     this.deadGoblinWidget.bringToTop();
   }
 }

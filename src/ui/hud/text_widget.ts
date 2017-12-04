@@ -1,7 +1,6 @@
 import { Game } from '../../index';
 
 export default class TextWidget {
-
   private text: Phaser.Text;
 
   constructor(
@@ -9,7 +8,10 @@ export default class TextWidget {
     private readonly x: number,
     private readonly y: number
   ) {
-    this.text = this.game.add.text(this.x, this.y, "", { font: 'bold 15px Consolas', fill: '#000' });
+    this.text = this.game.add.text(this.x, this.y, '', {
+      font: 'bold 15px Consolas',
+      fill: '#000',
+    });
     this.text.fixedToCamera = true;
   }
 
