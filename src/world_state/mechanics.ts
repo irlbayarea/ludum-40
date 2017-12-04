@@ -1,7 +1,5 @@
 import { Point } from 'phaser-ce';
-import { filter, sample, remove, random } from 'lodash';
-import { ITicker } from '../ticker';
-import PeriodicGenerator from '../periodic_generator';
+import { filter, sample, remove, random, shuffle } from 'lodash';
 import * as common from '../common';
 import HutFactory from '../ui/sprites/hut';
 import { game } from '../index';
@@ -23,7 +21,6 @@ import { randomName } from '../character/names';
  * Effectively "runs" the game, i.e. instead of just randomly spawning units.
  */
 export class GameMechanics {
-  private readonly denGenerator: DenGenerator;
   private readonly denSpawnActive: Map<
     Phaser.Tile,
     Hut | undefined
@@ -31,7 +28,6 @@ export class GameMechanics {
   private readonly denSpawnLocations: Phaser.Tile[];
   private readonly denActive: Den[] = [];
 
-  private readonly hutGenerator: HutGenerator;
   private readonly hutSpawnActive: Map<
     Phaser.Tile,
     Hut | undefined
@@ -55,13 +51,11 @@ export class GameMechanics {
       for (const result of this.hutSpawnLocations) {
         this.hutSpawnActive.set(result, undefined);
       }
-      this.hutGenerator = new HutGenerator(
-        this.spawnHutIntoWorld.bind(this),
-        common.globals.gameplay.hutSpawnRateMs,
-        new HutFactory(game)
-      );
-
-      game.generators.push(this.hutGenerator);
+      game.time.events.loop(common.globals.gameplay.hutSpawnRateMs, () => {
+        this.spawnHutIntoWorld(new Hut(new HutFactory(game).hut()));
+      });
+      this.spawnHutIntoWorld(new Hut(new HutFactory(game).hut()));
+      this.spawnHutIntoWorld(new Hut(new HutFactory(game).hut()));
     }
 
     const denLayer: Phaser.TilemapLayer = map.layers[map.getLayer('spawns')];
@@ -70,24 +64,17 @@ export class GameMechanics {
       for (const result of this.denSpawnLocations) {
         this.denSpawnActive.set(result, undefined);
       }
-      this.denGenerator = new DenGenerator(
-        this.spawnDenIntoWorld.bind(this),
-        common.globals.gameplay.denSpawnRateMs,
-        new HutFactory(game)
-      );
-      game.generators.push(this.denGenerator);
+      game.time.events.loop(common.globals.gameplay.hutSpawnRateMs, () => {
+        this.spawnDenIntoWorld(new Den(new HutFactory(game).den()));
+      });
+      this.spawnDenIntoWorld(new Den(new HutFactory(game).den()));
     }
-
-    // Force starting buildings.
-    this.hutGenerator.periodicGenerator.force();
-    this.hutGenerator.periodicGenerator.force();
-    this.denGenerator.periodicGenerator.force();
 
     // Setup game looping mechanics:
     // Have the goblin AI "think" every 1s.
     game.time.events.loop(
       common.globals.gameplay.goblinThinkRateMs,
-      this.giveGoblinOrders,
+      this.giveNpcOrders,
       this
     );
 
@@ -386,48 +373,48 @@ export class GameMechanics {
   }
 
   /**
-   * Attempts to give goblins orders.
+   * Attempts to give NPCs orders.
    *
    * This method should *not* be called every game loop, but rather a bit less
    * often. "Smarter" goblins could have this loop called more often, for
    * example.
    *
-   * Intended priority (not implemented):
+   * Intended priority for Goblins (not 100% implemented):
    *   1. Attack in-range enemy
-   *   2. Move to attack NPCs
-   *   3. Move to attack PCs
-   *   4. Move to attack Huts
-   *   5. Wander
+   *   2. Move to attack N/PCs
+   *   3. Move to attack Huts
+   *   4. Wander
    *
    * Future:
    *   - "Horde Mode": Follow other goblins as they do their tasks.
    */
-  private giveGoblinOrders(): void {
-    for (const goblin of filter(game.worldState.characters, c => c.isGoblin)) {
-      // Do nothing, just attack.
-      if (this.hasEnemyWithinAttackRange(goblin)) {
+  private giveNpcOrders(): void {
+    for (const npc of game.worldState.characters) {
+      if (npc === game.worldState.playerCharacter) {
         continue;
       }
-      const enemy = this.findClosestEnemy(goblin);
+      // Do nothing, just attack.
+      if (this.hasEnemyWithinAttackRange(npc)) {
+        npc.goal = Goal.attack(this.findClosestEnemy(npc)!.target);
+        continue;
+      }
+      const enemy = this.findClosestEnemy(npc);
       if (
         enemy &&
         enemy.distance <= common.globals.gameplay.goblinVisionDistance
       ) {
-        this.orderMove(goblin, enemy.target.getWorldPosition());
+        this.orderMove(npc, enemy.target.getWorldPosition());
         continue;
       }
-      const enemyHut = this.findClosestBuilding(goblin);
+      const enemyHut = this.findClosestBuilding(npc);
       if (
         enemyHut &&
         enemyHut.distance <= common.globals.gameplay.goblinVisionDistance
       ) {
-        this.orderMove(
-          goblin,
-          this.worldPositionOfSprite(enemyHut.target.sprite)
-        );
+        this.orderMove(npc, this.worldPositionOfSprite(enemyHut.target.sprite));
         continue;
       }
-      // common.debug.log('Could not find anything to do!', goblin);
+      npc.goal = Goal.wander();
     }
   }
 
@@ -449,7 +436,7 @@ export class GameMechanics {
    * If mid-swing and near an enemy, deal damage.
    */
   private dealDamageIfNeeded(): void {
-    for (const char of game.worldState.characters) {
+    for (const char of shuffle(game.worldState.characters)) {
       if (char.isArmed) {
         if (char.weapon.isHitting) {
           if (this.hasEnemyWithinAttackRange(char)) {
@@ -497,8 +484,6 @@ export class GameMechanics {
         return false;
       }
     );
-    common.debug.log('Dead Characters');
-    common.debug.log(deadCharacters);
     for (const char of deadCharacters) {
       if (char.isGoblin) {
         game.worldState.incrementGoblinKills();
@@ -506,8 +491,6 @@ export class GameMechanics {
         game.worldState.incrementGuardKills();
       }
     }
-    common.debug.log('Dead Characters');
-    common.debug.log(deadCharacters);
     const deadBuildings: IBuilding[] = remove(
       attacker.isGoblin ? this.hutActive : this.denActive,
       defender => {
@@ -707,47 +690,9 @@ class Hut implements IBuilding {
   }
 }
 
-class HutGenerator implements ITicker {
-  public periodicGenerator: PeriodicGenerator<Hut>;
-
-  public constructor(
-    private readonly spawn: (den: Den) => any,
-    period: number,
-    factory: HutFactory
-  ) {
-    this.periodicGenerator = new PeriodicGenerator<Hut>(
-      period,
-      (_: number) => new Hut(factory.hut())
-    );
-  }
-
-  public tick(elapsed: number) {
-    this.periodicGenerator.tick(elapsed).forEach(this.spawn);
-  }
-}
-
 class Den implements IBuilding {
   constructor(public readonly sprite: Phaser.Sprite) {}
   public getBuildingType(): string {
     return 'Den';
-  }
-}
-
-class DenGenerator implements ITicker {
-  public periodicGenerator: PeriodicGenerator<Den>;
-
-  public constructor(
-    private readonly spawn: (den: Den) => any,
-    period: number,
-    factory: HutFactory
-  ) {
-    this.periodicGenerator = new PeriodicGenerator<Den>(
-      period,
-      (_: number) => new Den(factory.den())
-    );
-  }
-
-  public tick(elapsed: number) {
-    this.periodicGenerator.tick(elapsed).forEach(this.spawn);
   }
 }
