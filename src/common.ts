@@ -36,7 +36,7 @@ export const globals: IGlobals = {
 
     denAndHutHP: 15,
 
-    npcAttackRateMs: 300,
+    npcAttackRateMs: 500,
     maximumCharacters: 100,
     promotionsRateMs: 1500,
 
@@ -44,11 +44,12 @@ export const globals: IGlobals = {
     crisisRateMs: 10 * 1000,
     defaultWeaponRange: 1.25,
     playerRangeModifier: 0.75,
-    playerStartingHP: 50,
+    playerStartingHP: 20,
     hutSpawnRateMs: 15 * 1000,
     denSpawnRateMs: 20 * 1000,
     playerHPHealRateMs: 1 * 1000,
     guardSalaryMultiplier: 2,
+    playerHPHealRateMs: 1 * 4000,
   },
 };
 
