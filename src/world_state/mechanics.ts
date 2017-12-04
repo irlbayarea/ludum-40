@@ -45,7 +45,6 @@ export class GameMechanics {
         new HutFactory(game)
       );
       game.generators.push(this.hutGenerator);
-      common.debug.log('Hut spawn locations: ', this.hutSpawnActive.size);
     }
 
     const denLayer: Phaser.TilemapLayer = map.layers[map.getLayer('spawns')];
@@ -60,7 +59,6 @@ export class GameMechanics {
         new HutFactory(game)
       );
       game.generators.push(this.denGenerator);
-      common.debug.log('Den spawn locations: ', this.denSpawnActive.size);
     }
 
     // Setup game looping mechanics:
@@ -112,7 +110,6 @@ export class GameMechanics {
     const location = this.getHutSpawnLocation();
     if (location === undefined) {
       hut.sprite.kill();
-      common.debug.log('Tried to spawn a hut, but no locations idle.');
       return;
     }
     this.hutSpawnActive.set(location, hut);
@@ -166,6 +163,10 @@ export class GameMechanics {
     return `{${cell.x + modX}, ${cell.y + modY}}`;
   }
 
+  private worldPositionOfSprite(sprite: Phaser.Sprite) : Phaser.Point {
+    return new Phaser.Point(sprite!.x / 64, sprite!.y / 64);
+  }
+
   /**
    * Attempts to give goblins orders.
    *
@@ -190,11 +191,22 @@ export class GameMechanics {
         return;
       }
       const enemy = this.findClosestEnemy(goblin);
-      if (enemy) {
-        common.debug.log('Ordered goblin to attack!');
+      if (
+        enemy &&
+        enemy.distance <= common.globals.gameplay.goblinVisionDistance
+      ) {
         this.orderMove(goblin, enemy.target.getWorldPosition());
         return;
       }
+      const enemyHut = this.findClosestBuilding(goblin);
+      if (
+        enemyHut &&
+        enemyHut.distance <= common.globals.gameplay.goblinVisionDistance
+      ) {
+        this.orderMove(goblin, this.worldPositionOfSprite(enemyHut.target.sprite));
+        return;
+      }
+      // common.debug.log('Could not find anything to do!', goblin);
     }
   }
 
@@ -234,8 +246,11 @@ export class GameMechanics {
    * @param who
    * @param to
    */
-  private isOpposed(who: Character, to: Character): boolean {
-    return who.isGoblin !== to.isGoblin;
+  private isOpposed(who: Character, to: Character | Hut | Den): boolean {
+    if (to instanceof Character) {
+      return who.isGoblin !== to.isGoblin;
+    }
+    return who.isGoblin !== to instanceof Den;
   }
 
   /**
@@ -256,6 +271,12 @@ export class GameMechanics {
       }
       return false;
     });
+    remove(attacker.isGoblin ? this.hutActive : this.denActive, defender => {
+      if (this.withinRange(range, attacker.getSprite(), defender.sprite)) {
+        return this.dealDamage(defender, attacker);
+      }
+      return false;
+    });
   }
 
   /**
@@ -264,13 +285,15 @@ export class GameMechanics {
    * @param injure
    * @param source
    */
-  private dealDamage(injure: Character, source: Character): boolean {
-    if (!this.isOpposed(injure, source)) {
+  private dealDamage(injure: Character | Hut | Den, source: Character): boolean {
+    if (!this.isOpposed(source, injure)) {
       return false;
     }
-    const sprite = injure.getSprite();
+    const sprite = (injure as Hut).sprite || (injure as Character).getSprite();
     sprite.damage(1);
-    game.blood.sprite(sprite);
+    if (sprite.body) {
+      game.blood.sprite(sprite);
+    }
     if (sprite.health === 0) {
       return true;
     }
@@ -358,7 +381,7 @@ export class GameMechanics {
   }
 
   /**
-   * Returns the closet enemy.
+   * Returns the closest enemy.
    *
    * @param source
    */
@@ -388,6 +411,34 @@ export class GameMechanics {
           distance: targetDistance,
         }
       : undefined;
+  }
+
+  /**
+   * Returns the closest hut or den.
+   *
+   * @param source
+   */
+  private findClosestBuilding(
+    source: Character
+  ): { target: Hut | Den; distance: number } | undefined {
+    const sourcePos = source.getWorldPosition();
+    let target: Hut | Den | null = null;
+    let targetDistance: number = 1000;
+    const targets = source.isGoblin ? this.hutActive : this.denActive;
+    for (const potential of targets) {
+      const potentialPos = potential.sprite.worldPosition as Phaser.Point;
+      const distance = sourcePos.distance(potentialPos) / 64;
+      if (distance < targetDistance) {
+        target = potential;
+        targetDistance = distance;
+      }
+    }
+    return target
+    ? {
+        target,
+        distance: targetDistance,
+      }
+    : undefined;
   }
 }
 
