@@ -520,7 +520,7 @@ export class GameMechanics {
     );
     for (const char of deadCharacters) {
       if (char.isGoblin) {
-        game.worldState.incrementGoblinKills();
+        game.worldState.incrementGoblinKills(char.getSprite().maxHealth);
       } else {
         game.worldState.incrementGuardKills();
       }
