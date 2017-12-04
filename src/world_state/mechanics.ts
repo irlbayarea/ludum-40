@@ -36,6 +36,8 @@ export class GameMechanics {
   private readonly hutActive: Hut[] = [];
 
   private readonly armory: Armory;
+  private readonly sword: Phaser.Sound[];
+  private readonly death: Phaser.Sound;
 
   /**
    * Reads significant information based on the provided map.
@@ -56,6 +58,8 @@ export class GameMechanics {
       });
       this.spawnHutIntoWorld(new Hut(new HutFactory(game).hut()));
       this.spawnHutIntoWorld(new Hut(new HutFactory(game).hut()));
+      this.sword = [1, 2, 3, 4, 5].map(n => game.add.sound(`sword${n}`));
+      this.death = game.add.sound('death');
     }
 
     const denLayer: Phaser.TilemapLayer = map.layers[map.getLayer('spawns')];
@@ -128,6 +132,14 @@ export class GameMechanics {
 
   private healPlayer(): void {
     game.worldState.playerCharacter.getSprite().heal(1);
+  }
+
+  private attenuate(source: Character, sound: Phaser.Sound): void {
+    const player = game.worldState.playerCharacter.getWorldPosition();
+    const other = source.getWorldPosition();
+    const distance = player.distance(other);
+    const volume = Math.floor(100 / Math.floor(30 - distance));
+    sound.play(undefined, undefined, volume);
   }
 
   /**
@@ -283,7 +295,7 @@ export class GameMechanics {
         Math.floor(y / 64)
       )
     );
-    sprite.maxHealth = sprite.health = 5;
+    sprite.maxHealth = sprite.health = 10;
   }
 
   private createRandomGuard(): Character {
@@ -478,7 +490,7 @@ export class GameMechanics {
       const enemyHut = this.findClosestBuilding(npc);
       if (
         enemyHut &&
-        enemyHut.distance <= common.globals.gameplay.goblinVisionDistance
+        enemyHut.distance <= common.globals.gameplay.goblinVisionDistance * 1.5
       ) {
         this.orderMove(npc, this.worldPositionOfSprite(enemyHut.target.sprite));
         return true;
@@ -599,7 +611,13 @@ export class GameMechanics {
     } else {
       game.blood.boom(sprite);
     }
+    if (source === game.worldState.playerCharacter) {
+      this.attenuate(source, sample(this.sword) as Phaser.Sound);
+    }
     if (sprite.health === 0) {
+      if (injure instanceof Character) {
+        this.attenuate(injure, this.death);
+      }
       return true;
     }
     return false;
