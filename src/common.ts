@@ -47,7 +47,7 @@ export const globals: IGlobals = {
     playerStartingHP: 20,
     hutSpawnRateMs: 15 * 1000,
     denSpawnRateMs: 20 * 1000,
-    guardSalaryMultiplier: 2,
+    guardSalaryMultiplier: 5,
     playerHPHealRateMs: 1 * 4000,
   },
 };
