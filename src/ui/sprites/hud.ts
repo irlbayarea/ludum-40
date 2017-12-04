@@ -82,7 +82,12 @@ export class SpriteHUD {
   }
 
   private healthColorRange(percent: number): number {
-    return Phaser.Color.interpolateColor(0x52be80, 0xff0000, 100 - (percent * 100), 100);
+    return Phaser.Color.interpolateColor(
+      0x52be80,
+      0xff0000,
+      100 - percent * 100,
+      100
+    );
   }
 
   private healthPercent(): number {
