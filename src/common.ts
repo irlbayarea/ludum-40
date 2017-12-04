@@ -30,20 +30,21 @@ export const globals: IGlobals = {
   },
   experiments: userExperiments,
   gameplay: {
-    goblinSpawnRateMs: 15 * 100,
+    goblinSpawnRateMs: 2000,
     goblinThinkRateMs: 1000,
     goblinVisionDistance: 10,
 
-    denAndHutHP: 300,
+    denAndHutHP: 15,
 
     npcAttackRateMs: 300,
-    maximumCharacters: 200,
+    maximumCharacters: 100,
+    promotionsRateMs: 1500,
 
     contractRateMs: 20 * 1000,
     crisisRateMs: 10 * 1000,
     defaultWeaponRange: 1.25,
     playerRangeModifier: 0.75,
-    playerStartingHP: 100,
+    playerStartingHP: 50,
     hutSpawnRateMs: 15 * 1000,
     denSpawnRateMs: 20 * 1000,
   },
@@ -124,6 +125,11 @@ interface IGlobals {
      * Maximum number of rendered characters.
      */
     maximumCharacters: number;
+
+    /**
+     * How often to check for promotions.
+     */
+    promotionsRateMs: number;
 
     contractRateMs: number;
     crisisRateMs: number;

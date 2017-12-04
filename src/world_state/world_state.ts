@@ -49,6 +49,12 @@ export default class WorldState {
   public readonly grid: Grid;
   private readonly astar: EasyStar.js;
 
+  private playerKills: number = 0;
+  private goblinKills: number = 0;
+  private guardKills: number = 0;
+  private hutDestroyed: number = 0;
+  private denDesdtroyed: number = 0;
+
   /**
    * Whether the player character released the attack key.
    *
@@ -82,7 +88,36 @@ export default class WorldState {
     this.astar.setAcceptableTiles([0]);
     this.characters = [];
   }
-
+  public getPlayerKills(): number {
+    return this.playerKills;
+  }
+  public incrementPlayerKills() {
+    this.playerKills += 1;
+  }
+  public getDeadGoblins(): number {
+    return this.goblinKills;
+  }
+  public incrementGoblinKills() {
+    this.goblinKills += 1;
+  }
+  public getDeadGuards(): number {
+    return this.guardKills;
+  }
+  public incrementGuardKills() {
+    this.guardKills += 1;
+  }
+  public getHutDestroyed(): number {
+    return this.hutDestroyed;
+  }
+  public incrementHutDestroyed() {
+    this.hutDestroyed += 1;
+  }
+  public getDenDesdtroyed(): number {
+    return this.denDesdtroyed;
+  }
+  public incrementDenDesdtroyed() {
+    this.denDesdtroyed += 1;
+  }
   /**
    * Sets the map parameter based on the provided map.
    *
@@ -145,11 +180,12 @@ export default class WorldState {
   }
 
   public update(): void {
-    this.updateCharacters();
     this.mechanics.mainLoop();
+    this.updateCharacters();
   }
 
   public render(): void {
+    this.renderCharacters();
     if (common.experiment('render-debug')) {
       this.renderDebug();
     }
@@ -163,6 +199,12 @@ export default class WorldState {
    */
   public isOpposed(who: Character, to: Character): boolean {
     return who.isGoblin !== to.isGoblin;
+  }
+
+  private renderCharacters(): void {
+    this.characters.forEach(c => {
+      c.hud.sprayBlood();
+    });
   }
 
   private renderDebug() {

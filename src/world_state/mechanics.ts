@@ -11,10 +11,13 @@ import {
   SkinColor,
   ShirtColor,
   PantsColor,
+  HairColor,
+  ShieldColor,
 } from '../ui/sprites/armory';
 import { Weapon } from '../ui/sprites/weapon';
 import { SpawnConfig } from '../character/spawn_config';
 import Goal from '../character/goal';
+import { randomName } from '../character/names';
 
 /**
  * Effectively "runs" the game, i.e. instead of just randomly spawning units.
@@ -57,6 +60,7 @@ export class GameMechanics {
         common.globals.gameplay.hutSpawnRateMs,
         new HutFactory(game)
       );
+
       game.generators.push(this.hutGenerator);
     }
 
@@ -73,6 +77,11 @@ export class GameMechanics {
       );
       game.generators.push(this.denGenerator);
     }
+
+    // Force starting buildings.
+    this.hutGenerator.periodicGenerator.force();
+    this.hutGenerator.periodicGenerator.force();
+    this.denGenerator.periodicGenerator.force();
 
     // Setup game looping mechanics:
     // Have the goblin AI "think" every 1s.
@@ -95,6 +104,22 @@ export class GameMechanics {
       this.spawnGoblins,
       this
     );
+
+    // Offer NPC contracts.
+    game.time.events.loop(
+      common.globals.gameplay.contractRateMs,
+      this.offerContracts,
+      this
+    );
+
+    // Maybe use new promotion logic.
+    if (common.experiment('promotions')) {
+      game.time.events.loop(
+        common.globals.gameplay.promotionsRateMs,
+        this.offerPromotions,
+        this
+      );
+    }
   }
 
   /**
@@ -187,6 +212,83 @@ export class GameMechanics {
     return new Phaser.Point(sprite!.x / 64, sprite!.y / 64);
   }
 
+  private offerContracts(): void {
+    if (!game.isOfferingContract && this.hutActive.length > 0) {
+      game.offerContract(this.createRandomGuard(), character => {
+        const hairColor = sample([
+          HairColor.Black,
+          HairColor.Blonde,
+          HairColor.Brown,
+          HairColor.Orange,
+          HairColor.White,
+        ]) as HairColor;
+        const hairStyle = random(0, 12);
+        const beardStyle = random(0, 6);
+        const texture = this.armory.peonTexture({
+          skin: sample([
+            SkinColor.Brown,
+            SkinColor.Tan,
+            SkinColor.White,
+          ]) as SkinColor,
+          shirt: {
+            color: sample([
+              ShirtColor.Black,
+              ShirtColor.Orange,
+              ShirtColor.Purple,
+              ShirtColor.Tan,
+              ShirtColor.Teal,
+            ]) as ShirtColor,
+            style: random(0, 15),
+          },
+          pants: sample([
+            PantsColor.Black,
+            PantsColor.Brown,
+            PantsColor.Orange,
+            PantsColor.Purple,
+            PantsColor.Teal,
+          ]),
+          hair:
+            hairStyle < 12
+              ? {
+                  color: hairColor,
+                  style: random(0, 11),
+                }
+              : undefined,
+          beard:
+            beardStyle < 4
+              ? {
+                  color: hairColor,
+                  style: beardStyle,
+                }
+              : undefined,
+        });
+        this.spawnRandomGuard(character, texture);
+      });
+    }
+  }
+
+  private spawnRandomGuard(
+    character: Character,
+    texture: Phaser.RenderTexture
+  ): void {
+    // const location = sample(this.hutActive) as Hut;
+    const { x, y } = game.worldState.playerCharacter.getSprite();
+    character.arm(Weapon.scimitar());
+    const sprite = game.spawn(
+      new SpawnConfig(
+        character,
+        texture,
+        Math.floor(x / 64),
+        Math.floor(y / 64)
+      )
+    );
+    sprite.maxHealth = sprite.health = 5;
+  }
+
+  private createRandomGuard(): Character {
+    return new Character(randomName(), CharacterType.Guard);
+  }
+
   private spawnGoblins(): void {
     if (
       this.denActive.length === 0 ||
@@ -204,9 +306,76 @@ export class GameMechanics {
     }
   }
 
+  private offerPromotions(): void {
+    for (const goblin of filter(game.worldState.characters, c => c.isGoblin)) {
+      const sprite = goblin.getSprite();
+      if (sprite.maxHealth >= 25) {
+        continue;
+      }
+      const buddies = filter(this.findNearbyBudies(goblin), c => {
+        return c.getSprite().maxHealth === sprite.maxHealth;
+      });
+      if (buddies.length >= 5) {
+        sprite.maxHealth *= 5;
+        sprite.health = sprite.maxHealth;
+        sprite.setTexture(this.createGoblinTexture(sprite.maxHealth));
+      }
+    }
+  }
+
+  private findNearbyBudies(character: Character): Character[] {
+    return filter(game.worldState.characters, c => {
+      return (
+        c !== character &&
+        this.withinRange(3.5, character.getSprite(), c.getSprite())
+      );
+    });
+  }
+
   private spawnGoblinPeon(x: number, y: number): void {
     const character = new Character('Goblin', CharacterType.Goblin);
-    const texture = this.armory.peonTexture({
+    const texture = this.createGoblinTexture();
+    character.arm(Weapon.axe());
+    game.spawn(new SpawnConfig(character, texture, x, y));
+  }
+
+  private createGoblinTexture(health: number = 1): Phaser.RenderTexture {
+    if (health >= 25) {
+      return this.armory.peonTexture({
+        skin: SkinColor.Green,
+        lips: true,
+        shirt: {
+          color: ShirtColor.Green,
+          style: 13,
+        },
+        pants: PantsColor.Teal,
+        beard: {
+          color: HairColor.Black,
+          style: 3,
+        },
+        hat: 3,
+        shield: {
+          color: ShieldColor.BronzeTeal,
+          style: 1,
+        },
+      });
+    }
+    if (health >= 5) {
+      return this.armory.peonTexture({
+        skin: SkinColor.Green,
+        lips: true,
+        shirt: {
+          color: ShirtColor.Green,
+          style: 13,
+        },
+        pants: PantsColor.Teal,
+        beard: {
+          color: HairColor.Black,
+          style: 3,
+        },
+      });
+    }
+    return this.armory.peonTexture({
       skin: SkinColor.Green,
       shirt: {
         color: ShirtColor.Green,
@@ -214,8 +383,6 @@ export class GameMechanics {
       },
       pants: PantsColor.Green,
     });
-    character.arm(Weapon.axe());
-    game.spawn(new SpawnConfig(character, texture, x, y));
   }
 
   /**
@@ -239,7 +406,7 @@ export class GameMechanics {
     for (const goblin of filter(game.worldState.characters, c => c.isGoblin)) {
       // Do nothing, just attack.
       if (this.hasEnemyWithinAttackRange(goblin)) {
-        return;
+        continue;
       }
       const enemy = this.findClosestEnemy(goblin);
       if (
@@ -247,7 +414,7 @@ export class GameMechanics {
         enemy.distance <= common.globals.gameplay.goblinVisionDistance
       ) {
         this.orderMove(goblin, enemy.target.getWorldPosition());
-        return;
+        continue;
       }
       const enemyHut = this.findClosestBuilding(goblin);
       if (
@@ -258,7 +425,7 @@ export class GameMechanics {
           goblin,
           this.worldPositionOfSprite(enemyHut.target.sprite)
         );
-        return;
+        continue;
       }
       // common.debug.log('Could not find anything to do!', goblin);
     }
@@ -284,12 +451,12 @@ export class GameMechanics {
   private dealDamageIfNeeded(): void {
     for (const char of game.worldState.characters) {
       if (char.isArmed) {
-        char.weapon.update();
-      }
-      if (char.isAttacking) {
-        if (this.hasEnemyWithinAttackRange(char)) {
-          this.hitWithWeapon(char);
+        if (char.weapon.isHitting) {
+          if (this.hasEnemyWithinAttackRange(char)) {
+            this.hitWithWeapon(char);
+          }
         }
+        char.weapon.update();
       }
     }
   }
@@ -350,6 +517,7 @@ export class GameMechanics {
     sprite.damage(1);
     if (sprite.body) {
       game.blood.sprite(sprite);
+      (injure as Character).hud.updateHealthBar();
     }
     if (sprite.health === 0) {
       return true;
@@ -427,8 +595,12 @@ export class GameMechanics {
     source: Phaser.Sprite,
     target: Phaser.Sprite | { sprite: Phaser.Sprite }
   ): boolean {
-    if (!(target instanceof Phaser.Sprite)) {
-      return this.withinRange(range, source, target.sprite);
+    if ('sprite' in target) {
+      return this.withinRange(
+        range,
+        source,
+        (target as { sprite: Phaser.Sprite }).sprite
+      );
     }
     // TODO: Implement this better.
     return game.physics.arcade.distanceBetween(source, target) <= range * 48;
@@ -501,7 +673,7 @@ class Hut {
 }
 
 class HutGenerator implements ITicker {
-  private periodicGenerator: PeriodicGenerator<Hut>;
+  public periodicGenerator: PeriodicGenerator<Hut>;
 
   public constructor(
     private readonly spawn: (den: Den) => any,
@@ -524,7 +696,7 @@ class Den {
 }
 
 class DenGenerator implements ITicker {
-  private periodicGenerator: PeriodicGenerator<Den>;
+  public periodicGenerator: PeriodicGenerator<Den>;
 
   public constructor(
     private readonly spawn: (den: Den) => any,

@@ -16,7 +16,11 @@ export class Weapon {
   }
 
   public static axe(): Weapon {
-    return new Weapon(101);
+    const w: Weapon = new Weapon(101);
+    w.sprite.scale.x *= -1;
+    w.sprite.x -= w.sprite.width / 4;
+    w.setAnchorPoint(new Phaser.Point(0.0, 0.0));
+    return w;
   }
 
   public static spear(): Weapon {
@@ -24,6 +28,8 @@ export class Weapon {
   }
 
   public readonly range: number;
+
+  public anchorPoint: Phaser.Point = new Phaser.Point(0, 0);
 
   private readonly sprite: Phaser.Sprite;
   private mIsSwinging: boolean;
@@ -40,7 +46,7 @@ export class Weapon {
     sprite.addChild(this.sprite);
     this.sprite.pivot.x = this.sprite.width * 0.1;
     this.sprite.pivot.y = this.sprite.height * 0.8;
-    this.sprite.anchor.set(0, 0);
+    this.sprite.anchor = this.anchorPoint;
   }
 
   public detach(sprite: Phaser.Sprite): void {
@@ -56,6 +62,10 @@ export class Weapon {
         this.mIsHitting = true;
       });
     }
+  }
+
+  public setAnchorPoint(aP: Phaser.Point) {
+    this.anchorPoint = aP;
   }
 
   public update(): void {
