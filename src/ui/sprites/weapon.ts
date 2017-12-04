@@ -24,7 +24,9 @@ export class Weapon {
   }
 
   public static spear(): Weapon {
-    return new Weapon(49);
+    return new Weapon(49, {
+      range: common.globals.gameplay.defaultWeaponRange * 0.25,
+    });
   }
 
   public readonly range: number;
