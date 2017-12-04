@@ -20,11 +20,7 @@ export default class BloodFactory {
   }
 
   public boom(on: Phaser.Sprite): Phaser.Sprite {
-    const sprite = this.game.add.sprite(
-      on.x,
-      on.y,
-      'explode'
-    );
+    const sprite = this.game.add.sprite(on.x, on.y, 'explode');
     // sprite.scale = new Phaser.Point(0.25, 0.25);
     sprite.animations.add('animate');
     sprite.animations.play('animate', 30, false, true);
