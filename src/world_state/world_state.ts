@@ -394,7 +394,7 @@ export default class WorldState {
         'Over',
         true,
         false,
-        `You lots all your huts after killing ${game.worldState.getDeadGoblins()} goblins!`
+        `You lost all your huts after killing ${game.worldState.getDeadGoblins()} goblins!`
       );
     }
 
