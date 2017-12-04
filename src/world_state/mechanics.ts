@@ -87,7 +87,7 @@ export class GameMechanics {
     // Have the goblin AI "think" every 1s.
     game.time.events.loop(
       common.globals.gameplay.goblinThinkRateMs,
-      this.giveGoblinOrders,
+      this.giveNpcOrders,
       this
     );
 
@@ -386,48 +386,51 @@ export class GameMechanics {
   }
 
   /**
-   * Attempts to give goblins orders.
+   * Attempts to give NPCs orders.
    *
    * This method should *not* be called every game loop, but rather a bit less
    * often. "Smarter" goblins could have this loop called more often, for
    * example.
    *
-   * Intended priority (not implemented):
+   * Intended priority for Goblins (not 100% implemented):
    *   1. Attack in-range enemy
-   *   2. Move to attack NPCs
-   *   3. Move to attack PCs
-   *   4. Move to attack Huts
-   *   5. Wander
+   *   2. Move to attack N/PCs
+   *   3. Move to attack Huts
+   *   4. Wander
    *
    * Future:
    *   - "Horde Mode": Follow other goblins as they do their tasks.
    */
-  private giveGoblinOrders(): void {
-    for (const goblin of filter(game.worldState.characters, c => c.isGoblin)) {
-      // Do nothing, just attack.
-      if (this.hasEnemyWithinAttackRange(goblin)) {
+  private giveNpcOrders(): void {
+    for (const npc of game.worldState.characters) {
+      if (npc === game.worldState.playerCharacter) {
         continue;
       }
-      const enemy = this.findClosestEnemy(goblin);
+      // Do nothing, just attack.
+      if (this.hasEnemyWithinAttackRange(npc)) {
+        npc.goal = Goal.attack(this.findClosestEnemy(npc)!.target);
+        continue;
+      }
+      const enemy = this.findClosestEnemy(npc);
       if (
         enemy &&
         enemy.distance <= common.globals.gameplay.goblinVisionDistance
       ) {
-        this.orderMove(goblin, enemy.target.getWorldPosition());
+        this.orderMove(npc, enemy.target.getWorldPosition());
         continue;
       }
-      const enemyHut = this.findClosestBuilding(goblin);
+      const enemyHut = this.findClosestBuilding(npc);
       if (
         enemyHut &&
         enemyHut.distance <= common.globals.gameplay.goblinVisionDistance
       ) {
         this.orderMove(
-          goblin,
+          npc,
           this.worldPositionOfSprite(enemyHut.target.sprite)
         );
         continue;
       }
-      // common.debug.log('Could not find anything to do!', goblin);
+      npc.goal = Goal.wander();
     }
   }
 
@@ -497,8 +500,6 @@ export class GameMechanics {
         return false;
       }
     );
-    // common.debug.log('Dead Characters');
-    // common.debug.log(deadCharacters);
     for (const char of deadCharacters) {
       if (char.isGoblin) {
         game.worldState.incrementGoblinKills();
@@ -506,8 +507,6 @@ export class GameMechanics {
         game.worldState.incrementGuardKills();
       }
     }
-    // common.debug.log('Dead Characters');
-    // common.debug.log(deadCharacters);
     const deadBuildings: IBuilding[] = remove(
       attacker.isGoblin ? this.hutActive : this.denActive,
       defender => {

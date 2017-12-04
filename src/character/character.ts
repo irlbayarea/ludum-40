@@ -30,6 +30,7 @@ export default class Character {
    * Could be handled better, but whether it is a Goblin.
    */
   public readonly isGoblin: boolean;
+  public readonly isGuard: boolean;
 
   public readonly speed: number;
   public readonly strength: number;
@@ -47,7 +48,6 @@ export default class Character {
   public goal: Goal;
 
   private sprite?: Phaser.Sprite;
-  private isGuard: boolean;
   private salary: number;
 
   private mWeapon: Weapon;
