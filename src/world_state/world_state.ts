@@ -1,5 +1,6 @@
 import * as EasyStar from 'easystarjs';
 import * as common from '../common';
+import * as Phaser from 'phaser-ce';
 
 import Grid from './grid';
 import Path from './path';
@@ -9,7 +10,6 @@ import { Weapon } from '../ui/sprites/weapon';
 import { remove } from 'lodash';
 import { GameMechanics } from './mechanics';
 import Goal from '../character/goal';
-import { Point } from 'phaser-ce';
 
 /**
  */
@@ -32,11 +32,14 @@ export default class WorldState {
    * Moves a character on a given tick toward the target point. Use functions
    * like `directCharacterToPoint` to control character movement.
    */
-  private static moveCharacterTick(char: Character, towards: Point): void {
+  private static moveCharacterTick(
+    char: Character,
+    towards: Phaser.Point
+  ): void {
     const body = char.getSprite().body;
-    const p: Point = new Point(body.x, body.y);
-    const p2: Point = new Point(towards.x, towards.y);
-    const dir: Point = p2
+    const p: Phaser.Point = new Phaser.Point(body.x, body.y);
+    const p2: Phaser.Point = new Phaser.Point(towards.x, towards.y);
+    const dir: Phaser.Point = p2
       .subtract(p.x, p.y)
       .normalize()
       .multiply(char.speed, char.speed);
@@ -182,8 +185,11 @@ export default class WorldState {
     }
   }
 
-  public randomNearbyPoint(point: Point, distance: number): Point {
-    return new Point(
+  public randomNearbyPoint(
+    point: Phaser.Point,
+    distance: number
+  ): Phaser.Point {
+    return new Phaser.Point(
       this.clampx((Math.random() - 0.5) * 2 * distance + point.x),
       this.clampx((Math.random() - 0.5) * 2 * distance + point.y)
     );
@@ -228,7 +234,7 @@ export default class WorldState {
     // Render pathing debug.
     for (let x: number = 0; x < this.grid.w; x++) {
       for (let y: number = 0; y < this.grid.h; y++) {
-        const p: Point = new Point(x + 0.5, y + 0.5);
+        const p: Phaser.Point = new Phaser.Point(x + 0.5, y + 0.5);
         const color: string = this.grid.collisionWorldPoint(p)
           ? 'rgba(255,0,255,128)'
           : 'rgba(0,255,0,128)';
@@ -243,8 +249,8 @@ export default class WorldState {
    * of 1.00 every tile. Returns a Path or null if no path could be found. Make
    * sure to use center positions of entities.
    */
-  private pathfind(from: Point, to: Point): Path | null {
-    const points: Point[] = [];
+  private pathfind(from: Phaser.Point, to: Phaser.Point): Path | null {
+    const points: Phaser.Point[] = [];
     this.astar.setIterationsPerCalculation(10000000);
     this.astar.findPath(
       Math.floor(from.x),
@@ -254,7 +260,7 @@ export default class WorldState {
       path => {
         if (path !== null) {
           for (let i = 0; i < path.length; i++) {
-            points[i] = new Point(path[i].x, path[i].y);
+            points[i] = new Phaser.Point(path[i].x, path[i].y);
           }
         }
       }
@@ -287,8 +293,8 @@ export default class WorldState {
     // Pathfinding update.
     this.characters.filter(c => c.path !== null).forEach(c => {
       const path: Path = c.path!;
-      const goalPos: Point | null = path.currentGoal();
-      const curPos: Point = c.getWorldPosition();
+      const goalPos: Phaser.Point | null = path.currentGoal();
+      const curPos: Phaser.Point = c.getWorldPosition();
 
       if (goalPos === null) {
         c.path = null;
@@ -297,7 +303,7 @@ export default class WorldState {
       } else {
         WorldState.moveCharacterTick(
           c,
-          new Point(goalPos.x * 64, goalPos.y * 64)
+          new Phaser.Point(goalPos.x * 64, goalPos.y * 64)
         );
       }
     });
@@ -349,7 +355,7 @@ export default class WorldState {
             if (goal.state === Goal.STATE_ACTIVE) {
               // When path is null, find a new path.
               if (c.path === null) {
-                let p: Point | null = null;
+                let p: Phaser.Point | null = null;
                 let remainingTries: number = 3;
                 do {
                   p = this.randomNearbyPoint(c.getWorldPosition(), 10);
@@ -401,7 +407,10 @@ export default class WorldState {
    * tile = 1.00 distance). Returns true if able to do that. The character
    * and destination must not be on a blocking point.
    */
-  private directCharacterToPoint(char: Character, point: Point): boolean {
+  private directCharacterToPoint(
+    char: Character,
+    point: Phaser.Point
+  ): boolean {
     if (this.grid.collisionWorldPoint(char.getWorldPosition())) {
       return false;
     }

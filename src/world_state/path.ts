@@ -1,6 +1,6 @@
 import { xyObjToPoint } from '../common';
 import { game } from '../index';
-import { Point } from 'phaser-ce';
+import * as Phaser from 'phaser-ce';
 
 export default class Path {
   public static readonly CLOSE_DISTANCE: number = 8 / 64;
@@ -8,7 +8,7 @@ export default class Path {
   /**
    * Returns true if the given position is near the goal position.
    */
-  public static isNearGoal(pos: Point, goalPos: Point): boolean {
+  public static isNearGoal(pos: Phaser.Point, goalPos: Phaser.Point): boolean {
     return pos.distance(goalPos) <= Path.CLOSE_DISTANCE;
   }
 
@@ -25,7 +25,7 @@ export default class Path {
   public curIndex: number;
   private points: Phaser.Point[];
 
-  public constructor(points: Point[]) {
+  public constructor(points: Phaser.Point[]) {
     this.curIndex = 0;
     this.points = [];
     points.forEach(p => {
@@ -36,13 +36,13 @@ export default class Path {
   /**
    * Returns the next goal position to reach or null if we are done.
    */
-  public currentGoal(): Point | null {
+  public currentGoal(): Phaser.Point | null {
     if (this.curIndex >= this.points.length) {
       return null;
     }
     const p = this.points[this.curIndex];
     const j = Path.jigglePoint(p);
-    return new Point(j.x + 0.5, j.y + 0.5);
+    return new Phaser.Point(j.x + 0.5, j.y + 0.5);
   }
 
   /**
