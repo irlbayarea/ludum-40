@@ -320,7 +320,9 @@ export class GameMechanics {
   }
 
   private spawnGoblinPeon(x: number, y: number): void {
-    const character = new Character('Goblin', CharacterType.Goblin, {strength: random(1, 3)});
+    const character = new Character('Goblin', CharacterType.Goblin, {
+      strength: random(1, 3),
+    });
     const texture = this.createGoblinTexture(character.strength);
     if (character.strength === 3) {
       character.arm(Weapon.spear());
@@ -411,7 +413,7 @@ export class GameMechanics {
       if (npc === game.worldState.playerCharacter) {
         continue;
       }
-      
+
       // Whether or not to do a random thing instead.
       const shouldBeRandom = random(0, 10 - npc.randomness) === 0;
       if (shouldBeRandom) {
@@ -426,7 +428,7 @@ export class GameMechanics {
       }
       const enemy = this.findClosestEnemy(npc);
       if (
-        npc.intelligence >= 5 && 
+        npc.intelligence >= 5 &&
         enemy &&
         enemy.distance <= common.globals.gameplay.goblinVisionDistance
       ) {
@@ -435,7 +437,7 @@ export class GameMechanics {
       }
       const enemyHut = this.findClosestBuilding(npc);
       if (
-        npc.intelligence >= 7 && 
+        npc.intelligence >= 7 &&
         enemyHut &&
         enemyHut.distance <= common.globals.gameplay.goblinVisionDistance
       ) {

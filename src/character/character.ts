@@ -162,4 +162,3 @@ export enum CharacterType {
   Guard = 3,
   Peasant = 4,
 }
-
