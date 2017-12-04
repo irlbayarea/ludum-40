@@ -92,6 +92,12 @@ export class GameMechanics {
       this
     );
 
+    game.time.events.loop(
+      common.globals.gameplay.playerHPHealRateMs,
+      this.healPlayer,
+      this
+    );
+
     // Offer NPC contracts.
     game.time.events.loop(
       common.globals.gameplay.contractRateMs,
@@ -118,6 +124,10 @@ export class GameMechanics {
    */
   public mainLoop(): void {
     this.dealDamageIfNeeded();
+  }
+
+  private healPlayer(): void {
+    game.worldState.playerCharacter.getSprite().heal(1);
   }
 
   /**
@@ -426,30 +436,55 @@ export class GameMechanics {
       }
 
       // Do nothing, just attack.
-      if (npc.intelligence >= 3 && this.hasEnemyWithinAttackRange(npc)) {
+      if (this.hasEnemyWithinAttackRange(npc)) {
         npc.goal = Goal.attack(this.findClosestEnemy(npc)!.target);
         continue;
       }
+
+      // Concentrate on buildings.
+      if (this.attackBuildingIfHighIntelligence(npc)) {
+        continue;
+      }
+
+      // Attack closest enemies.
       const enemy = this.findClosestEnemy(npc);
       if (
-        npc.intelligence >= 5 &&
         enemy &&
         enemy.distance <= common.globals.gameplay.goblinVisionDistance
       ) {
         this.orderMove(npc, enemy.target.getWorldPosition());
         continue;
       }
+
+      // Attack closest buildings.
       const enemyHut = this.findClosestBuilding(npc);
       if (
-        npc.intelligence >= 7 &&
         enemyHut &&
         enemyHut.distance <= common.globals.gameplay.goblinVisionDistance
       ) {
         this.orderMove(npc, this.worldPositionOfSprite(enemyHut.target.sprite));
         continue;
       }
-      npc.goal = Goal.wander();
+
+      // Wander.
+      if (npc.goal.type === Goal.TYPE_IDLE) {
+        npc.goal = Goal.wander();
+      }
     }
+  }
+
+  private attackBuildingIfHighIntelligence(npc: Character): boolean {
+    if (npc.intelligence > 5) {
+      const enemyHut = this.findClosestBuilding(npc);
+      if (
+        enemyHut &&
+        enemyHut.distance <= common.globals.gameplay.goblinVisionDistance
+      ) {
+        this.orderMove(npc, this.worldPositionOfSprite(enemyHut.target.sprite));
+        return true;
+      }
+    }
+    return false;
   }
 
   /**
