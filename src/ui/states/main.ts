@@ -91,8 +91,8 @@ export default class Main extends Phaser.State {
     const sc: SpawnConfig = new SpawnConfig(
       playerCharacterTemplate,
       textures.guard(game.armory),
-      12,
-      12
+      4,
+      4
     );
     game.spawn(sc);
   }
@@ -122,18 +122,24 @@ export default class Main extends Phaser.State {
     );
 
     // Initialize Layers.
-    const layers = ['terrain', 'foreground', 'collision', 'huts', 'spawns'].map(
-      name => map.createLayer(name)
-    );
+    const layers = [
+      'terrain',
+      'shadows',
+      'foreground',
+      'above',
+      'collision',
+      'huts',
+      'spawns',
+    ].map(name => map.createLayer(name));
 
     layers.forEach(layer => {
       layer.resizeWorld();
       layer.wrap = true;
     });
 
-    const collision = layers[2];
-    const huts = layers[3];
-    const spawns = layers[4];
+    const collision = layers[4];
+    const huts = layers[5];
+    const spawns = layers[6];
     collision.visible = false;
     huts.visible = false;
     spawns.visible = false;
