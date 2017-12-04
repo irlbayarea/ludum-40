@@ -38,6 +38,8 @@ export default class Character {
   public readonly goodness: number;
   public readonly name: string;
 
+  public readonly lefthanded: boolean = Math.random() > 0.5 ? true : false;
+
   public path: Path | null;
   public drawDebugPaths: boolean = true;
   public hud: SpriteHUD;
@@ -221,7 +223,14 @@ export default class Character {
   public setSprite(sprite: Phaser.Sprite) {
     if (!this.sprite) {
       this.sprite = sprite;
-      this.hud = new SpriteHUD(this);
+      if (this.lefthanded) {
+        this.sprite.scale.x *= -1;
+      }
+      this.hud = new SpriteHUD(this.sprite, this.name, this.lefthanded);
+
+      this.hud.addHealthBar();
+      this.hud.addNameTag();
+
       if (this.mWeapon) {
         this.mWeapon.attach(sprite);
       }
