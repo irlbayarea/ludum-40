@@ -82,15 +82,7 @@ export class SpriteHUD {
   }
 
   private healthColorRange(percent: number): number {
-    if (percent >= 1.0) {
-      return 0x52be80; // Green
-    } else if (1.0 > percent && percent >= 0.5) {
-      return 0xd35400; // Orange
-    } else if (0.5 > percent && percent >= 0.25) {
-      return 0xc0392b; // Orange-Red
-    } else {
-      return 0xff0000;
-    }
+    return Phaser.Color.interpolateColor(0x52be80, 0xff0000, 100 - (percent * 100), 100);
   }
 
   private healthPercent(): number {
