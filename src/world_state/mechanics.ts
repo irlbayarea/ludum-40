@@ -424,10 +424,7 @@ export class GameMechanics {
         enemyHut &&
         enemyHut.distance <= common.globals.gameplay.goblinVisionDistance
       ) {
-        this.orderMove(
-          npc,
-          this.worldPositionOfSprite(enemyHut.target.sprite)
-        );
+        this.orderMove(npc, this.worldPositionOfSprite(enemyHut.target.sprite));
         continue;
       }
       npc.goal = Goal.wander();
