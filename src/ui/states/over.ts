@@ -7,7 +7,19 @@ import { game } from '../../index';
 export default class GameOver extends Phaser.State {
   private rKey: Phaser.Key;
 
-  public init(): void {
+  public init(message: string): void {
+    const x = 0;
+    const y = this.game.height / 2;
+    const text = this.game.add.text(x, y, '', {
+      font: 'bold ' + '40' + 'px ' + 'Arial',
+      fill: '#FFFFFF',
+      boundsAlignH: 'center',
+      boundsAlignV: 'middle',
+    });
+    text.setShadow(1, 1, 'rgba(0, 0, 0, 1)', 3, true, true);
+    text.align = 'center';
+    text.fixedToCamera = true;
+    text.text = message;
     this.stage.backgroundColor = '#FF0000';
     this.rKey = this.game.input.keyboard.addKey(Phaser.Keyboard.R);
   }
