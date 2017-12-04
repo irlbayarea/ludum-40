@@ -1,3 +1,4 @@
+// import * as common from '../../common';
 import HudModel from './hud_model';
 import MessagePanel from '../hud/message';
 import UserQuestion from '../../user_question';
@@ -6,14 +7,14 @@ import { Game } from '../../index';
 
 export default class HudRenderer {
   private messages: MessagePanel;
-  private scoreWidget: TextWidget;
-  private killWidget: TextWidget;
+  private deadGoblinWidget: TextWidget;
+  private deadGuardWidget: TextWidget;
   private model: HudModel;
 
-  constructor(game: Game, messages: MessagePanel) {
+  constructor(private game: Game, messages: MessagePanel) {
     this.messages = messages;
-    this.scoreWidget = new TextWidget(game, 10, 10);
-    this.killWidget = new TextWidget(game, 10, 30);
+    this.deadGoblinWidget = new TextWidget(this.game, 10, 10);
+    this.deadGuardWidget = new TextWidget(this.game, 10, 30);
   }
 
   public render(hud: HudModel) {
@@ -24,10 +25,10 @@ export default class HudRenderer {
       return;
     }
     this.model = hud;
+    this.renderDeadGoblins();
+    this.renderDeadGuards();
     this.renderMessage(this.model.message);
     this.renderQuestion(this.model.question);
-    this.renderKillCount(this.model.killCount);
-    this.renderScore(this.model.score);
   }
 
   public setMessagePanelClearCountdown() {
@@ -49,11 +50,17 @@ export default class HudRenderer {
     }
   }
 
-  private renderScore(s: number) {
-    this.scoreWidget.write('Score: ' + s);
+  private renderDeadGuards() {
+    this.deadGuardWidget.write(
+      'Dead Goblins: ' + this.game.worldState.getDeadGuards()
+    );
+    this.deadGuardWidget.bringToTop();
   }
 
-  private renderKillCount(c: number) {
-    this.killWidget.write('Kill count: ' + c);
+  private renderDeadGoblins() {
+    this.deadGoblinWidget.write(
+      'Dead Guards : ' + this.game.worldState.getDeadGoblins()
+    );
+    this.deadGoblinWidget.bringToTop();
   }
 }

@@ -1,3 +1,4 @@
+// import * as common from '../../common';
 import * as Phaser from 'phaser-ce';
 import { game } from '../../index';
 import * as Time from '../../logic/_time/common';
@@ -33,7 +34,6 @@ export class SpriteHUD {
   public updateHealthBar(): void {
     this.healthBar.tint = this.healthColorRange(this.healthPercent());
     this.healthBar.scale.set(this.healthPercent(), 1);
-    // this.healthBar.scale.x *= (this.lefthanded ? -1 : 1);
     // common.debug.log(this.name + ' : ' + 100 * this.healthPercent() + ' % ');
   }
 
@@ -53,7 +53,6 @@ export class SpriteHUD {
       this.healthBar.anchor.set(0.5, 0);
       this.healthBar.tint = this.healthColorRange(this.healthPercent());
       this.healthBar.scale.set(this.healthPercent(), 1);
-      // this.healthBar.scale.x *= (this.lefthanded ? -1 : 1);
       this.sprite.addChild(this.healthBar);
     } else {
       throw new Error('Sprite already has a health bar!');
@@ -95,16 +94,14 @@ export class SpriteHUD {
   }
 
   private healthPercent(): number {
-    /*
-    common.debug.log(
-      'Health % : ' +
-        this.name +
-        ' : ' +
-        this.sprite.health +
-        '/' +
-        this.sprite.maxHealth
-    );
-    */
+    // common.debug.log(
+    //   'Health % : ' +
+    //     this.name +
+    //     ' : ' +
+    //     this.sprite.health +
+    //     '/' +
+    //     this.sprite.maxHealth
+    // );
     return this.sprite.health / this.sprite.maxHealth;
   }
 }
