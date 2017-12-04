@@ -140,7 +140,7 @@ interface IGlobals {
     /**
      * Guard salary multiplier
      */
-    guardSalaryMultiplier: number,
+    guardSalaryMultiplier: number;
 
     contractRateMs: number;
     crisisRateMs: number;

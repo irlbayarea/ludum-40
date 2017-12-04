@@ -2,8 +2,8 @@
  * Character class
  * Encapsulates all information about a character
  */
-import * as common from '../common'
- import { SpriteHUD } from '../ui/sprites/hud';
+import * as common from '../common';
+import { SpriteHUD } from '../ui/sprites/hud';
 import * as Phaser from 'phaser-ce';
 import { randomName } from './names';
 import Path from '../world_state/path';
@@ -65,7 +65,7 @@ export default class Character {
         Character.maxIntelligence
       ),
       randomness: random(Character.minRandomness, Character.maxRandomness),
-      money: 0
+      money: 0,
     };
     stats = assign(defaultStats, stats);
 
@@ -153,16 +153,13 @@ export default class Character {
   }
 
   public changeMoney(money: number) {
-    return this.money += money;
+    return (this.money += money);
   }
 
   private setSalary(): void {
-    this.salary = 
-    common.globals.gameplay.guardSalaryMultiplier * 
-    Math.sqrt(
-      this.strength ** 2 +
-        this.intelligence ** 2
-    );
+    this.salary =
+      common.globals.gameplay.guardSalaryMultiplier *
+      Math.sqrt(this.strength ** 2 + this.intelligence ** 2);
   }
 }
 
