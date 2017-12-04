@@ -497,8 +497,8 @@ export class GameMechanics {
         return false;
       }
     );
-    common.debug.log('Dead Characters');
-    common.debug.log(deadCharacters);
+    // common.debug.log('Dead Characters');
+    // common.debug.log(deadCharacters);
     for (const char of deadCharacters) {
       if (char.isGoblin) {
         game.worldState.incrementGoblinKills();
@@ -506,8 +506,8 @@ export class GameMechanics {
         game.worldState.incrementGuardKills();
       }
     }
-    common.debug.log('Dead Characters');
-    common.debug.log(deadCharacters);
+    // common.debug.log('Dead Characters');
+    // common.debug.log(deadCharacters);
     const deadBuildings: IBuilding[] = remove(
       attacker.isGoblin ? this.hutActive : this.denActive,
       defender => {
