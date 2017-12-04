@@ -89,13 +89,17 @@ export default class WorldState {
     map: Phaser.Tilemap,
     layer: Phaser.TilemapLayer
   ): void {
+    // Must use transposed grid for our A* algorithm.
+    const trans: number[][] = [];
     for (let y = 0; y < map.height; y++) {
+      trans[y] = [];
       for (let x = 0; x < map.width; x++) {
         const tile = map.getTile(x, y, layer);
-        this.grid.collisions[y][x] = tile !== null ? 1 : 0;
+        this.grid.collisions[x][y] = tile !== null ? 1 : 0;
+        trans[y][x] = tile !== null ? 1 : 0;
       }
     }
-    this.astar.setGrid(this.grid.collisions);
+    this.astar.setGrid(trans);
   }
 
   /**
@@ -114,10 +118,75 @@ export default class WorldState {
   }
 
   /**
-   * Takes `from` and `to` which must be world space coordinates, or a distance
-   * of 1.00 every tile. Returns a Path or null if no path could be found.
+   * Tells the character to get to the given point in world coordinates (1
+   * tile = 1.00 distance). Returns true if able to do that. The character
+   * and destination must not be on a blocking point.
    */
-  public pathfind(from: Phaser.Point, to: Phaser.Point): Path | null {
+  public directCharacterToPoint(char: Character, point: Phaser.Point): boolean {
+    if (this.grid.collisionWorldPoint(char.getWorldPosition())) {
+      return false;
+    }
+    if (this.grid.collisionWorldPoint(point)) {
+      return false;
+    }
+    char.path = this.pathfind(char.getWorldPosition(), point);
+    return char.path !== null;
+  }
+
+  public nearby(point: Phaser.Point, distance: number): Phaser.Point {
+    return new Phaser.Point(
+      this.clamp((Math.random() - 0.5) * 2 * distance + point.x),
+      this.clamp((Math.random() - 0.5) * 2 * distance + point.y)
+    );
+  }
+
+  public update(): void {
+    this.updateCharacters();
+  }
+
+  public render(): void {
+    if (common.experiment('render-debug')) {
+      this.renderDebug();
+    }
+  }
+
+  /**
+   * Whether the provided characters are on opposing sides.
+   *
+   * @param who
+   * @param to
+   */
+  public isOpposed(who: Character, to: Character): boolean {
+    return who.isGoblin !== to.isGoblin;
+  }
+
+  private renderDebug() {
+    // Render collision debug.
+    this.characters
+      .filter(c => c.drawDebugPaths && c.path !== null)
+      .forEach(c => {
+        c.path!.drawDebug(c.getWorldPosition());
+      });
+
+    // Render pathing debug.
+    for (let x: number = 0; x < this.grid.w; x++) {
+      for (let y: number = 0; y < this.grid.h; y++) {
+        const p: Phaser.Point = new Phaser.Point(x + 0.5, y + 0.5);
+        const color: string = this.grid.collisionWorldPoint(p)
+          ? 'rgba(255,0,255,128)'
+          : 'rgba(0,255,0,128)';
+        const circ: Phaser.Circle = new Phaser.Circle(p.x * 64, p.y * 64, 15);
+        game.debug.geom(circ, color, true);
+      }
+    }
+  }
+
+  /**
+   * Takes `from` and `to` which must be world space coordinates, or a distance
+   * of 1.00 every tile. Returns a Path or null if no path could be found. Make
+   * sure to use center positions of entities.
+   */
+  private pathfind(from: Phaser.Point, to: Phaser.Point): Path | null {
     const points: Array<{ x: number; y: number }> = [];
     this.astar.setIterationsPerCalculation(10000000);
     this.astar.findPath(
@@ -138,36 +207,6 @@ export default class WorldState {
     this.astar.disableCornerCutting();
     this.astar.calculate();
     return points.length >= 1 ? new Path(points) : null;
-  }
-
-  /**
-   * Tells the character to get to the given point in world coordinates (1
-   * tile = 1.00 distance). Returns true if able to do that.
-   */
-  public directCharacterToPoint(char: Character, point: Phaser.Point): boolean {
-    char.path = this.pathfind(char.getWorldPosition(), point);
-    return char.path !== null;
-  }
-
-  public nearby(point: Phaser.Point, distance: number): Phaser.Point {
-    return new Phaser.Point(
-      this.clamp((Math.random() - 0.5) * 2 * distance + point.x),
-      this.clamp((Math.random() - 0.5) * 2 * distance + point.y)
-    );
-  }
-
-  public update(): void {
-    this.updateCharacters();
-  }
-
-  /**
-   * Whether the provided characters are on opposing sides.
-   *
-   * @param who
-   * @param to
-   */
-  public isOpposed(who: Character, to: Character): boolean {
-    return who.isGoblin !== to.isGoblin;
   }
 
   private updateCharacters(): void {
@@ -228,7 +267,13 @@ export default class WorldState {
         tries++;
       } while (this.grid.collisionWorldPoint(p) && tries < 10);
       if (!this.grid.collisionWorldPoint(p)) {
-        this.directCharacterToPoint(character, p);
+        try {
+          this.directCharacterToPoint(character, p);
+        } catch (e) {
+          common.debug.log(
+            'worldState.stopCharacter: exception when using directCharacterToPoint.'
+          );
+        }
       }
     }
   }
