@@ -270,10 +270,10 @@ export class GameMechanics {
     character: Character,
     texture: Phaser.RenderTexture
   ): void {
-    const location = sample(this.hutActive) as Hut;
-    const { x, y } = location.sprite;
+    // const location = sample(this.hutActive) as Hut;
+    const { x, y } = game.worldState.playerCharacter.getSprite();
     character.arm(Weapon.scimitar());
-    game.spawn(
+    const sprite = game.spawn(
       new SpawnConfig(
         character,
         texture,
@@ -281,6 +281,7 @@ export class GameMechanics {
         Math.floor(y / 64)
       )
     );
+    sprite.maxHealth = sprite.health = 5;
   }
 
   private createRandomGuard(): Character {
@@ -307,14 +308,15 @@ export class GameMechanics {
   private offerPromotions(): void {
     for (const goblin of filter(game.worldState.characters, c => c.isGoblin)) {
       const sprite = goblin.getSprite();
+      if (sprite.maxHealth >= 25) {
+        continue;
+      }
       const buddies = filter(this.findNearbyBudies(goblin), c => {
-        return c.getSprite().maxHealth <= sprite.maxHealth;
+        return c.getSprite().maxHealth === sprite.maxHealth;
       });
-      console.log('Found a group of buddies:', buddies);
       if (buddies.length >= 5) {
-        console.log('PROMOTION!');
         sprite.maxHealth *= 5;
-        sprite.heal(sprite.maxHealth);
+        sprite.health = sprite.maxHealth;
         sprite.setTexture(this.createGoblinTexture(sprite.maxHealth));
       }
     }
@@ -322,7 +324,7 @@ export class GameMechanics {
 
   private findNearbyBudies(character: Character): Character[] {
     return filter(game.worldState.characters, (c) => {
-      return c !== character && this.withinRange(5, character.getSprite(), c.getSprite());
+      return c !== character && this.withinRange(3.5, character.getSprite(), c.getSprite());
     });
   }
 
@@ -377,8 +379,6 @@ export class GameMechanics {
       },
       pants: PantsColor.Green,
     });
-    character.arm(Weapon.axe());
-    game.spawn(new SpawnConfig(character, texture, x, y));
   }
 
   /**
@@ -447,12 +447,12 @@ export class GameMechanics {
   private dealDamageIfNeeded(): void {
     for (const char of game.worldState.characters) {
       if (char.isArmed) {
-        char.weapon.update();
-      }
-      if (char.isAttacking) {
-        if (this.hasEnemyWithinAttackRange(char)) {
-          this.hitWithWeapon(char);
+        if (char.weapon.isHitting) {
+          if (this.hasEnemyWithinAttackRange(char)) {
+            this.hitWithWeapon(char);
+          }
         }
+        char.weapon.update();
       }
     }
   }
