@@ -1,9 +1,16 @@
-import * as Phaser from 'phaser-ce';
 import { xyObjToPoint } from '../common';
 import { game } from '../index';
+import { Point } from 'phaser-ce';
 
 export default class Path {
   public static readonly CLOSE_DISTANCE: number = 8 / 64;
+
+  /**
+   * Returns true if the given position is near the goal position.
+   */
+  public static isNearGoal(pos: Point, goalPos: Point): boolean {
+    return pos.distance(goalPos) <= Path.CLOSE_DISTANCE;
+  }
 
   /**
    * Returns a jiggled point in world coordiantes.
@@ -18,38 +25,24 @@ export default class Path {
   public curIndex: number;
   private points: Phaser.Point[];
 
-  public constructor(points: Array<{ x: number; y: number }>) {
+  public constructor(points: Point[]) {
     this.curIndex = 0;
     this.points = [];
     points.forEach(p => {
-      const pp: Phaser.Point = new Phaser.Point(p.x, p.y);
-      this.points.push(pp);
+      this.points.push(p);
     });
   }
 
   /**
-   * Returns the next point goal to reach or null if we are done.
+   * Returns the next goal position to reach or null if we are done.
    */
-  public currentGoal(): { x: number; y: number } | null {
+  public currentGoal(): Point | null {
     if (this.curIndex >= this.points.length) {
       return null;
     }
     const p = this.points[this.curIndex];
     const j = Path.jigglePoint(p);
-    return { x: j.x + 0.5, y: j.y + 0.5 };
-  }
-
-  /**
-   * Returns true if the given position is near the goal. Expects that
-   * currentGoal() does not return null.
-   */
-  public isNearGoal(pos: { x: number; y: number }): boolean {
-    const currentGoalPos: { x: number; y: number } | null = this.currentGoal();
-    return (
-      new Phaser.Point(pos.x, pos.y).distance(
-        new Phaser.Point(currentGoalPos!.x, currentGoalPos!.y)
-      ) <= Path.CLOSE_DISTANCE
-    );
+    return new Point(j.x + 0.5, j.y + 0.5);
   }
 
   /**
