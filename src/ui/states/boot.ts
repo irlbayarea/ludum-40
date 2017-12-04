@@ -61,8 +61,11 @@ export default class Boot extends Phaser.State {
       Phaser.Tilemap.TILED_JSON
     );
 
-    // UI elements.
-    this.load.image('arrow.right', require('assets/images/arrow_right.png'));
+    // Load BG Music.
+    this.load.audio(
+      'music',
+      require('assets/audio/background.ogg'),
+    );
   }
 
   public render(): void {
