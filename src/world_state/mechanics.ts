@@ -1,11 +1,14 @@
 import * as Phaser from 'phaser-ce';
-import { filter, sample, remove } from 'lodash';
+import { filter, sample, remove, random } from 'lodash';
 import { ITicker } from '../ticker';
 import PeriodicGenerator from '../periodic_generator';
 import * as common from '../common';
 import HutFactory from '../ui/sprites/hut';
 import { game } from '../index';
-import Character from '../character/character';
+import Character, { CharacterType } from '../character/character';
+import { Armory, SkinColor, ShirtColor, PantsColor } from '../ui/sprites/armory';
+import { Weapon } from '../ui/sprites/weapon';
+import { SpawnConfig } from '../character/spawn_config';
 
 /**
  * Effectively "runs" the game, i.e. instead of just randomly spawning units.
@@ -27,12 +30,16 @@ export class GameMechanics {
   private readonly hutSpawnLocations: Phaser.Tile[];
   private readonly hutActive: Hut[] = [];
 
+  private readonly armory: Armory;
+
   /**
    * Reads significant information based on the provided map.
    *
    * **NOTE**: This does not currently work with generated maps.
    */
   constructor(map: Phaser.Tilemap) {
+    this.armory = new Armory(game);
+    
     const hutLayer: Phaser.TilemapLayer = map.layers[map.getLayer('huts')];
     if (hutLayer) {
       this.hutSpawnLocations = this.findSpawnLocations(hutLayer);
@@ -74,6 +81,13 @@ export class GameMechanics {
       common.globals.gameplay.npcAttackRateMs,
       this.attackNearbyEnemies,
       this
+    );
+
+    // Spawn goblins/hordes from dens.
+    game.time.events.loop(
+      common.globals.gameplay.goblinSpawnRateMs,
+      this.spawnGoblins,
+      this,
     );
   }
 
@@ -165,6 +179,33 @@ export class GameMechanics {
 
   private worldPositionOfSprite(sprite: Phaser.Sprite) : Phaser.Point {
     return new Phaser.Point(sprite!.x / 64, sprite!.y / 64);
+  }
+
+  private spawnGoblins(): void {
+    if (this.denActive.length === 0) {
+      return;
+    }
+    for (const den of this.denActive) {
+      for (let i = 0; i < random(0, 3); i++) {
+        const x = Math.floor(den.sprite.x / 64);
+        const y = Math.floor(den.sprite.y / 64);
+        this.spawnGoblinPeon(x, y);
+      }
+    }
+  }
+
+  private spawnGoblinPeon(x: number, y: number): void {
+    const character = new Character('Goblin', CharacterType.Goblin);
+    const texture = this.armory.peonTexture({
+      skin: SkinColor.Green,
+      shirt: {
+        color: ShirtColor.Green,
+        style: 9,
+      },
+      pants: PantsColor.Green,
+    });
+    character.arm(Weapon.axe());
+    game.spawn(new SpawnConfig(character, texture, x, y));
   }
 
   /**
@@ -442,11 +483,11 @@ export class GameMechanics {
   }
 }
 
-export class Hut {
+class Hut {
   constructor(public readonly sprite: Phaser.Sprite) {}
 }
 
-export class HutGenerator implements ITicker {
+class HutGenerator implements ITicker {
   private periodicGenerator: PeriodicGenerator<Hut>;
 
   public constructor(
@@ -465,11 +506,11 @@ export class HutGenerator implements ITicker {
   }
 }
 
-export class Den {
+class Den {
   constructor(public readonly sprite: Phaser.Sprite) {}
 }
 
-export class DenGenerator implements ITicker {
+class DenGenerator implements ITicker {
   private periodicGenerator: PeriodicGenerator<Den>;
 
   public constructor(
