@@ -11,8 +11,8 @@ import { assign, random } from 'lodash';
 import Goal from './goal';
 
 export default class Character {
-  public static readonly minSpeed: number = 10;
-  public static readonly maxSpeed: number = 500;
+  public static readonly minSpeed: number = 200;
+  public static readonly maxSpeed: number = 600;
   public static readonly minStrength: number = 0;
   public static readonly maxStrength: number = 10;
   public static readonly minIntelligence: number = 0;
@@ -50,10 +50,10 @@ export default class Character {
     name: string = randomName(),
     type: CharacterType,
     stats?: {
-      speed: number;
-      strength: number;
-      intelligence: number;
-      randomness: number;
+      speed?: number;
+      strength?: number;
+      intelligence?: number;
+      randomness?: number;
     }
   ) {
     const defaultStats = {
@@ -68,64 +68,10 @@ export default class Character {
     stats = assign(defaultStats, stats);
 
     this.name = name;
-
-    if (
-      Character.maxSpeed >= stats.speed &&
-      stats.speed >= Character.minSpeed
-    ) {
-      this.speed = stats.speed;
-    } else {
-      throw new RangeError(
-        'speed value must be within [' +
-          Character.minSpeed +
-          ',' +
-          Character.maxSpeed +
-          ']'
-      );
-    }
-    if (
-      Character.maxStrength >= stats.strength &&
-      stats.strength >= Character.minStrength
-    ) {
-      this.strength = stats.strength;
-    } else {
-      throw new RangeError(
-        'strength value must be within [' +
-          Character.minStrength +
-          ',' +
-          Character.maxStrength +
-          ']'
-      );
-    }
-    if (
-      Character.maxIntelligence >= stats.intelligence &&
-      stats.intelligence >= Character.minIntelligence
-    ) {
-      this.intelligence = stats.intelligence;
-    } else {
-      throw new RangeError(
-        'intelligence value must be within [' +
-          Character.minIntelligence +
-          ',' +
-          Character.maxIntelligence +
-          ']'
-      );
-    }
-    if (
-      Character.maxRandomness >= stats.randomness &&
-      stats.randomness >= Character.minRandomness
-    ) {
-      this.randomness = stats.randomness;
-    } else {
-      throw new RangeError(
-        'randomness value must be within [' +
-          Character.minRandomness +
-          ',' +
-          Character.maxRandomness +
-          ']'
-      );
-    }
-
+    this.speed = stats.speed as number;
+    this.strength = stats.strength as number;
+    this.intelligence = stats.intelligence as number;
+    this.randomness = stats.randomness as number;
     this.isGuard = type === CharacterType.Guard;
     this.isGoblin = type === CharacterType.Goblin;
     this.setSalary();

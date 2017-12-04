@@ -320,9 +320,13 @@ export class GameMechanics {
   }
 
   private spawnGoblinPeon(x: number, y: number): void {
-    const character = new Character('Goblin', CharacterType.Goblin);
-    const texture = this.createGoblinTexture();
-    character.arm(Weapon.axe());
+    const character = new Character('Goblin', CharacterType.Goblin, {strength: random(1, 3)});
+    const texture = this.createGoblinTexture(character.strength);
+    if (character.strength === 3) {
+      character.arm(Weapon.spear());
+    } else {
+      character.arm(Weapon.axe());
+    }
     game.spawn(new SpawnConfig(character, texture, x, y));
   }
 
@@ -362,6 +366,20 @@ export class GameMechanics {
         },
       });
     }
+    if (health === 3) {
+      return this.armory.peonTexture({
+        skin: SkinColor.Green,
+        shirt: {
+          color: ShirtColor.Green,
+          style: 4,
+        },
+        pants: PantsColor.Brown,
+        beard: {
+          color: HairColor.Brown,
+          style: random(0, 7),
+        },
+      });
+    }
     return this.armory.peonTexture({
       skin: SkinColor.Green,
       shirt: {
@@ -393,13 +411,22 @@ export class GameMechanics {
       if (npc === game.worldState.playerCharacter) {
         continue;
       }
+      
+      // Whether or not to do a random thing instead.
+      const shouldBeRandom = random(0, 10 - npc.randomness) === 0;
+      if (shouldBeRandom) {
+        npc.goal = Goal.wander();
+        continue;
+      }
+
       // Do nothing, just attack.
-      if (this.hasEnemyWithinAttackRange(npc)) {
+      if (npc.intelligence >= 3 && this.hasEnemyWithinAttackRange(npc)) {
         npc.goal = Goal.attack(this.findClosestEnemy(npc)!.target);
         continue;
       }
       const enemy = this.findClosestEnemy(npc);
       if (
+        npc.intelligence >= 5 && 
         enemy &&
         enemy.distance <= common.globals.gameplay.goblinVisionDistance
       ) {
@@ -408,6 +435,7 @@ export class GameMechanics {
       }
       const enemyHut = this.findClosestBuilding(npc);
       if (
+        npc.intelligence >= 7 && 
         enemyHut &&
         enemyHut.distance <= common.globals.gameplay.goblinVisionDistance
       ) {
