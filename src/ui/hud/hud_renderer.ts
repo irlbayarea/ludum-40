@@ -11,10 +11,10 @@ export default class HudRenderer {
   private static readonly yPad = 10;
   private static readonly fontSize = 20;
   private static readonly font = 'Courier New';
-  private static readonly colNum = 4;
-  private static readonly rowNum = 1;
+  private static readonly colNum = 2;
+  private static readonly rowNum = 2;
 
-  private static readonly hudW = globals.dimensions.width;
+  private static readonly hudW = globals.dimensions.width / 2;
   private static readonly hudH = HudRenderer.rowNum *
     (HudRenderer.fontSize + HudRenderer.yPad);
 
@@ -77,17 +77,22 @@ export default class HudRenderer {
     this.renderDeadGoblins(this.HUD[0]);
     this.renderLivingGuards(this.HUD[1]);
     this.renderStandingHuts(this.HUD[2]);
+    this.renderMoney(this.HUD[3]);
+  }
+
+  private renderMoney(tw: TextWidget) {
+    tw.write('Money :$' + this.game.worldState.playerCharacter.getMoney());
   }
 
   private renderLivingGuards(tw: TextWidget) {
     tw.write(
-      'Guards : ' +
+      'Guards       : ' +
         this.game.worldState.characters.filter(char => !char.isGoblin).length
     );
   }
 
   private renderStandingHuts(tw: TextWidget) {
-    tw.write('Huts   : ' + this.game.worldState.getHutCount());
+    tw.write('Huts  : ' + this.game.worldState.getHutCount());
   }
 
   private renderDeadGoblins(tw: TextWidget) {

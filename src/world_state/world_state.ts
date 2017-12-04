@@ -100,26 +100,30 @@ export default class WorldState {
   public getDeadGoblins(): number {
     return this.goblinKills;
   }
-  public incrementGoblinKills() {
+  public incrementGoblinKills(value: number) {
     this.goblinKills += 1;
+    this.playerCharacter.changeMoney(value);
   }
   public getDeadGuards(): number {
     return this.guardKills;
   }
   public incrementGuardKills() {
     this.guardKills += 1;
+    this.playerCharacter.changeMoney(-5);
   }
   public getHutDestroyed(): number {
     return this.hutDestroyed;
   }
   public incrementHutDestroyed() {
     this.hutDestroyed += 1;
+    this.playerCharacter.changeMoney(-10);
   }
   public getDenDesdtroyed(): number {
     return this.denDesdtroyed;
   }
   public incrementDenDesdtroyed() {
     this.denDesdtroyed += 1;
+    this.playerCharacter.changeMoney(10);
   }
   public getHutCount() {
     return this.mechanics.getHutCount();

@@ -134,12 +134,8 @@ export class GameMechanics {
     game.worldState.playerCharacter.getSprite().heal(1);
   }
 
-  private attenuate(source: Character, sound: Phaser.Sound): void {
-    const player = game.worldState.playerCharacter.getWorldPosition();
-    const other = source.getWorldPosition();
-    const distance = player.distance(other);
-    const volume = Math.floor(100 / Math.floor(30 - distance));
-    sound.play(undefined, undefined, volume);
+  private attenuate(sound: Phaser.Sound): void {
+    sound.play();
   }
 
   /**
@@ -567,7 +563,7 @@ export class GameMechanics {
     );
     for (const char of deadCharacters) {
       if (char.isGoblin) {
-        game.worldState.incrementGoblinKills();
+        game.worldState.incrementGoblinKills(char.getSprite().maxHealth);
       } else {
         game.worldState.incrementGuardKills();
       }
@@ -612,11 +608,11 @@ export class GameMechanics {
       game.blood.boom(sprite);
     }
     if (source === game.worldState.playerCharacter) {
-      this.attenuate(source, sample(this.sword) as Phaser.Sound);
+      this.attenuate(sample(this.sword) as Phaser.Sound);
     }
     if (sprite.health === 0) {
       if (injure instanceof Character) {
-        this.attenuate(injure, this.death);
+        this.attenuate(this.death);
       }
       return true;
     }
