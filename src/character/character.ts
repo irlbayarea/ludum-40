@@ -12,7 +12,7 @@ import Goal from './goal';
 
 export default class Character {
   public static readonly minSpeed: number = 200;
-  public static readonly maxSpeed: number = 600;
+  public static readonly maxSpeed: number = 500;
   public static readonly minStrength: number = 0;
   public static readonly maxStrength: number = 10;
   public static readonly minIntelligence: number = 0;
