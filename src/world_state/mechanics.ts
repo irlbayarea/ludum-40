@@ -92,6 +92,12 @@ export class GameMechanics {
       this
     );
 
+    game.time.events.loop(
+      common.globals.gameplay.playerHPHealRateMs,
+      this.healPlayer,
+      this
+    );
+
     // Offer NPC contracts.
     game.time.events.loop(
       common.globals.gameplay.contractRateMs,
@@ -118,6 +124,10 @@ export class GameMechanics {
    */
   public mainLoop(): void {
     this.dealDamageIfNeeded();
+  }
+
+  private healPlayer(): void {
+    game.worldState.playerCharacter.getSprite().heal(1);
   }
 
   /**
