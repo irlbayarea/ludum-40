@@ -220,7 +220,9 @@ export default class Character {
   public setSprite(sprite: Phaser.Sprite) {
     if (!this.sprite) {
       this.sprite = sprite;
-      this.hud = new SpriteHUD(this);
+      this.hud = new SpriteHUD(this.sprite, this.name);
+      this.hud.addHealthBar();
+      this.hud.addNameTag();
       if (this.mWeapon) {
         this.mWeapon.attach(sprite);
       }

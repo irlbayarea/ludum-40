@@ -270,6 +270,7 @@ export class GameMechanics {
     }
     const sprite = injure.getSprite();
     sprite.damage(1);
+    injure.hud.updateHealthBar();
     game.blood.sprite(sprite);
     if (sprite.health === 0) {
       return true;
