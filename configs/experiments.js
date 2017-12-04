@@ -3,8 +3,7 @@ module.exports.experiments = {
   'demo-crisis': false,
   'generators': true,
   'use-generated-map': false,
-  'promotions': false,
+  'promotions': true,
   'accelerated': false,
   'render-debug': false,
-  'generators': false,
 };

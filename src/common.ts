@@ -34,7 +34,7 @@ export const globals: IGlobals = {
     goblinThinkRateMs: 1000,
     goblinVisionDistance: 10,
 
-    denAndHutHP: 20,
+    denAndHutHP: 15,
 
     npcAttackRateMs: 300,
     maximumCharacters: 100,
@@ -44,7 +44,7 @@ export const globals: IGlobals = {
     crisisRateMs: 10 * 1000,
     defaultWeaponRange: 1.25,
     playerRangeModifier: 0.75,
-    playerStartingHP: 100,
+    playerStartingHP: 50,
     hutSpawnRateMs: 15 * 1000,
     denSpawnRateMs: 20 * 1000,
   },
