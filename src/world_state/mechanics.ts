@@ -109,6 +109,10 @@ export class GameMechanics {
     }
   }
 
+  public getHutCount(): number {
+    return this.hutActive.length;
+  }
+
   /**
    * Forward events from the main game "update" loop.
    */
