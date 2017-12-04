@@ -40,14 +40,15 @@ export const globals: IGlobals = {
     maximumCharacters: 100,
     promotionsRateMs: 1500,
 
-    contractRateMs: 20 * 1000,
+    contractRateMs: 10 * 1000,
     crisisRateMs: 10 * 1000,
     defaultWeaponRange: 1.25,
     playerRangeModifier: 0.75,
     playerStartingHP: 20,
     hutSpawnRateMs: 15 * 1000,
     denSpawnRateMs: 20 * 1000,
-
+    playerHPHealRateMs: 1 * 1000,
+    guardSalaryMultiplier: 2,
     playerHPHealRateMs: 1 * 4000,
   },
 };
@@ -137,6 +138,10 @@ interface IGlobals {
      * HP Heal rate of PC. Number of seconds before player heals 1 HP.
      */
     playerHPHealRateMs: number;
+    /**
+     * Guard salary multiplier
+     */
+    guardSalaryMultiplier: number;
 
     contractRateMs: number;
     crisisRateMs: number;

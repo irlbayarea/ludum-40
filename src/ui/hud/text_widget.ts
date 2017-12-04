@@ -15,7 +15,7 @@ export default class TextWidget {
     this.text = this.game.add.text(this.x, this.y, '', {
       font: 'bold ' + fontSize + 'px ' + font,
       fill: '#FFFFFF',
-      boundsAlignH: 'center',
+      boundsAlignH: 'left',
       boundsAlignV: 'middle',
     });
     this.text.setTextBounds(this.x / 4, this.y / 4, this.w, this.h);

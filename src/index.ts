@@ -84,16 +84,36 @@ export class Game extends phaser.Game {
     }
     this.isOfferingContract = true;
     this.hud = this.hud.setQuestion(
-      'Do you want to hire ' + character.name + '?',
+      'Do you want to hire ' +
+        character.name +
+        ' for $' +
+        Math.round(character.getSalary() * 100) / 100 +
+        '?' +
+        '\n' +
+        'Str=' +
+        character.strength +
+        ', Speed=' +
+        Math.round(character.speed / 100) +
+        ', Int=' +
+        character.intelligence,
       ['yes', 'no'],
       (option: number) => {
         this.isOfferingContract = false;
         this.hud = this.hud.clearQuestion();
         if (option === 1) {
-          this.hud = this.hud.setMessage('You hired ' + character.name + '!');
-          onPurchase(character);
+          if (
+            this.worldState.playerCharacter.getMoney() >= character.getSalary()
+          ) {
+            this.worldState.playerCharacter.changeMoney(-character.getSalary());
+            this.hud = this.hud.setMessage('You hired ' + character.name + '!');
+            onPurchase(character);
+          } else {
+            this.hud = this.hud.setMessage(
+              "You can't afford " + character.name + '...'
+            );
+          }
         } else if (option === 2) {
-          this.hud = this.hud.setMessage('Oh. Okay.');
+          this.hud = this.hud.setMessage('Oh.. Okay.');
         }
       }
     );
