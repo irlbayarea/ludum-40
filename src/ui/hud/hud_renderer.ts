@@ -1,4 +1,4 @@
-import * as common from '../../common';
+// import * as common from '../../common';
 import HudModel from './hud_model';
 import MessagePanel from '../hud/message';
 import UserQuestion from '../../user_question';
