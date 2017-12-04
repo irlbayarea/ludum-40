@@ -65,10 +65,10 @@ export class Game extends phaser.Game {
     );
     sprite.scale = new Phaser.Point(4.0, 4.0);
     game.physics.p2.enable(sprite);
-    sprite.body.fixedRotation = true;
-    sprite.body.clearShapes();
+    (sprite.body as Phaser.Physics.P2.Body).fixedRotation = true;
+    (sprite.body as Phaser.Physics.P2.Body).clearShapes();
     (sprite.body as Phaser.Physics.P2.Body).addCircle(10, 0, 0, 0);
-    sprite.maxHealth = sprite.health;
+    sprite.maxHealth = sprite.health = config.character.strength;
     config.character.setSprite(sprite);
     game.worldState.addCharacter(config.character);
     return sprite;
