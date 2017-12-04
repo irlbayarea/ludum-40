@@ -118,6 +118,13 @@ export default class WorldState {
   public incrementDenDesdtroyed() {
     this.denDesdtroyed += 1;
   }
+  public resetKillCounts() {
+    this.playerKills = 0;
+    this.goblinKills = 0;
+    this.guardKills = 0;
+    this.hutDestroyed = 0;
+    this.denDesdtroyed = 0;
+  }
   /**
    * Sets the map parameter based on the provided map.
    *
