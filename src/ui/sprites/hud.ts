@@ -15,7 +15,8 @@ export class SpriteHUD {
 
   constructor(
     private readonly sprite: Phaser.Sprite,
-    private readonly name: string
+    private readonly name: string,
+    private readonly lefthanded: boolean
   ) {}
 
   public sprayBlood(): void {
@@ -29,7 +30,8 @@ export class SpriteHUD {
 
   public updateHealthBar(): void {
     this.healthBar.tint = this.healthColorRange(this.healthPercent());
-    this.healthBar.scale.set(this.healthPercent(), 1);
+    this.healthBar.scale.set(this.healthPercent() , 1);
+    // this.healthBar.scale.x *= (this.lefthanded ? -1 : 1);
     common.debug.log(this.name + ' : ' + 100 * this.healthPercent() + ' % ');
   }
 
@@ -41,15 +43,17 @@ export class SpriteHUD {
         hbH
       );
       bmd.ctx.beginPath();
-      bmd.ctx.rect(0, 0, this.sprite.width, hbH);
+      bmd.ctx.rect(0, 0, this.sprite.width * (this.lefthanded ? -1 : 1), hbH);
       bmd.ctx.fillStyle = '#FFF000';
       bmd.ctx.fill();
 
       this.healthBar = this.sprite.game.add.sprite(0, 9, bmd);
       this.healthBar.anchor.set(0.5, 0);
-      this.healthBar.tint = this.healthColorRange(1);
-      this.healthBar.scale.set(1, 1);
+      this.healthBar.tint = this.healthColorRange(this.healthPercent());
+      this.healthBar.scale.set(this.healthPercent(), 1);
+      // this.healthBar.scale.x *= (this.lefthanded ? -1 : 1);
       this.sprite.addChild(this.healthBar);
+
     } else {
       throw new Error('Sprite already has a health bar!');
     }
@@ -70,6 +74,7 @@ export class SpriteHUD {
       this.nameTag.setTextBounds(0, 0, this.sprite.width, this.sprite.height);
       this.nameTag.anchor.set(0.5, 0);
       this.nameTag.scale.set(0.25);
+      this.nameTag.scale.x *= (this.lefthanded ? -1 : 1);
       this.sprite.addChild(this.nameTag);
     } else {
       throw new Error('Sprite already has name tag!');
