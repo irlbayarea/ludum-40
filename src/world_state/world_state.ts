@@ -1,4 +1,3 @@
-import * as Phaser from 'phaser-ce';
 import * as EasyStar from 'easystarjs';
 import * as common from '../common';
 
@@ -9,6 +8,8 @@ import { game } from '../index';
 import { Weapon } from '../ui/sprites/weapon';
 import { remove } from 'lodash';
 import { GameMechanics } from './mechanics';
+import Goal from '../character/goal';
+import { Point } from 'phaser-ce';
 
 /**
  */
@@ -31,14 +32,11 @@ export default class WorldState {
    * Moves a character on a given tick toward the target point. Use functions
    * like `directCharacterToPoint` to control character movement.
    */
-  private static moveCharacterTick(
-    char: Character,
-    towards: Phaser.Point
-  ): void {
+  private static moveCharacterTick(char: Character, towards: Point): void {
     const body = char.getSprite().body;
-    const p: Phaser.Point = new Phaser.Point(body.x, body.y);
-    const p2: Phaser.Point = new Phaser.Point(towards.x, towards.y);
-    const dir: Phaser.Point = p2
+    const p: Point = new Point(body.x, body.y);
+    const p2: Point = new Point(towards.x, towards.y);
+    const dir: Point = p2
       .subtract(p.x, p.y)
       .normalize()
       .multiply(char.speed, char.speed);
@@ -120,6 +118,13 @@ export default class WorldState {
   public incrementDenDesdtroyed() {
     this.denDesdtroyed += 1;
   }
+  public resetKillCounts() {
+    this.playerKills = 0;
+    this.goblinKills = 0;
+    this.guardKills = 0;
+    this.hutDestroyed = 0;
+    this.denDesdtroyed = 0;
+  }
   /**
    * Sets the map parameter based on the provided map.
    *
@@ -174,26 +179,10 @@ export default class WorldState {
     }
   }
 
-  /**
-   * Tells the character to get to the given point in world coordinates (1
-   * tile = 1.00 distance). Returns true if able to do that. The character
-   * and destination must not be on a blocking point.
-   */
-  public directCharacterToPoint(char: Character, point: Phaser.Point): boolean {
-    if (this.grid.collisionWorldPoint(char.getWorldPosition())) {
-      return false;
-    }
-    if (this.grid.collisionWorldPoint(point)) {
-      return false;
-    }
-    char.path = this.pathfind(char.getWorldPosition(), point);
-    return char.path !== null;
-  }
-
-  public nearby(point: Phaser.Point, distance: number): Phaser.Point {
-    return new Phaser.Point(
-      this.clamp((Math.random() - 0.5) * 2 * distance + point.x),
-      this.clamp((Math.random() - 0.5) * 2 * distance + point.y)
+  public randomNearbyPoint(point: Point, distance: number): Point {
+    return new Point(
+      this.clampx((Math.random() - 0.5) * 2 * distance + point.x),
+      this.clampx((Math.random() - 0.5) * 2 * distance + point.y)
     );
   }
 
@@ -203,6 +192,7 @@ export default class WorldState {
   }
 
   public render(): void {
+    this.renderCharacters();
     if (common.experiment('render-debug')) {
       this.renderDebug();
     }
@@ -218,6 +208,12 @@ export default class WorldState {
     return who.isGoblin !== to.isGoblin;
   }
 
+  private renderCharacters(): void {
+    this.characters.forEach(c => {
+      c.hud.sprayBlood();
+    });
+  }
+
   private renderDebug() {
     // Render collision debug.
     this.characters
@@ -229,7 +225,7 @@ export default class WorldState {
     // Render pathing debug.
     for (let x: number = 0; x < this.grid.w; x++) {
       for (let y: number = 0; y < this.grid.h; y++) {
-        const p: Phaser.Point = new Phaser.Point(x + 0.5, y + 0.5);
+        const p: Point = new Point(x + 0.5, y + 0.5);
         const color: string = this.grid.collisionWorldPoint(p)
           ? 'rgba(255,0,255,128)'
           : 'rgba(0,255,0,128)';
@@ -244,8 +240,8 @@ export default class WorldState {
    * of 1.00 every tile. Returns a Path or null if no path could be found. Make
    * sure to use center positions of entities.
    */
-  private pathfind(from: Phaser.Point, to: Phaser.Point): Path | null {
-    const points: Array<{ x: number; y: number }> = [];
+  private pathfind(from: Point, to: Point): Path | null {
+    const points: Point[] = [];
     this.astar.setIterationsPerCalculation(10000000);
     this.astar.findPath(
       Math.floor(from.x),
@@ -255,7 +251,7 @@ export default class WorldState {
       path => {
         if (path !== null) {
           for (let i = 0; i < path.length; i++) {
-            points[i] = { x: path[i].x, y: path[i].y };
+            points[i] = new Point(path[i].x, path[i].y);
           }
         }
       }
@@ -267,65 +263,107 @@ export default class WorldState {
     return points.length >= 1 ? new Path(points) : null;
   }
 
+  /**
+   * Clamps an x world coordinate to the world.
+   */
+  private clampx(n: number) {
+    return Math.max(0, Math.min(this.grid.h - 0.001, n));
+  }
+
   private updateCharacters(): void {
-    this.characters.forEach(char => {
-      char.getSprite().body.setZeroVelocity();
-    });
-    this.characters.forEach(char => {
-      if (char.path !== null) {
-        const body = char.getSprite().body;
-        const pos: Phaser.Point = new Phaser.Point(body.x / 64, body.y / 64);
-        const path = char.path;
-        let goalPoint: { x: number; y: number } | null = path!.currentGoal();
-        if (goalPoint === null) {
-          this.stopCharacter(char);
-          return;
-        }
-        if (path!.isNearGoal(pos)) {
-          char.path!.advance();
-          goalPoint = char.path!.currentGoal();
-          if (goalPoint === null) {
-            this.stopCharacter(char);
-            return;
-          }
-        }
-        WorldState.moveCharacterTick(
-          char,
-          new Phaser.Point(goalPoint.x * 64, goalPoint.y * 64)
-        );
-      } else {
-        this.stopCharacter(char);
-      }
-      char.hud.sprayBlood();
-    });
+    this.updateCharacterBehaviors();
+    this.updateCharacterPhysics();
     this.updatePlayerCharacter();
   }
 
-  private stopCharacter(character: Character) {
-    if (character === this.playerCharacter) {
-      return;
-    }
-    character.path = null;
-    // Try to find a new wander path.
-    if (character.isWandering) {
-      let p = null;
-      let tries = 0;
-      do {
-        p = this.nearby(character.getWorldPosition(), 10);
-        tries++;
-      } while (this.grid.collisionWorldPoint(p) && tries < 10);
-      if (!this.grid.collisionWorldPoint(p)) {
-        try {
-          this.directCharacterToPoint(character, p);
-        } catch (e) {
-          common.debug.log('Error', e);
-        }
+  private updateCharacterPhysics(): void {
+    this.characters.forEach(char => {
+      char.getSprite().body.setZeroVelocity();
+    });
+
+    // Pathfinding update.
+    this.characters.filter(c => c.path !== null).forEach(c => {
+      const path: Path = c.path!;
+      const goalPos: Point | null = path.currentGoal();
+      const curPos: Point = c.getWorldPosition();
+
+      if (goalPos === null) {
+        c.path = null;
+      } else if (Path.isNearGoal(curPos, goalPos)) {
+        path.advance();
+      } else {
+        WorldState.moveCharacterTick(
+          c,
+          new Point(goalPos.x * 64, goalPos.y * 64)
+        );
       }
-    }
+    });
   }
 
-  private clamp(n: number) {
-    return Math.max(0, Math.min(this.grid.h - 0.001, n));
+  private updateCharacterBehaviors(): void {
+    this.characters.forEach(c => {
+      const goal: Goal = c.goal;
+      switch (c.goal.type) {
+        // Idle Goal.
+        case Goal.TYPE_IDLE:
+          {
+            goal.state = goal.state; // Leave me alone, linter!
+          }
+          break;
+
+        // Move To Goal.
+        case Goal.TYPE_MOVE_TO:
+          {
+            if (goal.state === Goal.STATE_START) {
+              this.directCharacterToPoint(c, goal.targetPoint!);
+              goal.state = Goal.STATE_ACTIVE;
+            }
+            if (goal.state === Goal.STATE_ACTIVE) {
+              if (c.path === null) {
+                goal.state = Goal.STATE_DONE;
+              }
+            } else if (goal.state === Goal.STATE_DONE) {
+              c.goal = Goal.idle();
+            }
+          }
+          break;
+
+        // Attack Character Goal.
+        case Goal.TYPE_ATTACK_CHAR:
+          {
+            goal.state = goal.state; // Leave me alone, linter!
+          }
+          break;
+
+        // Wander Goal.
+        case Goal.TYPE_WANDER:
+          {
+            if (goal.state === Goal.STATE_START) {
+              // Cancel whatever you were doing and start wandering.
+              c.path = null;
+              goal.state = Goal.STATE_ACTIVE;
+            }
+            if (goal.state === Goal.STATE_ACTIVE) {
+              // When path is null, find a new path.
+              if (c.path === null) {
+                let p: Point | null = null;
+                let remainingTries: number = 3;
+                do {
+                  p = this.randomNearbyPoint(c.getWorldPosition(), 10);
+                  remainingTries--;
+                  if (this.grid.collisionWorldPoint(p)) {
+                    p = null;
+                  }
+                } while (p == null && remainingTries > 0);
+                if (p !== null) {
+                  this.directCharacterToPoint(c, p);
+                }
+              }
+            }
+          }
+          break;
+      }
+    });
   }
 
   private updatePlayerCharacter(): void {
@@ -333,6 +371,8 @@ export default class WorldState {
       remove(this.characters, _ => true);
       game.state.start('Over');
     }
+
+    // Player Controls.
     if (game.controller.isLeft && !game.controller.isRight) {
       game.worldState.playerCharacter.getSprite().body.moveLeft(400);
     } else if (game.controller.isRight) {
@@ -351,5 +391,25 @@ export default class WorldState {
         this.releasedSwing = true;
       }
     }
+  }
+
+  /**
+   * Tells the character to get to the given point in world coordinates (1
+   * tile = 1.00 distance). Returns true if able to do that. The character
+   * and destination must not be on a blocking point.
+   */
+  private directCharacterToPoint(char: Character, point: Point): boolean {
+    if (this.grid.collisionWorldPoint(char.getWorldPosition())) {
+      return false;
+    }
+    if (this.grid.collisionWorldPoint(point)) {
+      return false;
+    }
+    try {
+      char.path = this.pathfind(char.getWorldPosition(), point);
+    } catch (e) {
+      common.debug.log('directCharacterToPoint: pathfinding exception.');
+    }
+    return char.path !== null;
   }
 }

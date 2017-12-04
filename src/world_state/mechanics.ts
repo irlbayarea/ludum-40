@@ -1,4 +1,4 @@
-import * as Phaser from 'phaser-ce';
+import { Point } from 'phaser-ce';
 import { filter, sample, remove, random } from 'lodash';
 import { ITicker } from '../ticker';
 import PeriodicGenerator from '../periodic_generator';
@@ -16,6 +16,7 @@ import {
 } from '../ui/sprites/armory';
 import { Weapon } from '../ui/sprites/weapon';
 import { SpawnConfig } from '../character/spawn_config';
+import Goal from '../character/goal';
 import { randomName } from '../character/names';
 
 /**
@@ -482,21 +483,47 @@ export class GameMechanics {
    */
   private hitWithWeapon(attacker: Character): void {
     const range = this.getWeaponRange(attacker);
-    remove(game.worldState.characters, defender => {
-      if (defender === attacker) {
+    const deadCharacters: Character[] = remove(
+      game.worldState.characters,
+      defender => {
+        if (defender === attacker) {
+          return false;
+        }
+        if (
+          this.withinRange(range, attacker.getSprite(), defender.getSprite())
+        ) {
+          return this.dealDamage(defender, attacker);
+        }
         return false;
       }
-      if (this.withinRange(range, attacker.getSprite(), defender.getSprite())) {
-        return this.dealDamage(defender, attacker);
+    );
+    common.debug.log('Dead Characters');
+    common.debug.log(deadCharacters);
+    for (const char of deadCharacters) {
+      if (char.isGoblin) {
+        game.worldState.incrementGoblinKills();
+      } else {
+        game.worldState.incrementGuardKills();
       }
-      return false;
-    });
-    remove(attacker.isGoblin ? this.hutActive : this.denActive, defender => {
-      if (this.withinRange(range, attacker.getSprite(), defender.sprite)) {
-        return this.dealDamage(defender, attacker);
+    }
+    common.debug.log('Dead Characters');
+    common.debug.log(deadCharacters);
+    const deadBuildings: IBuilding[] = remove(
+      attacker.isGoblin ? this.hutActive : this.denActive,
+      defender => {
+        if (this.withinRange(range, attacker.getSprite(), defender.sprite)) {
+          return this.dealDamage(defender, attacker);
+        }
+        return false;
       }
-      return false;
-    });
+    );
+    for (const b of deadBuildings) {
+      if (b instanceof Hut) {
+        game.worldState.incrementHutDestroyed();
+      } else if (b instanceof Den) {
+        game.worldState.incrementDenDesdtroyed();
+      }
+    }
   }
 
   /**
@@ -544,10 +571,7 @@ export class GameMechanics {
    * @param target
    */
   private orderMove(source: Character, target: { x: number; y: number }): void {
-    game.worldState.directCharacterToPoint(
-      source,
-      new Phaser.Point(target.x, target.y)
-    );
+    source.goal = Goal.moveTo(new Point(target.x, target.y));
   }
 
   /**
@@ -597,8 +621,12 @@ export class GameMechanics {
     source: Phaser.Sprite,
     target: Phaser.Sprite | { sprite: Phaser.Sprite }
   ): boolean {
-    if (!(target instanceof Phaser.Sprite)) {
-      return this.withinRange(range, source, target.sprite);
+    if ('sprite' in target) {
+      return this.withinRange(
+        range,
+        source,
+        (target as { sprite: Phaser.Sprite }).sprite
+      );
     }
     // TODO: Implement this better.
     return game.physics.arcade.distanceBetween(source, target) <= range * 48;
@@ -666,8 +694,15 @@ export class GameMechanics {
   }
 }
 
-class Hut {
+interface IBuilding {
+  getBuildingType(): string;
+}
+
+class Hut implements IBuilding {
   constructor(public readonly sprite: Phaser.Sprite) {}
+  public getBuildingType(): string {
+    return 'Hut';
+  }
 }
 
 class HutGenerator implements ITicker {
@@ -689,8 +724,11 @@ class HutGenerator implements ITicker {
   }
 }
 
-class Den {
+class Den implements IBuilding {
   constructor(public readonly sprite: Phaser.Sprite) {}
+  public getBuildingType(): string {
+    return 'Den';
+  }
 }
 
 class DenGenerator implements ITicker {
