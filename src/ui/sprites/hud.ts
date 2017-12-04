@@ -1,4 +1,3 @@
-import * as common from '../../common';
 import * as Phaser from 'phaser-ce';
 import { game } from '../../index';
 
@@ -33,7 +32,6 @@ export class SpriteHUD {
   public updateHealthBar(): void {
     this.healthBar.tint = this.healthColorRange(this.healthPercent());
     this.healthBar.scale.set(this.healthPercent(), 1);
-    // common.debug.log(this.name + ' : ' + 100 * this.healthPercent() + ' % ');
   }
 
   public addHealthBar(): void {
