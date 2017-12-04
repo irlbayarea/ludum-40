@@ -4,8 +4,6 @@
  */
 import { SpriteHUD } from '../ui/sprites/hud';
 import * as Phaser from 'phaser-ce';
-import Crisis from '../crisis/crisis';
-import CrisisOption from '../crisis/option';
 import { randomName } from './names';
 import Path from '../world_state/path';
 import { Weapon } from '../ui/sprites/weapon';
@@ -238,50 +236,6 @@ export default class Character {
     );
   }
 
-  /**
-   * handleCrisis
-   *
-   * If the crisis is being handled by a guard, perform a weighted random choice
-   *
-   */
-  public handleCrisis(crisis: Crisis): boolean {
-    if (this.isGuard) {
-      if (!crisis.claim(this)) {
-        return false;
-      }
-
-      const crisisProbability: number[] = [];
-
-      for (const opt of crisis.getOptions()) {
-        crisisProbability.push(scoreOption(this, opt));
-      }
-
-      let normalize: number = 0;
-      for (const prob of crisisProbability) {
-        normalize += prob;
-      }
-
-      const choiceVal: number = Math.random() * normalize;
-      let choiceSum: number = 0;
-      let i: number = 0;
-      for (const prob of crisisProbability) {
-        choiceSum += prob;
-        if (choiceVal <= choiceSum) {
-          crisis.resolve(crisis.getOptions()[i]);
-          return true;
-        } else {
-          i++;
-        }
-      }
-
-      // If we get to the end of the list without resolving the crisis, just pick the last element
-      crisis.resolve(crisis.getOptions()[crisis.getOptions().length - 1]);
-      return true;
-    } else {
-      return false;
-    }
-  }
-
   private setSalary(): void {
     this.salary = Math.sqrt(
       this.strength ** 2 +
@@ -295,25 +249,6 @@ export default class Character {
 // Average function of two numbers
 function average(min: number, max: number) {
   return 0.5 * (max - min) + min;
-}
-
-/**
- * If this crisis is being handled by a Guard, use the following formula to determine the
- * (relative) probability of the Guard choosing any particular option:
- * abs( (guard STR  * option STR  val + guard RANDO) +
- *      (guard CHA  * option CHA  val + guard RANDO) +
- *      (guard INT  * option INT  val + guard RANDO) +
- *      sqrt((abs(guard GOOD + option GOOD val) + guard RANDO)^2) )
- * The larger this value, the more aligned the choice is with the guard's "personality".
- */
-function scoreOption(c: Character, o: CrisisOption): number {
-  return Math.abs(
-    c.strength * o.strength +
-      c.randomness +
-      (c.intelligence * o.intelligence + c.randomness) +
-      (c.charisma * o.charisma + c.randomness) +
-      Math.sqrt((Math.abs(c.goodness + o.goodness) + c.randomness) ** 2)
-  );
 }
 
 export enum CharacterType {
