@@ -30,14 +30,14 @@ export const globals: IGlobals = {
   },
   experiments: userExperiments,
   gameplay: {
-    goblinSpawnRateMs: 15 * 100,
+    goblinSpawnRateMs: 2000,
     goblinThinkRateMs: 1000,
     goblinVisionDistance: 10,
 
-    denAndHutHP: 300,
+    denAndHutHP: 20,
 
     npcAttackRateMs: 300,
-    maximumCharacters: 200,
+    maximumCharacters: 100,
 
     contractRateMs: 20 * 1000,
     crisisRateMs: 10 * 1000,

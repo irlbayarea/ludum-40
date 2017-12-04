@@ -11,9 +11,11 @@ import {
   SkinColor,
   ShirtColor,
   PantsColor,
+  HairColor,
 } from '../ui/sprites/armory';
 import { Weapon } from '../ui/sprites/weapon';
 import { SpawnConfig } from '../character/spawn_config';
+import { randomName } from '../character/names';
 
 /**
  * Effectively "runs" the game, i.e. instead of just randomly spawning units.
@@ -56,6 +58,7 @@ export class GameMechanics {
         common.globals.gameplay.hutSpawnRateMs,
         new HutFactory(game)
       );
+
       game.generators.push(this.hutGenerator);
     }
 
@@ -72,6 +75,11 @@ export class GameMechanics {
       );
       game.generators.push(this.denGenerator);
     }
+
+    // Force starting buildings.
+    this.hutGenerator.periodicGenerator.force();
+    this.hutGenerator.periodicGenerator.force();
+    this.denGenerator.periodicGenerator.force();
 
     // Setup game looping mechanics:
     // Have the goblin AI "think" every 1s.
@@ -92,6 +100,13 @@ export class GameMechanics {
     game.time.events.loop(
       common.globals.gameplay.goblinSpawnRateMs,
       this.spawnGoblins,
+      this
+    );
+
+    // Offer NPC contracts.
+    game.time.events.loop(
+      common.globals.gameplay.contractRateMs,
+      this.offerContracts,
       this
     );
   }
@@ -184,6 +199,82 @@ export class GameMechanics {
 
   private worldPositionOfSprite(sprite: Phaser.Sprite): Phaser.Point {
     return new Phaser.Point(sprite!.x / 64, sprite!.y / 64);
+  }
+
+  private offerContracts(): void {
+    if (!game.isOfferingContract && this.hutActive.length > 0) {
+      game.offerContract(this.createRandomGuard(), character => {
+        const hairColor = sample([
+          HairColor.Black,
+          HairColor.Blonde,
+          HairColor.Brown,
+          HairColor.Orange,
+          HairColor.White,
+        ]) as HairColor;
+        const hairStyle = random(0, 12);
+        const beardStyle = random(0, 6);
+        const texture = this.armory.peonTexture({
+          skin: sample([
+            SkinColor.Brown,
+            SkinColor.Tan,
+            SkinColor.White,
+          ]) as SkinColor,
+          shirt: {
+            color: sample([
+              ShirtColor.Black,
+              ShirtColor.Orange,
+              ShirtColor.Purple,
+              ShirtColor.Tan,
+              ShirtColor.Teal,
+            ]) as ShirtColor,
+            style: random(0, 15),
+          },
+          pants: sample([
+            PantsColor.Black,
+            PantsColor.Brown,
+            PantsColor.Orange,
+            PantsColor.Purple,
+            PantsColor.Teal,
+          ]),
+          hair:
+            hairStyle < 12
+              ? {
+                  color: hairColor,
+                  style: random(0, 11),
+                }
+              : undefined,
+          beard:
+            beardStyle < 4
+              ? {
+                  color: hairColor,
+                  style: beardStyle,
+                }
+              : undefined,
+        });
+        this.spawnRandomGuard(character, texture);
+      });
+    }
+  }
+
+  private spawnRandomGuard(
+    character: Character,
+    texture: Phaser.RenderTexture
+  ): void {
+    const location = sample(this.hutActive) as Hut;
+    const { x, y } = location.sprite;
+    character.arm(Weapon.scimitar());
+    game.spawn(
+      new SpawnConfig(
+        character,
+        texture,
+        Math.floor(x / 64),
+        Math.floor(y / 64)
+      )
+    );
+  }
+
+  private createRandomGuard(): Character {
+    return new Character(randomName(), CharacterType.Guard);
   }
 
   private spawnGoblins(): void {
@@ -506,7 +597,7 @@ class Hut {
 }
 
 class HutGenerator implements ITicker {
-  private periodicGenerator: PeriodicGenerator<Hut>;
+  public periodicGenerator: PeriodicGenerator<Hut>;
 
   public constructor(
     private readonly spawn: (den: Den) => any,
@@ -529,7 +620,7 @@ class Den {
 }
 
 class DenGenerator implements ITicker {
-  private periodicGenerator: PeriodicGenerator<Den>;
+  public periodicGenerator: PeriodicGenerator<Den>;
 
   public constructor(
     private readonly spawn: (den: Den) => any,

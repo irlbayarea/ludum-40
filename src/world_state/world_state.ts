@@ -283,9 +283,7 @@ export default class WorldState {
         try {
           this.directCharacterToPoint(character, p);
         } catch (e) {
-          common.debug.log(
-            'worldState.stopCharacter: exception when using directCharacterToPoint.'
-          );
+          common.debug.log('Error', e);
         }
       }
     }
