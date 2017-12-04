@@ -1,4 +1,4 @@
-import * as Phaser from 'phaser-ce';
+import { Point } from 'phaser-ce';
 import { filter, sample, remove, random } from 'lodash';
 import { ITicker } from '../ticker';
 import PeriodicGenerator from '../periodic_generator';
@@ -16,6 +16,7 @@ import {
 } from '../ui/sprites/armory';
 import { Weapon } from '../ui/sprites/weapon';
 import { SpawnConfig } from '../character/spawn_config';
+import Goal from '../character/goal';
 import { randomName } from '../character/names';
 
 /**
@@ -544,10 +545,7 @@ export class GameMechanics {
    * @param target
    */
   private orderMove(source: Character, target: { x: number; y: number }): void {
-    game.worldState.directCharacterToPoint(
-      source,
-      new Phaser.Point(target.x, target.y)
-    );
+    source.goal = Goal.moveTo(new Point(target.x, target.y));
   }
 
   /**
@@ -597,8 +595,12 @@ export class GameMechanics {
     source: Phaser.Sprite,
     target: Phaser.Sprite | { sprite: Phaser.Sprite }
   ): boolean {
-    if (!(target instanceof Phaser.Sprite)) {
-      return this.withinRange(range, source, target.sprite);
+    if ('sprite' in target) {
+      return this.withinRange(
+        range,
+        source,
+        (target as { sprite: Phaser.Sprite }).sprite
+      );
     }
     // TODO: Implement this better.
     return game.physics.arcade.distanceBetween(source, target) <= range * 48;
