@@ -87,7 +87,7 @@ export class Game extends phaser.Game {
       'Do you want to hire ' +
         character.name +
         ' for $' +
-        Math.round(character.getSalary() * 100) / 100 +
+        parseFloat(character.getSalary().toFixed(2)) +
         '?' +
         '\n' +
         'Str=' +

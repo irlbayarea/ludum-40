@@ -81,7 +81,10 @@ export default class HudRenderer {
   }
 
   private renderMoney(tw: TextWidget) {
-    tw.write('Money :$' + this.game.worldState.playerCharacter.getMoney());
+    tw.write(
+      'Money :$' +
+        parseFloat(this.game.worldState.playerCharacter.getMoney().toFixed(2))
+    );
   }
 
   private renderLivingGuards(tw: TextWidget) {
