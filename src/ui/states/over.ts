@@ -11,7 +11,7 @@ export default class GameOver extends Phaser.State {
     const x = 0;
     const y = this.game.height / 2;
     const text = this.game.add.text(x, y, '', {
-      font: 'bold ' + '40' + 'px ' + 'Arial',
+      font: 'bold ' + '30' + 'px ' + 'Arial',
       fill: '#FFFFFF',
       boundsAlignH: 'center',
       boundsAlignV: 'middle',
