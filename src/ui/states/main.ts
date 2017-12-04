@@ -11,7 +11,6 @@ import { game } from '../../index';
 import Character, { CharacterType } from '../../character/character';
 import { generateMap, convertToTiles } from '../../map/generator';
 import HudRenderer from '../hud/hud_renderer';
-import { ITicker } from '../../ticker';
 
 import * as demo from '../demo';
 import { SpawnConfig } from '../../character/spawn_config';
@@ -49,14 +48,6 @@ export default class Main extends Phaser.State {
   public update(): void {
     game.world.bringToTop(this.alwaysOnTop);
     game.worldState.update();
-
-    const elapsed: number = game.time.elapsed;
-    game.gameEvents.tick(elapsed);
-
-    if (common.experiment('generators')) {
-      game.generators.forEach((generator: ITicker) => generator.tick(elapsed));
-    }
-
     if (game.hud.question) {
       if (game.controller.is1JustDown) {
         game.hud.question.callback(1);

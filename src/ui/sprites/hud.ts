@@ -1,7 +1,6 @@
 // import * as common from '../../common';
 import * as Phaser from 'phaser-ce';
 import { game } from '../../index';
-import * as Time from '../../logic/_time/common';
 
 export class SpriteHUD {
   private static readonly charScale: number = 4;
@@ -22,7 +21,7 @@ export class SpriteHUD {
     if (this.healthPercent() < SpriteHUD.bloodSprayThreshold) {
       if (
         Math.abs(
-          (Time.default.wallTime() % SpriteHUD.bloodSprayPeriodBase) *
+          ((game.time.now / 1000) % SpriteHUD.bloodSprayPeriodBase) *
             (this.healthPercent() / SpriteHUD.bloodSprayThreshold)
         ) < SpriteHUD.bloodSprayPulseWidth
       ) {

@@ -1,7 +1,5 @@
 import { Point } from 'phaser-ce';
 import { filter, sample, remove, random } from 'lodash';
-import { ITicker } from '../ticker';
-import PeriodicGenerator from '../periodic_generator';
 import * as common from '../common';
 import HutFactory from '../ui/sprites/hut';
 import { game } from '../index';
@@ -23,7 +21,6 @@ import { randomName } from '../character/names';
  * Effectively "runs" the game, i.e. instead of just randomly spawning units.
  */
 export class GameMechanics {
-  private readonly denGenerator: DenGenerator;
   private readonly denSpawnActive: Map<
     Phaser.Tile,
     Hut | undefined
@@ -31,7 +28,6 @@ export class GameMechanics {
   private readonly denSpawnLocations: Phaser.Tile[];
   private readonly denActive: Den[] = [];
 
-  private readonly hutGenerator: HutGenerator;
   private readonly hutSpawnActive: Map<
     Phaser.Tile,
     Hut | undefined
@@ -55,13 +51,14 @@ export class GameMechanics {
       for (const result of this.hutSpawnLocations) {
         this.hutSpawnActive.set(result, undefined);
       }
-      this.hutGenerator = new HutGenerator(
-        this.spawnHutIntoWorld.bind(this),
+      game.time.events.loop(
         common.globals.gameplay.hutSpawnRateMs,
-        new HutFactory(game)
+        () => {
+          this.spawnHutIntoWorld(new Hut(new HutFactory(game).hut()));
+        },
       );
-
-      game.generators.push(this.hutGenerator);
+      this.spawnHutIntoWorld(new Hut(new HutFactory(game).hut()));
+      this.spawnHutIntoWorld(new Hut(new HutFactory(game).hut()));
     }
 
     const denLayer: Phaser.TilemapLayer = map.layers[map.getLayer('spawns')];
@@ -70,18 +67,14 @@ export class GameMechanics {
       for (const result of this.denSpawnLocations) {
         this.denSpawnActive.set(result, undefined);
       }
-      this.denGenerator = new DenGenerator(
-        this.spawnDenIntoWorld.bind(this),
-        common.globals.gameplay.denSpawnRateMs,
-        new HutFactory(game)
+      game.time.events.loop(
+        common.globals.gameplay.hutSpawnRateMs,
+        () => {
+          this.spawnDenIntoWorld(new Den(new HutFactory(game).den()));
+        },
       );
-      game.generators.push(this.denGenerator);
+      this.spawnDenIntoWorld(new Den(new HutFactory(game).den()));
     }
-
-    // Force starting buildings.
-    this.hutGenerator.periodicGenerator.force();
-    this.hutGenerator.periodicGenerator.force();
-    this.denGenerator.periodicGenerator.force();
 
     // Setup game looping mechanics:
     // Have the goblin AI "think" every 1s.
@@ -707,47 +700,9 @@ class Hut implements IBuilding {
   }
 }
 
-class HutGenerator implements ITicker {
-  public periodicGenerator: PeriodicGenerator<Hut>;
-
-  public constructor(
-    private readonly spawn: (den: Den) => any,
-    period: number,
-    factory: HutFactory
-  ) {
-    this.periodicGenerator = new PeriodicGenerator<Hut>(
-      period,
-      (_: number) => new Hut(factory.hut())
-    );
-  }
-
-  public tick(elapsed: number) {
-    this.periodicGenerator.tick(elapsed).forEach(this.spawn);
-  }
-}
-
 class Den implements IBuilding {
   constructor(public readonly sprite: Phaser.Sprite) {}
   public getBuildingType(): string {
     return 'Den';
-  }
-}
-
-class DenGenerator implements ITicker {
-  public periodicGenerator: PeriodicGenerator<Den>;
-
-  public constructor(
-    private readonly spawn: (den: Den) => any,
-    period: number,
-    factory: HutFactory
-  ) {
-    this.periodicGenerator = new PeriodicGenerator<Den>(
-      period,
-      (_: number) => new Den(factory.den())
-    );
-  }
-
-  public tick(elapsed: number) {
-    this.periodicGenerator.tick(elapsed).forEach(this.spawn);
   }
 }

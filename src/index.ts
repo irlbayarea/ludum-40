@@ -7,14 +7,11 @@ import 'phaser';
 
 import * as phaser from 'phaser-ce';
 import * as common from './common';
-import * as events from './events';
-import * as generators from './events/generators';
 import Boot from './ui/states/boot';
 import { generateMap } from './map/generator';
 import Main from './ui/states/main';
 import WorldState from './world_state/world_state';
 import HudModel from './ui/hud/hud_model';
-import { ITicker } from './ticker';
 import Controller from './input/controller';
 import { SpawnConfig } from './character/spawn_config';
 import { Armory } from './ui/sprites/armory';
@@ -24,8 +21,6 @@ import HudBuilder from './ui/hud/hud_builder';
 import GameOver from './ui/states/over';
 
 export class Game extends phaser.Game {
-  public generators: ITicker[];
-  public gameEvents: events.GameEvents;
   public hud: HudModel;
   public worldState: WorldState;
   public controller: Controller;
@@ -52,13 +47,6 @@ export class Game extends phaser.Game {
     this.armory = new Armory(this);
     this.blood = new BloodFactory(this);
     this.worldState = new WorldState(40, 40);
-
-    // Enable events.
-    this.gameEvents = new events.GameEvents();
-    events.registerGlobalHandlers(this);
-
-    // Enable event generators.
-    generators.initGenerators(this);
   }
 
   public getUserInput(
