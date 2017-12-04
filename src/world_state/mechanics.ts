@@ -405,7 +405,7 @@ export class GameMechanics {
     for (const goblin of filter(game.worldState.characters, c => c.isGoblin)) {
       // Do nothing, just attack.
       if (this.hasEnemyWithinAttackRange(goblin)) {
-        return;
+        continue;
       }
       const enemy = this.findClosestEnemy(goblin);
       if (
@@ -413,7 +413,7 @@ export class GameMechanics {
         enemy.distance <= common.globals.gameplay.goblinVisionDistance
       ) {
         this.orderMove(goblin, enemy.target.getWorldPosition());
-        return;
+        continue;
       }
       const enemyHut = this.findClosestBuilding(goblin);
       if (
@@ -424,7 +424,7 @@ export class GameMechanics {
           goblin,
           this.worldPositionOfSprite(enemyHut.target.sprite)
         );
-        return;
+        continue;
       }
       // common.debug.log('Could not find anything to do!', goblin);
     }
