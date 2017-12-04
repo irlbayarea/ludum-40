@@ -3,43 +3,66 @@ import * as Phaser from 'phaser-ce';
 import Character from '../../character/character';
 
 export class SpriteHUD {
+  private static readonly charScale: number = 4;
+
   private nameTag: Phaser.Text;
-  // private healthBar: Phaser.Sprite;
+  private healthBar: Phaser.Sprite;
 
   constructor(private readonly character: Character) {
+    this.addHealthBar();
     this.addNameTag();
-    // this.addHealthBar();
   }
 
-  // private addHealthBar(): void {
-  //   this.healthBar = this.character.getSprite().game.add.bitmapData(
-  //     this.character.getSprite().width,
-  //     this.character.getSprite().height*0.1
-  //   );
-  //
-  // }
-
   public updateHealthBar(): void {
+    this.healthBar.tint = this.healthColorRange(this.healthPercent());
+    this.healthBar.scale.set(this.healthPercent(), 1);
     common.debug.log(
-      this.character.getName() +
-        ' : ' +
-        100 *
-          (this.character.getSprite().health /
-            this.character.getSprite().maxHealth) +
-        ' % '
+      this.character.getName() + ' : ' + 100 * this.healthPercent() + ' % '
     );
+  }
+
+  private addHealthBar(): void {
+    const hbH = 1; // health bar height
+    const bmd = this.character
+      .getSprite()
+      .game.add.bitmapData(
+        this.character.getSprite().width / SpriteHUD.charScale,
+        hbH
+      );
+    bmd.ctx.beginPath();
+    bmd.ctx.rect(0, 0, this.character.getSprite().width, hbH);
+    bmd.ctx.fillStyle = '#FFF000';
+    bmd.ctx.fill();
+
+    this.healthBar = this.character.getSprite().game.add.sprite(0, 9, bmd);
+    this.healthBar.anchor.set(0.5, 0);
+    this.healthBar.tint = this.healthColorRange(1);
+    this.healthBar.scale.set(1, 1);
+    this.character.getSprite().addChild(this.healthBar);
+  }
+
+  private healthColorRange(percent: number): number {
+    if (percent >= 1.0) {
+      return 0x52be80; // Green
+    } else if (1.0 > percent && percent >= 0.5) {
+      return 0xd35400; // Orange
+    } else if (0.5 > percent && percent >= 0.25) {
+      return 0xc0392b; // Orange-Red
+    } else {
+      return 0xff0000;
+    }
   }
 
   private addNameTag(): void {
     this.nameTag = new Phaser.Text(
       this.character.getSprite().game,
       0,
-      0,
+      10.5,
       this.character.getName(),
       {
         boundsAlignH: 'left',
-        boundsAlignV: 'bottom',
-        align: 'left',
+        boundsAlignV: 'top',
+        align: 'center',
         fill: '#FFFFFF',
         wordWrap: true,
         wordWrapWidth: this.character.getSprite().width,
@@ -53,8 +76,14 @@ export class SpriteHUD {
       this.character.getSprite().width,
       this.character.getSprite().height
     );
-    this.nameTag.anchor.set(this.character.getSprite().width / 4 / 32, 0);
-    this.nameTag.scale.set(0.25, 0.25);
+    this.nameTag.anchor.set(0.5, 0);
+    this.nameTag.scale.set(0.25);
     this.character.getSprite().addChild(this.nameTag);
+  }
+
+  private healthPercent(): number {
+    return (
+      this.character.getSprite().health / this.character.getSprite().maxHealth
+    );
   }
 }
