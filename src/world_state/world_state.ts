@@ -121,6 +121,9 @@ export default class WorldState {
   public incrementDenDesdtroyed() {
     this.denDesdtroyed += 1;
   }
+  public getHutCount() {
+    return this.mechanics.getHutCount();
+  }
   public resetKillCounts() {
     this.playerKills = 0;
     this.goblinKills = 0;

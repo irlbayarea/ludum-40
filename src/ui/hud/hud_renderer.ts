@@ -4,31 +4,48 @@ import MessagePanel from '../hud/message';
 import UserQuestion from '../../user_question';
 import TextWidget from './text_widget';
 import { Game } from '../../index';
+import { globals } from '../../common';
 
 export default class HudRenderer {
+  private static readonly xPad = 10;
+  private static readonly yPad = 10;
+  private static readonly fontSize = 20;
+  private static readonly font = 'Courier New';
+  private static readonly colNum = 4;
+  private static readonly rowNum = 1;
+
+  private static readonly hudW = globals.dimensions.width;
+  private static readonly hudH = HudRenderer.rowNum *
+    (HudRenderer.fontSize + HudRenderer.yPad);
+
   private messages: MessagePanel;
-  private deadGoblinWidget: TextWidget;
-  private deadGuardWidget: TextWidget;
-  private deadDenWidget: TextWidget;
-  private deadHutWidget: TextWidget;
+  private HUD: TextWidget[] = [];
   private model: HudModel;
 
   constructor(private game: Game, messages: MessagePanel) {
     this.messages = messages;
-    this.deadGoblinWidget = new TextWidget(this.game, 10, 10);
-    this.deadGuardWidget = new TextWidget(this.game, 10, 30);
-    this.deadDenWidget = new TextWidget(this.game, 10, 50);
-    this.deadHutWidget = new TextWidget(this.game, 10, 70);
+    for (let c = 0; c < HudRenderer.colNum; c++) {
+      for (let r = 0; r < HudRenderer.rowNum; r++) {
+        this.HUD.push(
+          new TextWidget(
+            game,
+            c / HudRenderer.colNum * HudRenderer.hudW + HudRenderer.xPad,
+            r / HudRenderer.rowNum * HudRenderer.hudH + HudRenderer.yPad,
+            HudRenderer.hudW / HudRenderer.colNum + HudRenderer.xPad / 2,
+            HudRenderer.hudH / HudRenderer.rowNum + HudRenderer.yPad / 2,
+            HudRenderer.fontSize,
+            HudRenderer.font
+          )
+        );
+      }
+    }
   }
 
   public render(hud: HudModel) {
     if (this.messages.countdown()) {
       this.messages.clearText();
     }
-    this.renderDeadGoblins();
-    this.renderDeadGuards();
-    this.renderDeadDens();
-    this.renderDeadHuts();
+    this.renderHUD();
     if (this.model === hud) {
       return;
     }
@@ -56,31 +73,25 @@ export default class HudRenderer {
     }
   }
 
-  private renderDeadGuards() {
-    this.deadGuardWidget.write(
-      'Dead Guards : ' + this.game.worldState.getDeadGuards()
-    );
-    this.deadGuardWidget.bringToTop();
+  private renderHUD() {
+    this.renderDeadGoblins(this.HUD[0]);
+    this.renderLivingGuards(this.HUD[1]);
+    this.renderStandingHuts(this.HUD[2]);
   }
 
-  private renderDeadGoblins() {
-    this.deadGoblinWidget.write(
-      'Dead Goblins: ' + this.game.worldState.getDeadGoblins()
+  private renderLivingGuards(tw: TextWidget) {
+    tw.write(
+      'Guards : ' +
+        this.game.worldState.characters.filter(char => !char.isGoblin).length
     );
-    this.deadGoblinWidget.bringToTop();
   }
 
-  private renderDeadHuts() {
-    this.deadHutWidget.write(
-      'Dead Huts   : ' + this.game.worldState.getHutDestroyed()
-    );
-    this.deadHutWidget.bringToTop();
+  private renderStandingHuts(tw: TextWidget) {
+    tw.write('Huts   : ' + this.game.worldState.getHutCount());
   }
 
-  private renderDeadDens() {
-    this.deadDenWidget.write(
-      'Dead Dens   : ' + this.game.worldState.getDenDesdtroyed()
-    );
-    this.deadDenWidget.bringToTop();
+  private renderDeadGoblins(tw: TextWidget) {
+    tw.write('Dead Goblins : ' + this.game.worldState.getDeadGoblins());
+    tw.bringToTop();
   }
 }
