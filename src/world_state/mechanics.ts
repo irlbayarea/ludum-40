@@ -36,9 +36,7 @@ export class GameMechanics {
   private readonly hutActive: Hut[] = [];
 
   private readonly armory: Armory;
-  private readonly hurt: Phaser.Sound[];
   private readonly sword: Phaser.Sound[];
-  private readonly guard: Phaser.Sound[];
   private readonly death: Phaser.Sound;
 
   /**
@@ -60,7 +58,6 @@ export class GameMechanics {
       });
       this.spawnHutIntoWorld(new Hut(new HutFactory(game).hut()));
       this.spawnHutIntoWorld(new Hut(new HutFactory(game).hut()));
-      this.hurt = [1, 2, 3, 4, 5].map(n => game.add.sound(`hurt${n}`));
       this.sword = [1, 2, 3, 4, 5].map(n => game.add.sound(`sword${n}`));
       this.death = game.add.sound('death');
     }
