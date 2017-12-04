@@ -26,7 +26,7 @@ export class SpriteHUD {
             (this.healthPercent() / SpriteHUD.bloodSprayThreshold)
         ) < SpriteHUD.bloodSprayPulseWidth
       ) {
-        game.blood.sprite(this.sprite);
+        game.blood.blood(this.sprite);
       }
     }
   }
