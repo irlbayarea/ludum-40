@@ -32,7 +32,10 @@ export default class WorldState {
    * Moves a character on a given tick toward the target point. Use functions
    * like `directCharacterToPoint` to control character movement.
    */
-  private static moveCharacterTick(char: Character, towards: Phaser.Point): void {
+  private static moveCharacterTick(
+    char: Character,
+    towards: Phaser.Point
+  ): void {
     const body = char.getSprite().body;
     const p: Phaser.Point = new Phaser.Point(body.x, body.y);
     const p2: Phaser.Point = new Phaser.Point(towards.x, towards.y);
@@ -179,7 +182,10 @@ export default class WorldState {
     }
   }
 
-  public randomNearbyPoint(point: Phaser.Point, distance: number): Phaser.Point {
+  public randomNearbyPoint(
+    point: Phaser.Point,
+    distance: number
+  ): Phaser.Point {
     return new Phaser.Point(
       this.clampx((Math.random() - 0.5) * 2 * distance + point.x),
       this.clampx((Math.random() - 0.5) * 2 * distance + point.y)
@@ -398,7 +404,10 @@ export default class WorldState {
    * tile = 1.00 distance). Returns true if able to do that. The character
    * and destination must not be on a blocking point.
    */
-  private directCharacterToPoint(char: Character, point: Phaser.Point): boolean {
+  private directCharacterToPoint(
+    char: Character,
+    point: Phaser.Point
+  ): boolean {
     if (this.grid.collisionWorldPoint(char.getWorldPosition())) {
       return false;
     }
