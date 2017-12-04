@@ -62,10 +62,7 @@ export default class Boot extends Phaser.State {
     );
 
     // Load BG Music.
-    this.load.audio(
-      'music',
-      require('assets/audio/background.ogg'),
-    );
+    this.load.audio('music', require('assets/audio/background.ogg'));
   }
 
   public render(): void {

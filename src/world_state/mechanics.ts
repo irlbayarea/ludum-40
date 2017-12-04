@@ -438,7 +438,8 @@ export class GameMechanics {
 
       // Attack closest enemies.
       const enemy = this.findClosestEnemy(npc);
-      if (enemy &&
+      if (
+        enemy &&
         enemy.distance <= common.globals.gameplay.goblinVisionDistance
       ) {
         this.orderMove(npc, enemy.target.getWorldPosition());
