@@ -76,8 +76,11 @@ export default class Main extends Phaser.State {
         this.hudRenderer.setMessagePanelClearCountdown();
       }
     }
+  }
 
-    // Render
+  public render(): void {
+    game.worldState.render();
+
     this.hudRenderer.render(game.hud);
   }
 

@@ -41,6 +41,7 @@ export default class Character {
   public readonly lefthanded: boolean = Math.random() > 0.5 ? true : false;
 
   public path: Path | null;
+  public drawDebugPaths: boolean = true;
   public hud: SpriteHUD;
 
   private wandering: boolean;
@@ -238,10 +239,13 @@ export default class Character {
     }
   }
   /**
-   * Returns the position of the character in world coordinates (1 tile = 1.00 distance).
+   * Returns the center position of the character in world coordinates (1 tile = 1.00 distance).
    */
   public getWorldPosition(): Phaser.Point {
-    return new Phaser.Point(this.sprite!.x / 64, this.sprite!.y / 64);
+    return new Phaser.Point(
+      this.sprite!.centerX / 64,
+      this.sprite!.centerY / 64
+    );
   }
 
   /**
