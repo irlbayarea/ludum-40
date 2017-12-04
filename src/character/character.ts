@@ -10,6 +10,7 @@ import { randomName } from './names';
 import Path from '../world_state/path';
 import { Weapon } from '../ui/sprites/weapon';
 import { assign } from 'lodash';
+import Goal from './goal';
 
 export default class Character {
   public static readonly minSpeed: number = 10;
@@ -41,8 +42,8 @@ export default class Character {
   public path: Path | null;
   public drawDebugPaths: boolean = true;
   public hud: SpriteHUD;
+  public goal: Goal;
 
-  private wandering: boolean;
   private sprite?: Phaser.Sprite;
   private isGuard: boolean;
   private salary: number;
@@ -165,6 +166,7 @@ export default class Character {
     this.isGoblin = type === CharacterType.Goblin;
     this.setSalary();
     this.path = null;
+    this.goal = Goal.idle();
   }
 
   public arm(weapon: Weapon): void {
@@ -188,18 +190,6 @@ export default class Character {
 
   get weapon(): Weapon {
     return this.mWeapon;
-  }
-
-  public wander() {
-    this.wandering = true;
-  }
-
-  public stopWandering() {
-    this.wandering = false;
-  }
-
-  public isWandering(): boolean {
-    return this.wandering;
   }
 
   public getName(): string {

@@ -1,4 +1,4 @@
-import * as Phaser from 'phaser-ce';
+import { Point } from 'phaser-ce';
 import { filter, sample, remove, random } from 'lodash';
 import { ITicker } from '../ticker';
 import PeriodicGenerator from '../periodic_generator';
@@ -14,6 +14,7 @@ import {
 } from '../ui/sprites/armory';
 import { Weapon } from '../ui/sprites/weapon';
 import { SpawnConfig } from '../character/spawn_config';
+import Goal from '../character/goal';
 
 /**
  * Effectively "runs" the game, i.e. instead of just randomly spawning units.
@@ -376,10 +377,7 @@ export class GameMechanics {
    * @param target
    */
   private orderMove(source: Character, target: { x: number; y: number }): void {
-    game.worldState.directCharacterToPoint(
-      source,
-      new Phaser.Point(target.x, target.y)
-    );
+    source.goal = Goal.moveTo(new Point(target.x, target.y));
   }
 
   /**
