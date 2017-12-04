@@ -32,9 +32,13 @@ export const globals: IGlobals = {
   gameplay: {
     goblinSpawnRateMs: 15 * 100,
     goblinThinkRateMs: 1000,
-    npcAttackRateMs: 300,
+    goblinVisionDistance: 10,
 
-    aggroRange: 15,
+    denAndHutHP: 300,
+
+    npcAttackRateMs: 300,
+    maximumCharacters: 200,
+
     contractRateMs: 20 * 1000,
     crisisRateMs: 10 * 1000,
     defaultWeaponRange: 1.25,
@@ -89,7 +93,6 @@ interface IGlobals {
    * Gampeplay configuration.
    */
   readonly gameplay: {
-    aggroRange: number;
     /**
      * How often to spawn goblins at dens.
      */
@@ -101,11 +104,26 @@ interface IGlobals {
     goblinThinkRateMs: number;
 
     /**
+     * How far the goblin can "see" in order to take actions.
+     */
+    goblinVisionDistance: number;
+
+    /**
      * How often to have armed NPCs swing their weapon.
      *
      * TODO: We should allow this number to be accelerated for stronger NPCs.
      */
     npcAttackRateMs: number;
+
+    /**
+     * How much HP to give Dens/Huts.
+     */
+    denAndHutHP: number;
+
+    /**
+     * Maximum number of rendered characters.
+     */
+    maximumCharacters: number;
 
     contractRateMs: number;
     crisisRateMs: number;
