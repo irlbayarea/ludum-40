@@ -37,6 +37,7 @@ export const globals: IGlobals = {
     denAndHutHP: 300,
 
     npcAttackRateMs: 300,
+    maximumCharacters: 200,
 
     contractRateMs: 20 * 1000,
     crisisRateMs: 10 * 1000,
@@ -118,6 +119,11 @@ interface IGlobals {
      * How much HP to give Dens/Huts.
      */
     denAndHutHP: number;
+
+    /**
+     * Maximum number of rendered characters.
+     */
+    maximumCharacters: number;
 
     contractRateMs: number;
     crisisRateMs: number;

@@ -6,7 +6,12 @@ import * as common from '../common';
 import HutFactory from '../ui/sprites/hut';
 import { game } from '../index';
 import Character, { CharacterType } from '../character/character';
-import { Armory, SkinColor, ShirtColor, PantsColor } from '../ui/sprites/armory';
+import {
+  Armory,
+  SkinColor,
+  ShirtColor,
+  PantsColor,
+} from '../ui/sprites/armory';
 import { Weapon } from '../ui/sprites/weapon';
 import { SpawnConfig } from '../character/spawn_config';
 
@@ -39,7 +44,7 @@ export class GameMechanics {
    */
   constructor(map: Phaser.Tilemap) {
     this.armory = new Armory(game);
-    
+
     const hutLayer: Phaser.TilemapLayer = map.layers[map.getLayer('huts')];
     if (hutLayer) {
       this.hutSpawnLocations = this.findSpawnLocations(hutLayer);
@@ -87,7 +92,7 @@ export class GameMechanics {
     game.time.events.loop(
       common.globals.gameplay.goblinSpawnRateMs,
       this.spawnGoblins,
-      this,
+      this
     );
   }
 
@@ -177,12 +182,16 @@ export class GameMechanics {
     return `{${cell.x + modX}, ${cell.y + modY}}`;
   }
 
-  private worldPositionOfSprite(sprite: Phaser.Sprite) : Phaser.Point {
+  private worldPositionOfSprite(sprite: Phaser.Sprite): Phaser.Point {
     return new Phaser.Point(sprite!.x / 64, sprite!.y / 64);
   }
 
   private spawnGoblins(): void {
-    if (this.denActive.length === 0) {
+    if (
+      this.denActive.length === 0 ||
+      game.worldState.characters.length >
+        common.globals.gameplay.maximumCharacters
+    ) {
       return;
     }
     for (const den of this.denActive) {
@@ -244,7 +253,10 @@ export class GameMechanics {
         enemyHut &&
         enemyHut.distance <= common.globals.gameplay.goblinVisionDistance
       ) {
-        this.orderMove(goblin, this.worldPositionOfSprite(enemyHut.target.sprite));
+        this.orderMove(
+          goblin,
+          this.worldPositionOfSprite(enemyHut.target.sprite)
+        );
         return;
       }
       // common.debug.log('Could not find anything to do!', goblin);
@@ -326,7 +338,10 @@ export class GameMechanics {
    * @param injure
    * @param source
    */
-  private dealDamage(injure: Character | Hut | Den, source: Character): boolean {
+  private dealDamage(
+    injure: Character | Hut | Den,
+    source: Character
+  ): boolean {
     if (!this.isOpposed(source, injure)) {
       return false;
     }
@@ -475,11 +490,11 @@ export class GameMechanics {
       }
     }
     return target
-    ? {
-        target,
-        distance: targetDistance,
-      }
-    : undefined;
+      ? {
+          target,
+          distance: targetDistance,
+        }
+      : undefined;
   }
 }
 

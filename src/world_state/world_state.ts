@@ -120,7 +120,7 @@ export default class WorldState {
 
   /**
    * Adds a character to the game state, initializing its physics. Expects a Character object with a sprite.
-   * 
+   *
    * DO NOT USE.
    */
   public addCharacter(character: Character): void {
