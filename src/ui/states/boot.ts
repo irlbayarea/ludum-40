@@ -70,7 +70,6 @@ export default class Boot extends Phaser.State {
     this.load.audio('sword3', require('assets/audio/sword3.ogg'));
     this.load.audio('sword4', require('assets/audio/sword4.ogg'));
     this.load.audio('sword5', require('assets/audio/sword5.ogg'));
-    this.load.audio('death', require('assets/audio/death.ogg'));
   }
 
   public render(): void {
